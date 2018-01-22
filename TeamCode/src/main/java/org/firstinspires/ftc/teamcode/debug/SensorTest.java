@@ -35,9 +35,9 @@ public class SensorTest extends LinearOpMode{
 
             robot.enableLED(ledState);
 
-            telemetry.addData("Detected Red", robot.detectRed());
-            telemetry.addData("Detected Blue", robot.detectBlue());
-            telemetry.addData("LED State", ledState);
+            telemetry.addData("Red", robot.detectRed() ? "visible" : "not visible");
+            telemetry.addData("Blue", robot.detectBlue() ? "visible" : "not visible");
+            telemetry.addData("LED", ledState ? "on" : "off");
             telemetry.update();
         }
     }

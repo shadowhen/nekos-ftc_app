@@ -5,8 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.AutoBot;
 
-@Autonomous(name = "Blue Left Side")
-//@Disabled
+@Autonomous(name = "Competition: Blue Left Side")
 public class AutoBlue extends LinearOpMode {
 
     private AutoBot robot = new AutoBot();
@@ -22,10 +21,10 @@ public class AutoBlue extends LinearOpMode {
         robot.grabGlyph();
         sleep(1000);
 
-        robot.scanForKey(5);
+        robot.scanCryptoKey(5);
         robot.liftGlyph(0.25, 4);
 
-        switch (robot.getVuMark()){
+        switch (robot.getCryptoKey()){
             case RIGHT:
                 robot.turnByGyro(0.1 ,60, 5);
                 sleep(1000);
@@ -57,7 +56,7 @@ public class AutoBlue extends LinearOpMode {
         robot.moveByEncoders(0.4, -100, -100, 5);
 
         while (opModeIsActive()){
-            telemetry.addData("VuMark", robot.getVuMark());
+            telemetry.addData("VuMark", robot.getCryptoKey());
             telemetry.update();
         }
 

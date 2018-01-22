@@ -72,6 +72,31 @@ public abstract class Bot {
         driveMotors[3].setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
+    public void setRunMode(DcMotor.RunMode runMode){
+        switch (runMode){
+            case RUN_WITHOUT_ENCODER:
+                for (DcMotor driveMotor : driveMotors){
+                    driveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                }
+                break;
+            case RUN_USING_ENCODER:
+                for (DcMotor driveMotor : driveMotors){
+                    driveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                }
+                break;
+            case RUN_TO_POSITION:
+                for (DcMotor driveMotor : driveMotors){
+                    driveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                }
+                break;
+            case STOP_AND_RESET_ENCODER:
+                for (DcMotor driveMotor : driveMotors){
+                    driveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                }
+                break;
+        }
+    }
+
     /**
      * Set the drive power of the drive motors
      * to either move forward or backward or turn left or right

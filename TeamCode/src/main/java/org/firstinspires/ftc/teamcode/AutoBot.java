@@ -44,7 +44,7 @@ public class AutoBot extends Bot {
     }
 
     private enum Jewel {
-        RED_JEWEL, BLUE_JEWEL, UNKNOWN_JEWEL;
+        RED_JEWEL, BLUE_JEWEL, UNKNOWN_JEWEL
     }
 
     @Override
@@ -62,17 +62,11 @@ public class AutoBot extends Bot {
 
         // Resets all encoders on the drive motors
         addLog("Resetting drive motors' encoders");
-        driveMotors[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveMotors[1].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveMotors[2].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveMotors[3].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Activates the encoders on the drive motors
         addLog("Enabling drive motors' encoders");
-        driveMotors[0].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        driveMotors[1].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        driveMotors[2].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        driveMotors[3].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Prevent the drive motors from making any movement
         driveMotors[0].setPower(Math.abs(0));
@@ -93,7 +87,6 @@ public class AutoBot extends Bot {
         }
 
         telemetry.addData(">", "Press START to activate the robot.");
-        telemetry.addData("Lower Servo Arm", jewelArm.getPower());
         telemetry.update();
     }
 
@@ -123,6 +116,10 @@ public class AutoBot extends Bot {
         driveMotors[3].setTargetPosition(newTargets[3]);
     }
 
+    public void moveByEncoders(double speed, double leftDist, double rightDist){
+        moveByEncoders(speed, leftDist, rightDist, 5);
+    }
+
     /**
      * Set the target position of the drive motors based on the distance values
      * and the drive motors run to its target position based on the target values before
@@ -138,22 +135,18 @@ public class AutoBot extends Bot {
         int[] currentPosition = new int[4];
 
         // Resets the target and position values in the drive motors
-        driveMotors[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveMotors[1].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveMotors[2].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveMotors[3].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // Enable RUN_TO_POSIITON mode on the drive motors
+        setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        setTargetPosition(leftDist, rightDist);
 
         // Set the absolute speed of the drive motors
         driveMotors[0].setPower(Math.abs(speed));
         driveMotors[1].setPower(Math.abs(speed));
         driveMotors[2].setPower(Math.abs(speed));
         driveMotors[3].setPower(Math.abs(speed));
-
-        // Enable RUN_TO_POSIITON mode on the drive motors
-        driveMotors[0].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        driveMotors[1].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        driveMotors[2].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        driveMotors[3].setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Resets the timer for timeout
         timer.reset();
@@ -316,11 +309,29 @@ public class AutoBot extends Bot {
     //-----------------------------------------------------------------------
 
     public boolean detectBlue(){
-        return colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green();
+        boolean detected = false;
+        if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green()){
+            detected = true;
+            cdim.setLED(0, false);
+            cdim.setLED(1, true);
+        } else {
+            cdim.setLED(0, false);
+            cdim.setLED(1, false);
+        }
+        return detected;
     }
 
     public boolean detectRed(){
-        return colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green();
+        boolean detected = false;
+        if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green()){
+            detected = true;
+            cdim.setLED(0, true);
+            cdim.setLED(1, false);
+        } else {
+            cdim.setLED(0, false);
+            cdim.setLED(1, false);
+        }
+        return detected;
     }
 
     public void enableLED(boolean enable){
@@ -364,6 +375,10 @@ public class AutoBot extends Bot {
     //-----------------------------------------------------------------------
     //----------------------------Gyro Sensor--------------------------------
     //-----------------------------------------------------------------------
+
+    public void turnByGyro(double speed, int angle){
+        turnByGyro(speed, angle, 5);
+    }
 
     /**
      * Turn the robot in angle using gyro sensor
@@ -418,7 +433,7 @@ public class AutoBot extends Bot {
     //----------------------------Vuforia------------------------------------
     //-----------------------------------------------------------------------
 
-    public void scanForKey(double timeoutS){
+    public void scanCryptoKey(double timeoutS){
         boolean foundVuMark = false;
 
         vuforia.activateRelicTrackables(); // Activate the trackables
@@ -445,7 +460,7 @@ public class AutoBot extends Bot {
         }
     }
 
-    public RelicRecoveryVuMark getVuMark(){
+    public RelicRecoveryVuMark getCryptoKey(){
         return vuMark;
     }
 }

@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name = "Drive Control Competition")
+@TeleOp(name = "Competition: Drive Control")
 public class DriveControl extends OpMode {
 
     /////////////////////////////////////////////////////////////
@@ -98,31 +98,7 @@ public class DriveControl extends OpMode {
         setDriveSpeed();      // Set the power of the drive motors
         controlClapper();     // Controls the clapper using gamepad buttons
 
-        // Sends information to the driver phone through telemetry
-        telemetry.addLine("Power Setting");
-        telemetry.addLine("A: 1.00");
-        telemetry.addLine("B: 0.70");
-        telemetry.addLine("Y: 0.50");
-        telemetry.addLine("X: 0.30");
-        telemetry.addData("Mode", driveMotors[0].getMode());
-        telemetry.addLine("------------------------------");
-        telemetry.addData("Drive Clip", joystickClip);
-        telemetry.addData("Drive Power", "%.2f %.2f %.2f %.2f",
-                driveMotors[0].getPower(), driveMotors[1].getPower(), driveMotors[2].getPower(),
-                driveMotors[3].getPower());
-        telemetry.addData("Encoder Position", "%d %d %d %d",
-                driveMotors[0].getCurrentPosition(), driveMotors[1].getCurrentPosition(),
-                driveMotors[2].getCurrentPosition(), driveMotors[3].getCurrentPosition());
-        telemetry.addLine("------------------------------");
-        telemetry.addData("Arm Power", "%.2f", clapperMotor.getPower());
-        telemetry.addLine("------------------------------");
-        telemetry.addData("Servo Offset", "%.2f", servoPosition);
-        telemetry.addData("Servo Position", "%.2f %.2f", clapperServoLeft.getPosition(),
-                clapperServoRight.getPosition());
-        telemetry.addLine("------------------------------");
-        //telemetry.addData("Lower Arm Position", lowerServo);
-        //telemetry.addData("Servo Arm Position", lowerArmServo.getPosition());
-
+        updateTelemetry();    // Updates information on the driver phone
     }
 
     /**
@@ -182,6 +158,33 @@ public class DriveControl extends OpMode {
 
         clapperServoLeft.setPosition(MID_SERVO_LEFT + servoPosition);
         clapperServoRight.setPosition(MID_SERVO_RIGHT - servoPosition);
+    }
+
+    private void updateTelemetry(){
+        // Sends information to the driver phone through telemetry
+        telemetry.addLine("Power Setting");
+        telemetry.addLine("A: 1.00");
+        telemetry.addLine("B: 0.70");
+        telemetry.addLine("Y: 0.50");
+        telemetry.addLine("X: 0.30");
+        telemetry.addData("Mode", driveMotors[0].getMode().toString());
+        telemetry.addLine("------------------------------");
+        telemetry.addData("Drive Clip", joystickClip);
+        telemetry.addData("Drive Power", "%.2f %.2f %.2f %.2f",
+                driveMotors[0].getPower(), driveMotors[1].getPower(), driveMotors[2].getPower(),
+                driveMotors[3].getPower());
+        telemetry.addData("Encoder Position", "%d %d %d %d",
+                driveMotors[0].getCurrentPosition(), driveMotors[1].getCurrentPosition(),
+                driveMotors[2].getCurrentPosition(), driveMotors[3].getCurrentPosition());
+        telemetry.addLine("------------------------------");
+        telemetry.addData("Arm Power", "%.2f", clapperMotor.getPower());
+        telemetry.addLine("------------------------------");
+        telemetry.addData("Servo Offset", "%.2f", servoPosition);
+        telemetry.addData("Servo Position", "%.2f %.2f", clapperServoLeft.getPosition(),
+                clapperServoRight.getPosition());
+
+        // Clears and updates the telemetry
+        telemetry.update();
     }
 
     @Override

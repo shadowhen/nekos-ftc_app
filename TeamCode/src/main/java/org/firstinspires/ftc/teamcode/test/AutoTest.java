@@ -17,56 +17,12 @@ public class AutoTest extends LinearOpMode {
         waitForStart();
         robot.clearLog(); // Clears the logs
 
-        /*robot.grabGlyph();
-        sleep(1000);
-
-        robot.liftGlyph(0.25, 2);
-        robot.scanForKey(5);
-
-        switch (robot.getVuMark()){
-            case RIGHT:
-                robot.turnByGyro(0.1 ,60, 5);
-                sleep(1000);
-
-                robot.moveByEncoders(0.4, 600, 600, 5);
-                break;
-            case CENTER:
-                robot.turnByGyro(0.1 ,50, 5);
-                sleep(1000);
-
-                robot.moveByEncoders(0.4, 580, 580, 5);
-                break;
-            case LEFT:
-                robot.turnByGyro(0.1 ,40, 5);
-                sleep(1000);
-
-                robot.moveByEncoders(0.4, 560, 560, 5);
-                break;
-            default:
-                robot.turnByGyro(0.1 ,60, 5);
-                sleep(1000);
-
-                robot.moveByEncoders(0.4, 600, 600, 5);
+        robot.moveByEncoders(0.3, 200, 200);
+        if (robot.detectBlue()){
+            robot.turnByGyro(0.1, 90);
+        } else if (robot.detectRed()){
+            robot.turnByGyro(0.1, -90);
         }
-
-        robot.releaseGlyph();
-        sleep(1000);
-
-        robot.moveByEncoders(0.4, -100, -100, 5);
-
-        while (opModeIsActive()){
-            telemetry.addData("VuMark", robot.getVuMark());
-            telemetry.update();
-        }*/
-
-        /*robot.grabGlyph();
-        sleep(500);
-        robot.liftGlyph(0.25, 2);
-
-        robot.moveByEncoders(0.4, 560, 560, 5);
-        robot.lowerGlyph(0.25, 2);
-        robot.releaseGlyph();
-        sleep(500);
-        robot.moveByEncoders(0.4, -50, -50, 5);*/
+        robot.moveByEncoders(0.3, 200, 200);
     }
 }

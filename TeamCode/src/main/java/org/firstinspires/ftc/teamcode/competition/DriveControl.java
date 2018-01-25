@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name = "Competition: Drive Control")
+@TeleOp(name = "Competition: Drive Control", group = "Competition")
 public class DriveControl extends OpMode {
 
     /////////////////////////////////////////////////////////////
@@ -42,30 +42,27 @@ public class DriveControl extends OpMode {
 
     private DcMotor[] driveMotors = new DcMotor[4];
 
-    CRServo crServo;
-
     private DcMotor clapperMotor;
-    private Servo clapperServoLeft;
-    private Servo clapperServoRight;
+    private Servo   clapperServoLeft;
+    private Servo   clapperServoRight;
 
-    private Servo lowerArmServo;
+    private CRServo crServo;
 
-    private double joystickClip = 1;
-    private double armPower;
+    private double joystickClip  = 1;
     private double servoPosition = 0;
 
     private double[] joysticksOne = new double[2];
-    private double[] drivePower = new double[4];
 
     @Override
     public void init() {
+        // Get hardware references for the robot
         driveMotors[0] = hardwareMap.get(DcMotor.class, "motorleftfront");
         driveMotors[1] = hardwareMap.get(DcMotor.class, "motorrightfront");
         driveMotors[2] = hardwareMap.get(DcMotor.class, "motorleftrear");
         driveMotors[3] = hardwareMap.get(DcMotor.class, "motorrightrear");
 
-        clapperMotor = hardwareMap.get(DcMotor.class, "motorarm");
-        clapperServoLeft = hardwareMap.get(Servo.class,   "servoleftclap");
+        clapperMotor      = hardwareMap.get(DcMotor.class, "motorarm");
+        clapperServoLeft  = hardwareMap.get(Servo.class,   "servoleftclap");
         clapperServoRight = hardwareMap.get(Servo.class,   "servorightclap");
 
         crServo = hardwareMap.get(CRServo.class, "servolowerarm");
@@ -168,6 +165,8 @@ public class DriveControl extends OpMode {
         telemetry.addLine("Y: 0.50");
         telemetry.addLine("X: 0.30");
         telemetry.addData("Mode", driveMotors[0].getMode().toString());
+
+        // Drive motors
         telemetry.addLine("------------------------------");
         telemetry.addData("Drive Clip", joystickClip);
         telemetry.addData("Drive Power", "%.2f %.2f %.2f %.2f",
@@ -176,8 +175,12 @@ public class DriveControl extends OpMode {
         telemetry.addData("Encoder Position", "%d %d %d %d",
                 driveMotors[0].getCurrentPosition(), driveMotors[1].getCurrentPosition(),
                 driveMotors[2].getCurrentPosition(), driveMotors[3].getCurrentPosition());
+
+        // Paddle Arm
         telemetry.addLine("------------------------------");
         telemetry.addData("Arm Power", "%.2f", clapperMotor.getPower());
+
+        // Servos
         telemetry.addLine("------------------------------");
         telemetry.addData("Servo Offset", "%.2f", servoPosition);
         telemetry.addData("Servo Position", "%.2f %.2f", clapperServoLeft.getPosition(),

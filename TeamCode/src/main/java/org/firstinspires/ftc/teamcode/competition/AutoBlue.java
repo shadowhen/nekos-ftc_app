@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode.competition;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.AutoBot;
+import org.firstinspires.ftc.teamcode.robot.AutoBot;
 
-@Autonomous(name = "Competition: Blue Left Side")
+@Autonomous(name = "Competition: Blue Left Side", group = "Competition")
 public class AutoBlue extends LinearOpMode {
 
     private AutoBot robot = new AutoBot();
@@ -59,15 +59,5 @@ public class AutoBlue extends LinearOpMode {
             telemetry.addData("VuMark", robot.getCryptoKey());
             telemetry.update();
         }
-
-        /*robot.grabGlyph();
-        sleep(500);
-        robot.liftGlyph(0.25, 2);
-
-        robot.moveByEncoders(0.4, 560, 560, 5);
-        robot.lowerGlyph(0.25, 2);
-        robot.releaseGlyph();
-        sleep(500);
-        robot.moveByEncoders(0.4, -50, -50, 5);*/
     }
 }

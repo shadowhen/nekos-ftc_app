@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.vuforia;
+package org.firstinspires.ftc.teamcode.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -13,30 +14,28 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.teamcode.vuforia.BotVuforia;
 
-@TeleOp(name = "Vuforia Test", group = "test")
+@TeleOp(name = "Vuforia Test", group = "Test")
+@Disabled
 public class VuforiaTest extends LinearOpMode {
 
     private BotVuforia botVuforia = new BotVuforia();
 
     @Override
     public void runOpMode() throws InterruptedException {
-
         botVuforia.setupVuforia(hardwareMap); // Setup the vuforia for the robot
+
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
+
         waitForStart();
 
         botVuforia.activateRelicTrackables();
 
         while(opModeIsActive()){
-            if (gamepad1.a && !gamepad1.b){
-                botVuforia.activateRelicTrackables();
-            }
-            if (!gamepad1.a && gamepad1.b){
-                botVuforia.deactivateRelicTrackables();
-            }
-
+            // Get the vuMark based on the possible marks that the camera sees
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(botVuforia.getRelicTemplate());
+
+            // Informs the user about what the camera sees
             if (vuMark != RelicRecoveryVuMark.UNKNOWN){
                 telemetry.addData("VuMark", "%s visable", vuMark);
                 OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)botVuforia.getRelicTemplate().getListener()).getPose();

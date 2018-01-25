@@ -5,10 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.DriveBot;
+import org.firstinspires.ftc.teamcode.robot.DriveBot;
 
-@TeleOp(name = "Tele Test")
-public class TeleTest extends LinearOpMode{
+@TeleOp(name = "Hardware Debug", group = "Test")
+public class HardwareTest extends LinearOpMode {
 
     private DriveBot robot = new DriveBot();
     private ColorSensor colorSensor;

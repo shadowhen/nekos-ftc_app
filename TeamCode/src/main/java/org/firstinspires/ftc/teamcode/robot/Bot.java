@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,11 +10,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public abstract class Bot {
 
-    protected HardwareMap hwMap;
-    protected Telemetry telemetry;
+    protected HardwareMap hwMap;   // Robot's hardware map
+    protected Telemetry telemetry; // Robot's central telemetry
 
     // Drive system
-    protected DcMotor[] driveMotors;
+    protected DcMotor[] driveMotors; // Four motors
 
     // Paddles (Flaps)
     protected DcMotor flapperArm;
@@ -22,7 +22,7 @@ public abstract class Bot {
 
     // Jewel system
     protected DcMotor jewelSlider;
-    protected CRServo jewelArm;
+    protected CRServo jewelArm;         // Note: one motor and one servo!!!
     protected Servo   jewelElbow;
 
     protected static final double MID_SERVO = 0.5;
@@ -33,22 +33,21 @@ public abstract class Bot {
     }
 
     /**
-     * Initalizes the robot and sets up essential hardware that the user relies on such
+     * Initializes the robot and sets up essential hardware that the user relies on such
      * as movement, arm control, and flap control
      *
      * @param ahwMap     Hardware Map
      * @param _telemetry Telemetry
      */
-    protected void init(HardwareMap ahwMap, Telemetry _telemetry){
-        hwMap = ahwMap;
+    public void init(HardwareMap ahwMap, Telemetry _telemetry){
+        hwMap     = ahwMap;
         telemetry = _telemetry;
 
-        // Settings of telemetry log
+        // Settings of telemetry's log system
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.OLDEST_FIRST);
         telemetry.log().setCapacity(6);
 
-        // Get hardware values from the configuration file on the robot controller
-        // to make the robot and its hardware to work properly
+        // Get hardware references from the robot controller for the robot
         // Motors:
         driveMotors[0] = hwMap.get(DcMotor.class, "motorleftfront");
         driveMotors[1] = hwMap.get(DcMotor.class, "motorrightfront");
@@ -57,43 +56,25 @@ public abstract class Bot {
 
         // Paddle System (Flap System):
         flapperArm = hwMap.get(DcMotor.class, "motorarm");
-        flaps[0] = hwMap.get(Servo.class, "servoleftclap");
-        flaps[1] = hwMap.get(Servo.class, "servorightclap");
-
-        // Jewel System:
-        jewelSlider = hwMap.get(DcMotor.class, "motorslider");
-        jewelArm = hwMap.get(CRServo.class, "servolowerarm");
-        jewelElbow = hwMap.get(Servo.class, "servoelbowarm");
+        flaps[0]   = hwMap.get(Servo.class, "servoleftclap");
+        flaps[1]   = hwMap.get(Servo.class, "servorightclap");
 
         // Reverses direction of the right drive motors
-        driveMotors[0].setDirection(DcMotorSimple.Direction.FORWARD);
         driveMotors[1].setDirection(DcMotorSimple.Direction.REVERSE);
-        driveMotors[2].setDirection(DcMotorSimple.Direction.FORWARD);
         driveMotors[3].setDirection(DcMotorSimple.Direction.REVERSE);
+
+        // Forwards direction of the left drive motors
+        driveMotors[0].setDirection(DcMotorSimple.Direction.FORWARD);
+        driveMotors[2].setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
+    /**
+     * Set the run mode of the drive motors
+     * @param runMode Drive Motors' RunMode
+     */
     public void setRunMode(DcMotor.RunMode runMode){
-        switch (runMode){
-            case RUN_WITHOUT_ENCODER:
-                for (DcMotor driveMotor : driveMotors){
-                    driveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                }
-                break;
-            case RUN_USING_ENCODER:
-                for (DcMotor driveMotor : driveMotors){
-                    driveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                }
-                break;
-            case RUN_TO_POSITION:
-                for (DcMotor driveMotor : driveMotors){
-                    driveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                }
-                break;
-            case STOP_AND_RESET_ENCODER:
-                for (DcMotor driveMotor : driveMotors){
-                    driveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                }
-                break;
+        for (DcMotor driveMotor : driveMotors){
+            driveMotor.setMode(runMode);
         }
     }
 
@@ -120,7 +101,7 @@ public abstract class Bot {
     }
 
     /**
-     * Set the postiion that either opens or closes the flaps
+     * Set the position that either opens or closes the flaps
      *
      * @param position Opens or closes the flaps
      */

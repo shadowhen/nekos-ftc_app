@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode.competition;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.AutoBot;
+import org.firstinspires.ftc.teamcode.robot.AutoBot;
 
-@Autonomous(name = "Competition: Red Right Side")
+@Autonomous(name = "Competition: Red Right Side", group = "Competition")
 public class AutoRed extends LinearOpMode {
 
     private AutoBot robot = new AutoBot();

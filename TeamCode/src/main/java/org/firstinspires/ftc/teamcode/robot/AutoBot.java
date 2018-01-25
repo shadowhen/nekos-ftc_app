@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDeviceInterfaceModule;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
@@ -29,8 +28,8 @@ public class AutoBot extends Bot {
     private ModernRoboticsI2cGyro gyro;
     private ColorSensor colorSensor;
 
-    // Encoder functions
-    private static final double COUNTS_PER_REV = 1120;
+    // Math for target position system
+    private static final double COUNTS_PER_REV = 1120; // Counts Per Revolution from Tetrix Motor
     private static final double WHEELS_DIAMETER_MM = 83.5;
     private static final double COUNTS_PER_MM = COUNTS_PER_REV / (WHEELS_DIAMETER_MM * Math.PI);
 

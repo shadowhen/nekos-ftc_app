@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.debug;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.AutoBot;
+import org.firstinspires.ftc.teamcode.robot.AutoBot;
 
-@TeleOp(name = "Sensor Test")
-//@Disabled
+@TeleOp(name = "Sensor Debug", group = "Debug")
 public class SensorTest extends LinearOpMode{
 
     private AutoBot robot = new AutoBot();

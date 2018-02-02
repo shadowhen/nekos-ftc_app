@@ -14,39 +14,52 @@ public class AutoRed extends LinearOpMode {
     public void runOpMode(){
         robot.init(hardwareMap, telemetry);
 
+        // Calibrates and resets the gyro sensor
+        robot.getGyro().calibrate();
+        while (robot.getGyro().isCalibrating()){
+            telemetry.addLine(String.format("Calibrating gyro sensor for about %.4f", time));
+            telemetry.update();
+        }
+
+        telemetry.addData(">", "start");
+        telemetry.update();
         waitForStart(); // Waits until START button is pressed
 
-        robot.clearLog(); // Clears the logs
+        telemetry.log().clear(); // Clears the logs
 
         robot.grabGlyph();
         sleep(1000);
 
-        robot.scanCryptoKey(5);
-        robot.liftGlyph(0.25, 4);
+        robot.scanPictograph(5);
+        robot.liftGlyph(0.25, 2);
 
-        switch (robot.getCryptoKey()){
+        switch (robot.getVuMark()){
             case LEFT:
-                robot.turnByGyro(0.1 ,-115, 5);
+                robot.turn(0.2 ,-115, 5);
                 sleep(1000);
 
+                robot.lowerGlyph(0.1, 2);
                 robot.moveByEncoders(0.4, 600, 600, 5);
                 break;
             case CENTER:
-                robot.turnByGyro(0.1 ,-105, 5);
+                robot.turn(0.2 ,-105, 5);
                 sleep(1000);
 
+                robot.lowerGlyph(0.1, 2);
                 robot.moveByEncoders(0.4, 580, 580, 5);
                 break;
             case RIGHT:
-                robot.turnByGyro(0.1 ,-95, 5);
+                robot.turn(0.2 ,-95, 5);
                 sleep(1000);
 
+                robot.lowerGlyph(0.1, 2);
                 robot.moveByEncoders(0.4, 560, 560, 5);
                 break;
             default:
-                robot.turnByGyro(0.1 ,-95, 5);
+                robot.turn(0.2 ,-95, 5);
                 sleep(1000);
 
+                robot.lowerGlyph(0.1, 2);
                 robot.moveByEncoders(0.4, 600, 600, 5);
         }
 
@@ -54,10 +67,6 @@ public class AutoRed extends LinearOpMode {
         sleep(1000);
 
         robot.moveByEncoders(0.4, -100, -100, 5);
-
-        while (opModeIsActive()){
-            telemetry.addData("VuMark", robot.getCryptoKey());
-            telemetry.update();
-        }
+        robot.close();
     }
 }

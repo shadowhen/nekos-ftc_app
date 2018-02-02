@@ -1,28 +1,31 @@
 package org.firstinspires.ftc.teamcode.test;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.robot.AutoBot;
 
-@Autonomous(name = "Autonomous Test", group = "Test")
-//@Disabled
 public class AutoTest extends LinearOpMode {
 
     private AutoBot robot = new AutoBot();
 
-    @Override
-    public void runOpMode(){
-        robot.init(hardwareMap, telemetry);
-        waitForStart();
-        robot.clearLog(); // Clears the logs
+    private static final double DRIVE_SPEED = 0.3;
 
-        robot.moveByEncoders(0.3, 200, 200);
-        if (robot.detectBlue()){
-            robot.turnByGyro(0.1, 90);
-        } else if (robot.detectRed()){
-            robot.turnByGyro(0.1, -90);
+    @Override
+    public void runOpMode() throws InterruptedException {
+        robot.init(hardwareMap, telemetry);
+
+        waitForStart();
+
+        robot.moveByEncoders(DRIVE_SPEED, 200, 200, 5);
+        robot.turn(0.2, 135);
+
+        switch (robot.getJewelColor()) {
+            case RED:
+                break;
+            case BLUE:
+                break;
+            default:
+
         }
-        robot.moveByEncoders(0.3, 200, 200);
     }
 }

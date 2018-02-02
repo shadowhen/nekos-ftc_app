@@ -8,28 +8,27 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public abstract class Bot {
+public abstract class Bot implements Robot {
 
     protected HardwareMap hwMap;   // Robot's hardware map
     protected Telemetry telemetry; // Robot's central telemetry
 
     // Drive system
-    protected DcMotor[] driveMotors; // Four motors
+    private DcMotor[] driveMotors; // Four motors
 
-    // Paddles (Flaps)
-    protected DcMotor flapperArm;
-    protected Servo[] flaps;
+    // Paddle System
+    private DcMotor paddleArmMotor;
+    private Servo[] paddleServos;
 
     // Jewel system
-    protected DcMotor jewelSlider;
-    protected CRServo jewelArm;         // Note: one motor and one servo!!!
-    protected Servo   jewelElbow;
+    private DcMotor jewelSliderMotor;
+    private CRServo jewelArmCrServo;         // Note: one motor and one servo!!!
 
-    protected static final double MID_SERVO = 0.5;
+    private static final double MID_SERVO_POSITION = 0.5;
 
-    protected Bot(){
-        driveMotors = new DcMotor[4];
-        flaps = new Servo[2];
+    Bot(){
+        driveMotors  = new DcMotor[4];
+        paddleServos = new Servo[2];
     }
 
     /**
@@ -48,16 +47,20 @@ public abstract class Bot {
         telemetry.log().setCapacity(6);
 
         // Get hardware references from the robot controller for the robot
-        // Motors:
+        // Drive Motors:
         driveMotors[0] = hwMap.get(DcMotor.class, "motorleftfront");
         driveMotors[1] = hwMap.get(DcMotor.class, "motorrightfront");
         driveMotors[2] = hwMap.get(DcMotor.class, "motorleftrear");
         driveMotors[3] = hwMap.get(DcMotor.class, "motorrightrear");
 
-        // Paddle System (Flap System):
-        flapperArm = hwMap.get(DcMotor.class, "motorarm");
-        flaps[0]   = hwMap.get(Servo.class, "servoleftclap");
-        flaps[1]   = hwMap.get(Servo.class, "servorightclap");
+        // Paddle System:
+        paddleArmMotor  = hwMap.get(DcMotor.class, "motorarm");
+        paddleServos[0] = hwMap.get(Servo.class, "servoleftclap");
+        paddleServos[1] = hwMap.get(Servo.class, "servorightclap");
+
+        // Jewel arm system:
+        jewelSliderMotor = hwMap.get(DcMotor.class, "motorlowerarm");
+        jewelArmCrServo  = hwMap.get(CRServo.class,"servolowerarm");
 
         // Reverses direction of the right drive motors
         driveMotors[1].setDirection(DcMotorSimple.Direction.REVERSE);
@@ -66,17 +69,27 @@ public abstract class Bot {
         // Forwards direction of the left drive motors
         driveMotors[0].setDirection(DcMotorSimple.Direction.FORWARD);
         driveMotors[2].setDirection(DcMotorSimple.Direction.FORWARD);
+
+        jewelArmCrServo.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     /**
-     * Set the run mode of the drive motors
-     * @param runMode Drive Motors' RunMode
+     * Closes all hardware devices on the robot
      */
-    public void setRunMode(DcMotor.RunMode runMode){
-        for (DcMotor driveMotor : driveMotors){
-            driveMotor.setMode(runMode);
+    public void close() {
+        for (int i = 0; i < getDriveMotors().length; i++){
+            getDriveMotors()[i].close();
         }
+        for (int i = 0; i < getPaddleServos().length; i++){
+            getPaddleServos()[i].close();
+        }
+
+        getPaddleArmMotor().close();
+        getJewelArmCrServo().close();
+        getJewelSliderMotor().close();
     }
+
+    ////////////////////////////////////////////////////////////////////////
 
     /**
      * Set the drive power of the drive motors
@@ -92,59 +105,34 @@ public abstract class Bot {
     }
 
     /**
-     * Set the power of the arm which holds the flaps
+     * Set the position that either opens or closes the paddleServos
      *
-     * @param armPower Flap Arm Power
+     * @param position Opens or closes the paddleServos
      */
-    public void setArmPower(double armPower){
-        flapperArm.setPower(armPower);
+    public void setPaddlePosition(double position){
+        paddleServos[0].setPosition(MID_SERVO_POSITION + position);
+        paddleServos[1].setPosition(MID_SERVO_POSITION - position);
     }
 
-    /**
-     * Set the position that either opens or closes the flaps
-     *
-     * @param position Opens or closes the flaps
-     */
-    public void setFlapPosition(double position){
-        flaps[0].setPosition(MID_SERVO + position);
-        flaps[1].setPosition(MID_SERVO - position);
+    ////////////////////////////////////////////////////////////////////////
+
+    public DcMotor[] getDriveMotors() {
+        return driveMotors;
     }
 
-    /**
-     * Set the power of the jewel slider, which slides the arm out and in.
-     * @param sliderPower Power of the jewel slider
-     */
-    public void setJewelSliderPower(double sliderPower){
-        jewelSlider.setPower(sliderPower);
+    public DcMotor getPaddleArmMotor() {
+        return paddleArmMotor;
     }
 
-    /**
-     * Set the power (position) of the jewel arm
-     * @param jewelArmPower Power of the jewel arm
-     */
-    public void setJewelArmPower(double jewelArmPower){
-        jewelArm.setPower(jewelArmPower);
+    public Servo[] getPaddleServos() {
+        return paddleServos;
     }
 
-    /**
-     * Set the position of the jewel elbow.
-     * @param elbowPosition Position of the elbow
-     */
-    public void setJewelElbowPosition(double elbowPosition){
-        jewelElbow.setPosition(elbowPosition);
+    public DcMotor getJewelSliderMotor() {
+        return jewelSliderMotor;
     }
 
-    /**
-     * Adds a new log on telemetry
-     */
-    public void addLog(String entry){
-        telemetry.log().add(entry);
-    }
-
-    /**
-     * Clear all logs on the telemetry
-     */
-    public void clearLog(){
-        telemetry.log().clear();
+    public CRServo getJewelArmCrServo() {
+        return jewelArmCrServo;
     }
 }

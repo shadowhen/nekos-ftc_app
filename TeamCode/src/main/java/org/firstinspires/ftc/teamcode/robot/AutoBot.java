@@ -15,107 +15,89 @@ import org.firstinspires.ftc.teamcode.vuforia.BotVuforia;
 
 import java.util.Locale;
 
-public class AutoBot extends Bot {
+public class AutoBot extends Bot implements RobotAuto {
 
     private ElapsedTime timer;
-
-    // Vuforia
-    private RelicRecoveryVuMark vuMark;
-    private BotVuforia vuforia;
 
     // Sensors
     private ModernRoboticsUsbDeviceInterfaceModule cdim;
     private ModernRoboticsI2cGyro gyro;
     private ColorSensor colorSensor;
 
+    // Vuforia
+    private RelicRecoveryVuMark vuMark;
+    private BotVuforia vuforia;
+
     // Math for target position system
     private static final double COUNTS_PER_REV = 1120; // Counts Per Revolution from Tetrix Motor
     private static final double WHEELS_DIAMETER_MM = 83.5;
     private static final double COUNTS_PER_MM = COUNTS_PER_REV / (WHEELS_DIAMETER_MM * Math.PI);
 
-    // Speed for encoders
-    private static final double TURN_SPEED = 0.3;
-
     public AutoBot() {
         super();
-        timer = new ElapsedTime();
-        vuforia = new BotVuforia();
     }
 
-    private enum Jewel {
-        RED_JEWEL, BLUE_JEWEL, UNKNOWN_JEWEL
+    public enum Jewel {
+        RED, BLUE, UNKNOWN
+    }
+
+    public enum GlyphControl {
+        GRAB, RELEASE, LIFT, LOWER;
     }
 
     @Override
     public void init(HardwareMap ahwMap, Telemetry _telemetry) {
         super.init(ahwMap, _telemetry);
 
-        addLog("Adding new hardware");
-        // Device Interface Module hardware mao
+        telemetry.addData("Status", "Initializing");
+        telemetry.update();
+
+        // Initializing and creating new object of ElapsedTime
+        timer = new ElapsedTime();
+
+        // Get hardware references for the robot's hardware and electronic components
         cdim = (ModernRoboticsUsbDeviceInterfaceModule)
                 hwMap.get(DeviceInterfaceModule.class,"Device Interface Module 1");
-
-        // Sensors hardware map
         gyro = (ModernRoboticsI2cGyro)hwMap.get(GyroSensor.class, "gyro");
         colorSensor = hwMap.colorSensor.get("colorsensor");
 
-        // Resets all encoders on the drive motors
-        addLog("Resetting drive motors' encoders");
-        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        for (int i = 0; i < getDriveMotors().length; i++){
+            getDriveMotors()[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            getDriveMotors()[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            getDriveMotors()[i].setPower(0.00);
+        }
 
-        // Activates the encoders on the drive motors
-        addLog("Enabling drive motors' encoders");
-        setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        // Prevent the drive motors from making any movement
-        driveMotors[0].setPower(Math.abs(0));
-        driveMotors[1].setPower(Math.abs(0));
-        driveMotors[2].setPower(Math.abs(0));
-        driveMotors[3].setPower(Math.abs(0));
-
-        // Allows robot to use vuforia
-        addLog("Setting up vuforia");
-        vuforia.setupVuforia(hwMap);
-
-        // Calibrates and resets the gyro sensor
-        addLog("Calibrating Gyro Sensor");
-        gyro.calibrate();
-        while (gyro.isCalibrating()){
-            telemetry.addLine(String.format(Locale.ENGLISH, "Calibrating for about %.4f", timer.time()));
+        while (getGyro().isCalibrating()) {
+            telemetry.addData(">", "calibrating gyro sensor");
             telemetry.update();
         }
+
+        // Allows robot to use vuforia as its pictograph scanner
+        vuforia = new BotVuforia(hwMap);
+        vuforia.activateRelicTrackables(); // Allows vuforia to locate, scan, and track pictographs
 
         telemetry.addData(">", "Press START to activate the robot.");
         telemetry.update();
     }
 
-    //-----------------------------------------------------------------------
-    //---------------------------Auto Movement-------------------------------
-    //-----------------------------------------------------------------------
+    @Override
+    public void close() {
+        super.close();
 
-    /**
-     * Set the target position of the drive motors using distance of millimeters.
-     * <p>
-     * Note: The drive motors may have target position, BUT the drive motors must be runmode
-     * RUN_TO_POSITION in order to use posiiton values as moving and stop points.
-     * @param leftDist  Left MM Distance
-     * @param rightDist Right MM Distance
-     */
-    private void setTargetPosition(double leftDist, double rightDist){
-        int[] newTargets = new int[4];
+        // Close all hardware devices
+        colorSensor.close();
+        gyro.close();
+        cdim.close();
 
-        newTargets[0] = driveMotors[0].getCurrentPosition() + (int)(leftDist * COUNTS_PER_MM);
-        newTargets[1] = driveMotors[1].getCurrentPosition() + (int)(rightDist * COUNTS_PER_MM);
-        newTargets[2] = driveMotors[2].getCurrentPosition() + (int)(leftDist * COUNTS_PER_MM);
-        newTargets[3] = driveMotors[3].getCurrentPosition() + (int)(rightDist * COUNTS_PER_MM);
-
-        driveMotors[0].setTargetPosition(newTargets[0]);
-        driveMotors[1].setTargetPosition(newTargets[1]);
-        driveMotors[2].setTargetPosition(newTargets[2]);
-        driveMotors[3].setTargetPosition(newTargets[3]);
+        // Disables tracking relic vuMarks
+        vuforia.deactivatRelicTrackables();
     }
 
-    public void moveByEncoders(double speed, double leftDist, double rightDist){
+    ////////////////////////////////////////////////////////////////////////
+    //---------------------------Auto Movement----------------------------//
+    ////////////////////////////////////////////////////////////////////////
+
+    public void moveByEncoders(double speed, double leftDist, double rightDist) {
         moveByEncoders(speed, leftDist, rightDist, 5);
     }
 
@@ -129,39 +111,49 @@ public class AutoBot extends Bot {
      * @param rightDist Distance that the right drive motors must reach
      * @param timeoutS  Amount of seconds before robot reaches its target
      */
-    public void moveByEncoders(double speed, double leftDist, double rightDist, double timeoutS){
-        int[] currentTarget = new int[4];
+    public void moveByEncoders(double speed, double leftDist, double rightDist, double timeoutS) {
+        int[] currentTarget   = new int[4];
         int[] currentPosition = new int[4];
 
-        // Resets the target and position values in the drive motors
-        setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        boolean running = true;
 
-        // Enable RUN_TO_POSIITON mode on the drive motors
-        setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        // Set the target position of the drive motors
+        for (int i = 0; i < getDriveMotors().length; i++){
+            getDriveMotors()[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            getDriveMotors()[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        setTargetPosition(leftDist, rightDist);
+            if (i % 2 == 0){
+                getDriveMotors()[i].setTargetPosition(getDriveMotors()[i].getCurrentPosition()
+                        + (int)(leftDist * COUNTS_PER_MM));
+            } else if (i % 2 != 0){
+                getDriveMotors()[i].setTargetPosition(getDriveMotors()[i].getCurrentPosition()
+                        + (int)(rightDist * COUNTS_PER_MM));
+            }
+        }
 
-        // Set the absolute speed of the drive motors
-        driveMotors[0].setPower(Math.abs(speed));
-        driveMotors[1].setPower(Math.abs(speed));
-        driveMotors[2].setPower(Math.abs(speed));
-        driveMotors[3].setPower(Math.abs(speed));
+        // Set the absolute (non-negative) speed of the drive motors
+        setDrivePower(Math.abs(speed), Math.abs(speed));
 
-        // Resets the timer for timeout
         timer.reset();
 
         // The robot drives to its target position until one of
         // the drive motors' position reaches its target.
-        while ((timer.seconds() < timeoutS) &&
-                (driveMotors[0].isBusy() && driveMotors[1].isBusy()
-                && driveMotors[2].isBusy() && driveMotors[3].isBusy())){
+        while ((timer.seconds() < timeoutS) && running){
             // Gets the current position values from the drive motors
-            for (int i = 0; i < 4; i++){
-                currentPosition[i] = driveMotors[i].getCurrentPosition();
-                currentTarget[i] = driveMotors[i].getTargetPosition();
+            for (int i = 0; i < getDriveMotors().length; i++){
+                // Set the absolute speed of the drive motors since they move
+                // according to the target position
+                getDriveMotors()[i].setPower(Math.abs(speed));
+
+                // Get position and target values from the drive motors
+                currentPosition[i] = getDriveMotors()[i].getCurrentPosition();
+                currentTarget[i]   = getDriveMotors()[i].getTargetPosition();
+
+                if (!getDriveMotors()[i].isBusy()){
+                    running = false;
+                }
             }
 
-            // Information on the drive station
             telemetry.addData("Current Position", "%d %d %d %d",
                     currentPosition[0], currentPosition[1],
                     currentPosition[2], currentPosition[3]);
@@ -171,108 +163,33 @@ public class AutoBot extends Bot {
             telemetry.update();
         }
 
-        // Stops the drive motors
-        driveMotors[0].setPower(Math.abs(0));
-        driveMotors[1].setPower(Math.abs(0));
-        driveMotors[2].setPower(Math.abs(0));
-        driveMotors[3].setPower(Math.abs(0));
+        for (int i = 0; i < getDriveMotors().length; i++) {
+            // Stops the drive motors
+            getDriveMotors()[i].setPower(0);
 
-        // Disable RUN_TO_POSITION mode on the driver motors
-        driveMotors[0].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        driveMotors[1].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        driveMotors[2].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        driveMotors[3].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    /**
-     * The robot uses the encoder target position system to turn using millimeters to determine
-     * the turn distance
-     * @param speed     Turn Speed
-     * @param distance  MM Distance
-     * @param timeoutMS Timeout milliseconds for turn loop
-     */
-    public void turnByEncoder(double speed, double distance, long timeoutMS){
-        int[] newTarget = new int[4];
-        int[] currentTarget = new int[4];
-
-        for (int i = 0; i < driveMotors.length; i++){
-            newTarget[i] = driveMotors[i].getCurrentPosition() + (int)(distance * COUNTS_PER_MM);
-
-            if (i == 0 || i % 2 == 0){
-                driveMotors[i].setTargetPosition(newTarget[i]);
-            } else {
-                driveMotors[i].setTargetPosition(-newTarget[i]);
-            }
-
-            driveMotors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-
-        timer.reset();
-        while ((timer.milliseconds() < timeoutMS) && (!isReachedTarget())){
-            for (int i = 0; i < driveMotors.length; i++){
-                driveMotors[i].setPower(speed);
-                currentTarget[i] = driveMotors[i].getCurrentPosition();
-            }
-            telemetry.addData("Speed", speed);
-            telemetry.addData("Distance", distance);
-            telemetry.addData("Target Position", "%d %d %d %d",
-                    newTarget[0], newTarget[1], newTarget[2], newTarget[3]);
-            telemetry.addData("Current Position", "%d %d %d %d",
-                    currentTarget[0], currentTarget[1], currentTarget[2], currentTarget[3]);
-            telemetry.update();
-        }
-
-        for (DcMotor motor : driveMotors){
-            motor.setPower(0);
-            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            // Disable RUN_TO_POSITION mode on the driver motors
+            getDriveMotors()[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
-    /**
-     * Returns a boolean if the one of the drive motors reach its target position
-     * @return one of the drive motor reached its target
-     */
-    private boolean isReachedTarget(){
-       return driveMotors[0].getCurrentPosition() > driveMotors[0].getTargetPosition() ||
-               driveMotors[1].getCurrentPosition() > driveMotors[1].getTargetPosition() ||
-               driveMotors[2].getCurrentPosition() > driveMotors[2].getTargetPosition() ||
-               driveMotors[3].getCurrentPosition() > driveMotors[3].getTargetPosition();
-    }
+    /////////////////////////////////////////////////////////////////////////
+    //---------------------------Glyph Control-----------------------------//
+    /////////////////////////////////////////////////////////////////////////
 
     /**
-     * Turn the robot using milliseconds time
-     * @param speed Turn Speed
-     * @param sleepMS Wait time
-     */
-    public void turnByTime(double speed, long sleepMS){
-        timer.reset();
-
-        while (timer.milliseconds() < sleepMS){
-            telemetry.addData("Speed", "%.2f", speed);
-            telemetry.update();
-
-            setDrivePower(speed, -speed);
-        }
-    }
-
-    //-----------------------------------------------------------------------
-    //---------------------------Glyph Control-------------------------------
-    //-----------------------------------------------------------------------
-
-    /**
-     * Pulls in the flaps to grab the glyph
+     * Pulls in the paddleServos to grab the glyph
      */
     public void grabGlyph(){
-        addLog("Grabbing the glyph");
-        setFlapPosition(.4);
+        telemetry.log().add("Grabbing glyph");
+        setPaddlePosition(0.4);
     }
 
     /**
-     * Pulls back the flaps to release the glyph
+     * Pulls back the paddleServos to release the glyph
      */
     public void releaseGlyph(){
-        addLog("Releasing the glyph");
-        setFlapPosition(-.4); // Lets go the glyph
+        telemetry.log().add("Releasing glyph");
+        setPaddlePosition(-0.4); // Lets go the glyph
     }
 
     /**
@@ -282,11 +199,11 @@ public class AutoBot extends Bot {
      */
     public void liftGlyph(double speed, double seconds){
         timer.reset();
-        addLog("Raising the glyph");
+        telemetry.log().add("Raising glyph");
         while (timer.seconds() < seconds){
-            setArmPower(Math.abs(speed));
+            getPaddleArmMotor().setPower(Math.abs(speed));
         }
-        setArmPower(0);
+        getPaddleArmMotor().setPower(0);
     }
 
     /**
@@ -296,170 +213,132 @@ public class AutoBot extends Bot {
      */
     public void lowerGlyph(double speed, double seconds){
         timer.reset();
-        addLog("Lowering the glyph");
+        telemetry.log().add("Lowering glyph");
         while (timer.seconds() < seconds){
-            setArmPower(-Math.abs(speed));
+            getPaddleArmMotor().setPower(-Math.abs(speed));
         }
-        setArmPower(0);
+        getPaddleArmMotor().setPower(0);
     }
 
-    //-----------------------------------------------------------------------
-    //----------------------------Color Sensor-------------------------------
-    //-----------------------------------------------------------------------
+    /////////////////////////////////////////////////////////////////////////
+    //----------------------------Color Sensor-----------------------------//
+    /////////////////////////////////////////////////////////////////////////
 
-    public boolean detectBlue(){
-        boolean detected = false;
-        if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green()){
-            detected = true;
-            cdim.setLED(0, false);
-            cdim.setLED(1, true);
+    /**
+     * Returns the color of the jewel that color sensor detects
+     * @return Color of the Jewel
+     */
+    public Jewel getJewelColor() {
+        Jewel color;
+
+        if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green()) {
+            color = Jewel.RED;
+        } else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green()) {
+            color = Jewel.BLUE;
         } else {
-            cdim.setLED(0, false);
-            cdim.setLED(1, false);
+            color = Jewel.UNKNOWN;
         }
-        return detected;
+
+        return color;
     }
 
-    public boolean detectRed(){
-        boolean detected = false;
-        if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green()){
-            detected = true;
-            cdim.setLED(0, true);
-            cdim.setLED(1, false);
-        } else {
-            cdim.setLED(0, false);
-            cdim.setLED(1, false);
-        }
-        return detected;
-    }
+    /////////////////////////////////////////////////////////////////////////
+    //----------------------------Gyro Sensor------------------------------//
+    /////////////////////////////////////////////////////////////////////////
 
-    public void enableLED(boolean enable){
-        colorSensor.enableLed(enable);
-    }
-
-    public void locateJewel(Jewel jewel, double scanS, double turnS, double timeoutS){
-        boolean finish = false;
-        boolean reverseTurn = false;
-        Jewel foundJewel = Jewel.UNKNOWN_JEWEL;
-
-        timer.reset();
-        // Scans the jewel for certain amount of time
-        while (timer.seconds() < scanS){
-            if (detectBlue()){
-                foundJewel = Jewel.BLUE_JEWEL;
-            } else if (detectRed()){
-                foundJewel = Jewel.RED_JEWEL;
-            }
-        }
-
-        // Compares the found jewel and the current alliance jewel
-        // and decides the robot should either reverse or not
-        if (foundJewel != jewel && foundJewel != Jewel.UNKNOWN_JEWEL){
-            reverseTurn = true;
-        }
-
-        timer.reset();
-        // Robot turns with the jewel arm to knock off the opposite alliance jewel
-        while (timer.seconds() < turnS){
-            if (reverseTurn){
-                setDrivePower(-TURN_SPEED, TURN_SPEED);
-            } else {
-                setDrivePower(TURN_SPEED, -TURN_SPEED);
-            }
-        }
-        setDrivePower(0, 0);
-        addLog("");
-    }
-
-    //-----------------------------------------------------------------------
-    //----------------------------Gyro Sensor--------------------------------
-    //-----------------------------------------------------------------------
-
-    public void turnByGyro(double speed, int angle){
-        turnByGyro(speed, angle, 5);
+    public void turn(double speed, int turn){
+        turn(speed, turn, 5);
     }
 
     /**
      * Turn the robot in angle using gyro sensor
-     * @param angle Angle of the turn
+     * @param speed Turn speed
+     * @param turn Angle of the turn
+     * @param timeoutS Time before exiting the loop
      */
-    public void turnByGyro(double speed, int angle, double timeoutS){
-        boolean reverse = (angle < 0);
-        //gyro.resetZAxisIntegrator(); // Resets the z axis of the gyro
-        turnAbsolute(speed, angle + gyro.getIntegratedZValue(), reverse, timeoutS);
+    public void turn(double speed, int turn, double timeoutS){
+        turnAbsolute(speed, turn + gyro.getIntegratedZValue(), timeoutS);
     }
 
     /**
      * Turns the robot in absolute angle and only right unless
      * reverse is true, which makes the robot to rurn left
      *
-     * @param angle   Angle of turn
-     * @param reverse Reverse turn
-     * @param timeoutS Timeout seconds
+     * @param speed     Turn speed
+     * @param turn     Angle of turn
+     * @param timeoutS  Timeout seconds
      */
-    public void turnAbsolute(double speed, int angle, boolean reverse, double timeoutS){
-        int zValue = gyro.getIntegratedZValue(); // Assign the z value of the gyro sensor
+    public void turnAbsolute(double speed, int turn, double timeoutS){
+        int zValue; // Get z value of the gyro sensor
 
-        telemetry.log().add(String.format(Locale.ENGLISH, "Turning at %03d", angle));
+        telemetry.log().add(String.format(Locale.ENGLISH, "Turning at %03d", turn));
         timer.reset();
 
-        while ((zValue > (angle + 3) || zValue < (angle - 3)) && timer.seconds() < timeoutS){
-            if (reverse){
-                if (zValue < angle){
-                    setDrivePower(speed, -speed);
-                } else if (zValue > angle){
-                    setDrivePower(-speed, speed);
-                }
-            } else {
-                if (zValue > angle){
-                    setDrivePower(-speed, speed);
-                } else if (zValue < angle){
-                    setDrivePower(speed, -speed);
-                }
+        do {
+            zValue = gyro.getIntegratedZValue();
+
+            if (zValue < turn){
+                setDrivePower(speed, -speed);
+            } else if (zValue > turn){
+                setDrivePower(-speed, speed);
             }
 
-            telemetry.addData("Z Value", "%02d", zValue);
-            telemetry.addData("Z Turn ", "%02d", angle);
-            telemetry.addData("Reverse", reverse ? "On" : "Off");
-            telemetry.addData("Timeout", timer.seconds());
+            telemetry.addData("Z Value", zValue);
+            telemetry.addData("Target", turn);
             telemetry.update();
-
-            zValue = gyro.getIntegratedZValue();
-        }
+        } while ((zValue > (turn + 3) || zValue < (turn - 3)) && timer.seconds() < timeoutS);
     }
 
-    //-----------------------------------------------------------------------
-    //----------------------------Vuforia------------------------------------
-    //-----------------------------------------------------------------------
+    /////////////////////////////////////////////////////////////////////////
+    //----------------------------Vuforia----------------------------------//
+    /////////////////////////////////////////////////////////////////////////
 
-    public void scanCryptoKey(double timeoutS){
-        boolean foundVuMark = false;
-
-        vuforia.activateRelicTrackables(); // Activate the trackables
-        timer.reset(); // Resets the timer
+    /**
+     * Search and scans the pictograph through the phone camera
+     * @param timeoutS Time of scanning before ending the loop
+     */
+    public void scanPictograph(double timeoutS){
+        timer.reset();                     // Resets the timer
 
         while (timer.seconds() < timeoutS){
-            // Gets the vuMark from vuforia
-            vuMark = RelicRecoveryVuMark.from(vuforia.getRelicTemplate());
+            // Gets the vuMark from vuforia through the camera
+            getVuMark();
 
-            // Timeout
             telemetry.addData("Timeout", timer.seconds());
-
             if (vuMark != RelicRecoveryVuMark.UNKNOWN){
-                foundVuMark = true;
                 telemetry.addData("VuMark", "%s visable", vuMark);
             } else {
                 telemetry.addData("VuMark", "not visable");
             }
 
             telemetry.update();
-            if (foundVuMark){
-                break;
-            }
         }
     }
 
-    public RelicRecoveryVuMark getCryptoKey(){
+    /**
+     * Returns Relic Recovery VuMark from the last template that vuforia detects
+     * @return VuMark
+     */
+    public RelicRecoveryVuMark getVuMark(){
+        vuforia.activateRelicTrackables();
+        vuMark = RelicRecoveryVuMark.from(vuforia.getRelicTemplate());
+
         return vuMark;
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    //------------------------Getters Hardware-----------------------------//
+    /////////////////////////////////////////////////////////////////////////
+
+    public ModernRoboticsUsbDeviceInterfaceModule getCdim() {
+        return cdim;
+    }
+
+    public ModernRoboticsI2cGyro getGyro() {
+        return gyro;
+    }
+
+    public ColorSensor getColorSensor() {
+        return colorSensor;
     }
 }

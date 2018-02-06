@@ -1,203 +1,114 @@
-package org.firstinspires.ftc.teamcode.competition;
+package org.firstinspires.ftc.teamcode.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name = "Competition: Drive Control", group = "Competition")
-public class DriveControl extends OpMode {
+import org.firstinspires.ftc.teamcode.robot.DriveBot;
 
-    /////////////////////////////////////////////////////////////
-    //---------------------------------------------------------//
-    //---------You can edit anything below this box.-----------//
-    //---------------------------------------------------------//
-    /////////////////////////////////////////////////////////////
+@TeleOp(name = "Drive Test")
+public class DriveTest extends OpMode {
 
-    // Whether to use encoders on the drive motors
-    private static final boolean USE_ENCODERS = true;
+    private DriveBot robot = new DriveBot();
 
-    // Sped of the flap arm
-    private static final double ARM_SPEED = 0.3;
+    private double[] joystick = new double[4];
 
-    // Servo resets back into their position
-    private static final double MID_SERVO_LEFT = 0.5;
-    private static final double MID_SERVO_RIGHT = 0.5;
+    private double paddlePosition = 0;
 
-    // Min and max of the flap position
-    private static final double MIN_FLAP_POSITION = -0.45;
-    private static final double MAX_FLAP_POSITION = 0.50;
-
-    //
-    private static final double SERVO_SPEED = 0.02;
-
-    /////////////////////////////////////////////////////////////
-    //---------------------------------------------------------//
-    //---------No editing below unless you absolutely----------//
-    //--------------know what are you doing.-------------------//
-    //---------------------------------------------------------//
-    /////////////////////////////////////////////////////////////
-
-    private DcMotor[] driveMotors = new DcMotor[4];
-
-    private DcMotor clapperMotor;
-    private Servo   clapperServoLeft;
-    private Servo   clapperServoRight;
-
-    private CRServo crServo;
-
-    private double joystickClip  = 1;
-    private double servoPosition = 0;
-
-    private double[] joysticksOne = new double[2];
+    private static final double PADDLE_SPEED = 0.02;
 
     @Override
     public void init() {
-        // Get hardware references for the robot
-        driveMotors[0] = hardwareMap.get(DcMotor.class, "motorleftfront");
-        driveMotors[1] = hardwareMap.get(DcMotor.class, "motorrightfront");
-        driveMotors[2] = hardwareMap.get(DcMotor.class, "motorleftrear");
-        driveMotors[3] = hardwareMap.get(DcMotor.class, "motorrightrear");
-
-        clapperMotor      = hardwareMap.get(DcMotor.class, "motorarm");
-        clapperServoLeft  = hardwareMap.get(Servo.class,   "servoleftclap");
-        clapperServoRight = hardwareMap.get(Servo.class,   "servorightclap");
-
-        crServo = hardwareMap.get(CRServo.class, "servolowerarm");
-
-        driveMotors[1].setDirection(DcMotor.Direction.REVERSE);
-        driveMotors[3].setDirection(DcMotor.Direction.REVERSE);
-
-        for (DcMotor driveMotor : driveMotors){
-            if (USE_ENCODERS){
-                driveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                driveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            } else {
-                driveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            }
-        }
-
-        telemetry.addData(">", "Press the START button!");
-        telemetry.update();
-    }
-
-    @Override
-    public void start(){
-        clapperServoLeft.setPosition(MID_SERVO_LEFT);
-        clapperServoRight.setPosition(MID_SERVO_RIGHT);
+        robot.init(hardwareMap, telemetry);
     }
 
     @Override
     public void loop() {
-        setDriveSpeedLimit(); // Set the limit on the drive speed
-        setDriveSpeed();      // Set the power of the drive motors
-        controlClapper();     // Controls the clapper using gamepad buttons
+        // Get joystick values from both gamepads
+        joystick[0] = -gamepad1.left_stick_y;
+        joystick[1] = -gamepad1.right_stick_y;
 
-        updateTelemetry();    // Updates information on the driver phone
-    }
-
-    /**
-     * Controls the drive speed of the robot
-     */
-    private void setDriveSpeed(){
-        joysticksOne[0] = -gamepad1.left_stick_y;
-        joysticksOne[1] = -gamepad1.right_stick_y;
-
-        joysticksOne[0] = Range.clip(joysticksOne[0], -joystickClip, joystickClip);
-        joysticksOne[1] = Range.clip(joysticksOne[1], -joystickClip, joystickClip);
-
-        // Moves the robot in tank drive based from gamepad 1 joysticks
-        driveMotors[0].setPower(joysticksOne[0]);
-        driveMotors[1].setPower(joysticksOne[1]);
-        driveMotors[2].setPower(joysticksOne[0]);
-        driveMotors[3].setPower(joysticksOne[1]);
-    }
-
-    /**
-     * Controls the limit on drive speed of the robot
-     */
-    private void setDriveSpeedLimit(){
+        // Set the speed limit on the drive motors
         if (gamepad1.a){
-            joystickClip = 1;
+            robot.setDriveSpeedLimit(1.00);
         } else if (gamepad1.b) {
-            joystickClip = 0.7;
+            robot.setDriveSpeedLimit(0.75);
         } else if (gamepad1.y){
-            joystickClip = 0.5;
+            robot.setDriveSpeedLimit(0.50);
         } else if (gamepad1.x){
-            joystickClip = 0.3;
+            robot.setDriveSpeedLimit(0.25);
         }
-    }
 
-    /**
-     * Controls the clapper using gamepad buttons
-     */
-    private void controlClapper(){
-        // Moves the clapper arm up or down and opens and closes the flaps based from
-        // gamepad 2 left joystick and A and Y buttons.
+        // Drives the robot around
+        if (gamepad1.dpad_up) {
+            joystick[0] = robot.getDriveSpeedLimit();
+            joystick[1] = robot.getDriveSpeedLimit();
+        } else if (gamepad1.dpad_down) {
+            joystick[0] = -robot.getDriveSpeedLimit();
+            joystick[1] = -robot.getDriveSpeedLimit();
+        } else if (gamepad1.dpad_left) {
+            joystick[0] = -robot.getDriveSpeedLimit();
+            joystick[1] = robot.getDriveSpeedLimit();
+        } else if (gamepad1.dpad_right) {
+            joystick[0] = robot.getDriveSpeedLimit();
+            joystick[1] = -robot.getDriveSpeedLimit();
+        }
+        robot.setDrivePower(joystick[0], joystick[1]);
 
-        // Set the power of the clapper arm
-        if (gamepad2.y){
-            clapperMotor.setPower(ARM_SPEED);
-        } else if (gamepad2.a){
-            clapperMotor.setPower(-ARM_SPEED);
+        // Moves the paddle arm up or down
+        if (gamepad2.a) {
+            robot.getPaddleArmMotor().setPower(-0.3);
+        } else if (gamepad2.y) {
+            robot.getPaddleArmMotor().setPower(0.3);
         } else {
-            clapperMotor.setPower(0);
+            robot.getPaddleArmMotor().setPower(0);
         }
 
-        if (gamepad2.left_stick_y > 0.2){
-            servoPosition += SERVO_SPEED;
-        } else if (gamepad2.left_stick_y < -0.2){
-            servoPosition -= SERVO_SPEED;
+        // Opens or closes paddles
+        if (gamepad2.left_stick_y > 0.2) {
+            paddlePosition += PADDLE_SPEED;
+        } else if (gamepad2.left_stick_y < -0.2) {
+            paddlePosition -= PADDLE_SPEED;
+        } else if (gamepad2.dpad_up) {
+            paddlePosition = 0.5;
+        } else if (gamepad2.dpad_down) {
+            paddlePosition = -0.5;
+        } else if (gamepad2.dpad_left) {
+            paddlePosition = 0.0;
         }
-        servoPosition = Range.clip(servoPosition, MIN_FLAP_POSITION, MAX_FLAP_POSITION);
+        paddlePosition = Range.clip(paddlePosition, -0.5, 0.5);
+        robot.setPaddlePosition(paddlePosition);
 
-        clapperServoLeft.setPosition(MID_SERVO_LEFT + servoPosition);
-        clapperServoRight.setPosition(MID_SERVO_RIGHT - servoPosition);
-    }
+        // Pulls or push the jewel arm in or out
+        robot.getJewelSliderMotor().setPower(-gamepad2.right_stick_y);
 
-    private void updateTelemetry(){
-        // Sends information to the driver phone through telemetry
-        telemetry.addLine("Power Setting");
-        telemetry.addLine("A: 1.00");
-        telemetry.addLine("B: 0.70");
-        telemetry.addLine("Y: 0.50");
-        telemetry.addLine("X: 0.30");
-        telemetry.addData("Mode", driveMotors[0].getMode().toString());
+        // Moves the jewel arm around
+        if (gamepad2.x) {
+            robot.getJewelArmCrServo().setPower(0.8);
+        } else if (gamepad2.b) {
+            robot.getJewelArmCrServo().setPower(-0.8);
+        } else {
+            robot.getJewelArmCrServo().setPower(0.0);
+        }
 
-        // Drive motors
-        telemetry.addLine("------------------------------");
-        telemetry.addData("Drive Clip", joystickClip);
-        telemetry.addData("Drive Power", "%.2f %.2f %.2f %.2f",
-                driveMotors[0].getPower(), driveMotors[1].getPower(), driveMotors[2].getPower(),
-                driveMotors[3].getPower());
-        telemetry.addData("Encoder Position", "%d %d %d %d",
-                driveMotors[0].getCurrentPosition(), driveMotors[1].getCurrentPosition(),
-                driveMotors[2].getCurrentPosition(), driveMotors[3].getCurrentPosition());
-
-        // Paddle Arm
-        telemetry.addLine("------------------------------");
-        telemetry.addData("Arm Power", "%.2f", clapperMotor.getPower());
-
-        // Servos
-        telemetry.addLine("------------------------------");
-        telemetry.addData("Servo Offset", "%.2f", servoPosition);
-        telemetry.addData("Servo Position", "%.2f %.2f", clapperServoLeft.getPosition(),
-                clapperServoRight.getPosition());
-
-        // Clears and updates the telemetry
+        telemetry.addData("Speed Limit", "%.2f", robot.getDriveSpeedLimit());
+        telemetry.addLine("Controls: ").addData("A","1.00")
+                .addData("B", "0.75").addData("Y", "0.50")
+                .addData("X", "0.25");
+        telemetry.addLine("Speed: ")
+                .addData("Left", "%.2f %.2f",
+                        robot.getDriveMotors()[0].getPower(),
+                        robot.getDriveMotors()[2].getPower())
+                .addData("Right", "%.2f %.2f",
+                        robot.getDriveMotors()[1].getPower(),
+                        robot.getDriveMotors()[3].getPower());
+        telemetry.addData("CR Servo Power", robot.getJewelArmCrServo().getPower());
+        telemetry.addData("Paddle Position", paddlePosition);
         telemetry.update();
     }
 
     @Override
-    public void stop(){
-        // Set the power of the arm to zero
-        clapperMotor.setPower(0);
-
-        // Set the power of all drive motors to stop movement
-        for (DcMotor driveMotor : driveMotors){
-            driveMotor.setPower(0);
-        }
+    public void stop() {
+        robot.close();
     }
 }

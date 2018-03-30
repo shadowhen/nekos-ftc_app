@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.competition;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -7,8 +8,17 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+@Deprecated
 @TeleOp(name = "Competition: Drive Control", group = "Competition")
-public class DriveControl extends OpMode {
+@Disabled
+public class DriveControlOld extends OpMode {
+
+    /* This class used to be the program that the team used during competition and driving
+     * practice. However, this class no longer serves as the main drive program as new
+     * class now replaces this because of the usage of the DriveBot.class. For now, this class
+     * shall serve as a reference for any future driving programs that should have in its
+     * program.
+     */
 
     /////////////////////////////////////////////////////////////
     //---------------------------------------------------------//

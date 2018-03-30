@@ -18,16 +18,20 @@ public class DriveBot extends Bot {
     public void init(HardwareMap ahwMap, Telemetry _telemetry){
         super.init(ahwMap, _telemetry);
 
-        for (int i = 0; i < getDriveMotors().length; i++) {
-            getDriveMotors()[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            getDriveMotors()[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            getDriveMotors()[i].setPower(0.0);
+        for (int i = 0; i < getMotorDrive().length; i++) {
+            getMotorDrive()[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            getMotorDrive()[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            getMotorDrive()[i].setPower(0.0);
         }
+
+        telemetry.addData(">", "Press START button to run the robot");
+        telemetry.update();
     }
 
     @Override
     public void setDrivePower(double leftPower, double rightPower) {
-        leftPower  = Range.clip(leftPower, -getDriveSpeedLimit(), getDriveSpeedLimit());
+        // Limits the drive power in specific range
+        leftPower  = Range.clip(leftPower,  -getDriveSpeedLimit(), getDriveSpeedLimit());
         rightPower = Range.clip(rightPower, -getDriveSpeedLimit(), getDriveSpeedLimit());
 
         super.setDrivePower(leftPower, rightPower);

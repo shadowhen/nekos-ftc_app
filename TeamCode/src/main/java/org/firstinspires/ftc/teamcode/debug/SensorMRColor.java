@@ -41,7 +41,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 /*
  *
  * This is an example LinearOpMode that shows how to use
- * a Modern Robotics Color Sensor.
+ * a Modern Robotics Jewel Sensor.
  *
  * The op mode assumes that the color sensor
  * is configured with a name of "sensor_color".
@@ -52,7 +52,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @TeleOp(name = "Sensor: MR Color", group = "Sensor")
-@Disabled
+//@Disabled
 public class SensorMRColor extends LinearOpMode {
 
   private ColorSensor colorSensor;    // Hardware Device Object
@@ -79,7 +79,7 @@ public class SensorMRColor extends LinearOpMode {
     boolean bLedOn = true;
 
     // get a reference to our ColorSensor object.
-    colorSensor = hardwareMap.get(ColorSensor.class, "colorsensor");
+    colorSensor = hardwareMap.get(ColorSensor.class, "color");
 
     // Set the LED in the beginning
     colorSensor.enableLed(bLedOn);

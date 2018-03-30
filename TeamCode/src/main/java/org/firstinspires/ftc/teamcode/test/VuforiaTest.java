@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.teamcode.vuforia.BotVuforia;
+import org.firstinspires.ftc.teamcode.robot.sensor.BotVuforia;
 
 @TeleOp(name = "BotVuforia Test", group = "Test")
 @Disabled
@@ -22,23 +22,23 @@ public class VuforiaTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        vuforia.setupVuforia(hardwareMap); // Setup the vuforia for the robot
+        vuforia.setup(hardwareMap); // Setup the vuforia for the robot
 
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
 
         waitForStart();
 
-        vuforia.activateRelicTrackables();
+        vuforia.activate();
 
         while(opModeIsActive()){
             // Get the vuMark based on the possible marks that the camera sees
-            RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(vuforia.getRelicTemplate());
+            RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(vuforia.getTrackable());
 
             // Informs the user about what the camera sees
             if (vuMark != RelicRecoveryVuMark.UNKNOWN){
                 telemetry.addData("VuMark", "%s visable", vuMark);
-                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) vuforia.getRelicTemplate().getListener()).getPose();
+                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) vuforia.getTrackable().getListener()).getPose();
                 telemetry.addData("Pose", vuforia.format(pose));
 
                 if (pose != null) {

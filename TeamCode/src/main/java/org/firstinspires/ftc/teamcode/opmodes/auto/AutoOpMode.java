@@ -10,7 +10,8 @@ public class AutoOpMode extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        robot = new AutoBot();
+
         robot.init(hardwareMap, telemetry);
-        waitForStart();
     }
 }

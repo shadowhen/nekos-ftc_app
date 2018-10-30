@@ -3,95 +3,127 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.disnodeteam.dogecv.OpenCVPipeline;
 
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PrototypeDetector extends OpenCVPipeline {
 
-    public double scale = 1.0;
+    private static final Size GAUSSIAN_BLUR_FILTER_SIZE = new Size(7, 7);
+    private static final Size FINAL_IMAGE_SIZE = new Size(640, 480);
 
-    private Size initSize;
+    private static final Scalar LOW_GOLD = new Scalar(17, 100, 80);
+    private static final Scalar UPPER_GOLD = new Scalar(30, 255, 255);
+    private static final Scalar LOW_BRIGHT = new Scalar(170, 255, 255);
+    private static final Scalar HIGH_BRIGHT = new Scalar(180, 255, 255);
 
-    private Mat mRgbaC; // New Copy
-    private Mat mRgbaS; // Scale
-    private Mat mRgbaB; // Gaussian Blur
-    private Mat maskOne;
-    private Mat maskTwo;
-    private Mat mask;
+    private static final Scalar BOUNDING_RECT_COLOR = new Scalar(0, 255, 0);
 
-    private Mat kernel;
-    private Mat maskClosed;
-    private Mat maskClean;
+    private Mat mRgbaC = new Mat(); // New Copy
+    private Mat mRgbaB = new Mat(); // Gaussian Blur
+    private Mat mRgbaBHsv = new Mat();
 
-    private Mat overlay;
+    private Mat maskOne = new Mat();
+    private Mat maskTwo = new Mat();
+    private Mat mask = new Mat();
+
+    private Mat mFinal = new Mat();
+
+    private Mat kernel = new Mat();
+    private Mat maskClosed = new Mat();
+    private Mat maskClean = new Mat();
+
+    private Mat imageContour = new Mat();
+    private Mat hierarchy = new Mat();
+
+    private boolean detectedGold;
 
     @Override
     public Mat processFrame(Mat rgba, Mat gray) {
-        initSize = rgba.size();
-        Size adjustedSize = new Size();
+        double scaleX = 700 / rgba.width();
+        double scaleY = 700 / rgba.height();
+        ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
-        adjustedSize.height = initSize.height * scale;
-        adjustedSize.width = initSize.width * scale;
-
-        // Copies the original rgba mat to new copy, so the new copy can modified without modifiying
-        // the original mat
         rgba.copyTo(mRgbaC);
-        Imgproc.resize(mRgbaC, mRgbaS, adjustedSize);
-        Imgproc.GaussianBlur(mRgbaS, mRgbaB, new Size(new double[]{7, 7}), 0);
-        Core.inRange(mRgbaS, new Scalar(30, 100, 80), new Scalar(50, 255, 255), maskOne);
-        Core.inRange(mRgbaS, new Scalar(170, 100, 80), new Scalar(180, 255, 255), maskTwo);
 
-        // Mask One + Mask Two = Mask
+        // Resize the image
+        Imgproc.resize(rgba, mRgbaC, mRgbaC.size(), scaleX, scaleY);
+
+        Imgproc.GaussianBlur(mRgbaC, mRgbaB, GAUSSIAN_BLUR_FILTER_SIZE, 0);
+        Imgproc.cvtColor(mRgbaB, mRgbaBHsv, Imgproc.COLOR_RGB2HSV);
+
+        // Filter for the gold
+        Core.inRange(mRgbaBHsv, LOW_GOLD, UPPER_GOLD, maskOne);
+        Core.inRange(mRgbaBHsv, LOW_BRIGHT, HIGH_BRIGHT, maskTwo);
         Core.add(maskOne, maskTwo, mask);
 
-        // Erode and dilate
-        kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(15, 15));
+        // Erode and dilate the image
+        kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(5, 5));
         Imgproc.morphologyEx(mask, maskClosed, Imgproc.MORPH_CLOSE, kernel);
         Imgproc.morphologyEx(maskClosed, maskClean, Imgproc.MORPH_OPEN, kernel);
 
-        // FIND THE BIGGEST CONTOUR AKA FIND THE BIGGEST AREA
-        Mat image = new Mat();
-        Mat hiereachy = new Mat();
-        List<MatOfPoint> contours = new LinkedList<>();
+        // Copy the clean mask to an image for contours
+        maskClean.copyTo(imageContour);
+        
+        // Find the contour and find the biggest contour of all contours
+        Imgproc.findContours(imageContour, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        if (contours.size() > 0) {
+            drawRectangleContour(mRgbaC, findBiggestContour(contours));
+            detectedGold = true;
+        } else {
+            detectedGold = false;
+        }
+
+        mRgbaC.copyTo(mFinal);
+
+        // Returns the final image
+        return mFinal;
+    }
+
+    /**
+     * Find the biggest contour from given list of contours.
+     * @param contours List of contours
+     * @return Biggest contour
+     */
+    private static MatOfPoint findBiggestContour(List<MatOfPoint> contours) {
+        double maxArea = 0;
         MatOfPoint biggestContour = new MatOfPoint();
-        Mat maskGold = new Mat(rgba.rows(), rgba.cols(), CvType.CV_8U);
 
-        double maxVal = 0;
-        int maxValIdx = 0;
+        for (MatOfPoint contour : contours) {
+            double contourArea = Imgproc.contourArea(contour);
 
-        maskClean.copyTo(image);
-        Imgproc.findContours(image, contours, hiereachy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-        for (int contourIdx = 0; contourIdx < contours.size(); contourIdx++) {
-            double contourArea = Imgproc.contourArea(contours.get(contourIdx));
-            if (maxVal < contourArea) {
-                maxVal = contourArea;
-                maxValIdx = contourIdx;
+            if (maxArea < contourArea) {
+                maxArea = contourArea;
+                biggestContour = contour;
             }
         }
 
-        biggestContour = contours.get(maxValIdx);
-        Imgproc.drawContours(maskGold, contours, -1, new Scalar(0, 255, 0), -1);
+        return biggestContour;
+    }
 
-        // OVERLAY:
-        Mat rgbMask = new Mat();
-        Imgproc.cvtColor(maskGold, rgbMask, Imgproc.COLOR_GRAY2RGB);
-        Core.addWeighted(rgbMask, 0.5, rgba, 0.5, 0, overlay);
+    /**
+     * Draws the rectangle over a selected contour on a given image.
+     * @param image Image to be drawn
+     * @param contour Contour where the rectangle is drawn
+     */
+    private static void drawRectangleContour(Mat image, MatOfPoint contour) {
+        Rect rect = Imgproc.boundingRect(contour);
+        Imgproc.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), BOUNDING_RECT_COLOR, 5);
+    }
 
-        // CIRCLE THE BIGGEST GOLD
-        Mat circled = new Mat();
-        overlay.copyTo(circled);
-        Imgproc.ellipse(circled, Imgproc.fitEllipse(MatOfPoint2f.fromNativeAddr(biggestContour.getNativeObjAddr())), new Scalar(0, 255, 0), Imgproc.LINE_AA);
-
-        Mat mBgr = new Mat();
-        Imgproc.cvtColor(circled, mBgr, Imgproc.COLOR_RGB2BGR);
-        return mBgr;
+    /**
+     * Returns the detected gold
+     * @return detected gold
+     */
+    public boolean getDetectedGold() {
+        return detectedGold;
     }
 }

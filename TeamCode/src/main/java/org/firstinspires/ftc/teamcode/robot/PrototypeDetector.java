@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.robot;
 
 import com.disnodeteam.dogecv.OpenCVPipeline;
 
@@ -16,8 +16,9 @@ import java.util.List;
 
 public class PrototypeDetector extends OpenCVPipeline {
 
+    private static final double SCALE_X = 700;
+    private static final double SCALE_Y = 700;
     private static final Size GAUSSIAN_BLUR_FILTER_SIZE = new Size(7, 7);
-    private static final Size FINAL_IMAGE_SIZE = new Size(640, 480);
 
     private static final Scalar LOW_GOLD = new Scalar(17, 100, 80);
     private static final Scalar UPPER_GOLD = new Scalar(30, 255, 255);
@@ -47,8 +48,8 @@ public class PrototypeDetector extends OpenCVPipeline {
 
     @Override
     public Mat processFrame(Mat rgba, Mat gray) {
-        double scaleX = 700 / rgba.width();
-        double scaleY = 700 / rgba.height();
+        double scaleX = SCALE_X / rgba.width();
+        double scaleY = SCALE_Y / rgba.height();
         ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
         rgba.copyTo(mRgbaC);

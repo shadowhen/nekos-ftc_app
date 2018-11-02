@@ -6,6 +6,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+/**
+ * This class extends the DriveBot.class to implement autonomous features into the robot, so
+ * the robot can drive and do tasks without the intervention of the driver.
+ *
+ * @author Henry
+ */
 public class AutoBot extends DriveBot {
 
     private static final double COUNTS_PER_REV = 1120;
@@ -25,10 +31,22 @@ public class AutoBot extends DriveBot {
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    /**
+     * Converts the distance of millimeters to target position
+     * @param distance
+     * @return target position
+     */
     public static int convertDistanceToPosition(double distance) {
         return (int)(distance * COUNTS_PER_MM);
     }
 
+    /**
+     * Moves the robot at specified distances for left motors and right motors
+     * @param speed     Drive speed
+     * @param leftDist  Left Distance
+     * @param rightDist Right Distance
+     * @param timeoutS  Timeout in seconds
+     */
     public void moveByEncoder(double speed, double leftDist, double rightDist, double timeoutS) {
         int newLeftTarget = convertDistanceToPosition(leftDist);
         int newRightTarget = convertDistanceToPosition(rightDist);

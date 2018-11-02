@@ -6,7 +6,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class DriveBot {
+/**
+ * This class provides as the framework for the robot which can be used for any purposes
+ */
+public class DriveBot implements Bot {
 
     protected HardwareMap hwMap;
     protected Telemetry telemetry;
@@ -52,6 +55,11 @@ public class DriveBot {
         motorDriveRightRear.setMode(runMode);
     }
 
+    /**
+     * Set the drive power of the left and right motors.
+     * @param leftPower  Left Power
+     * @param rightPower Right Power
+     */
     public void setDrivePower(double leftPower, double rightPower) {
         motorDriveLeftFront.setPower(leftPower);
         motorDriveLeftRear.setPower(leftPower);
@@ -59,6 +67,11 @@ public class DriveBot {
         motorDriveRightRear.setPower(rightPower);
     }
 
+    /**
+     * Set the drive power of the left and right motors which the robot drives sideways.
+     * @param leftPower  Left Power
+     * @param rightPower Right Power
+     */
     public void setDrivePowerSideways(double leftPower, double rightPower) {
         motorDriveLeftFront.setPower(-leftPower);
         motorDriveLeftRear.setPower(leftPower);

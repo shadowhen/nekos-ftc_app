@@ -1,23 +1,21 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp(name = "Drive Op 1.0", group = "drive")
-@Disabled
+import org.firstinspires.ftc.teamcode.robot.DriveBot;
+
+/**
+ * This class provides the drive functionality for the driver to drive the robot on the field
+ * and during competition.
+ * @author Henry
+ */
+@TeleOp(name = "Drive Op 1.1", group = "drive")
 public class DriveOp extends OpMode {
 
     private static final double DRIVE_SPEED = 0.5;
 
-    // Drive motors
-    private DcMotor motorDriveLeftFront;
-    private DcMotor motorDriveLeftRear;
-    private DcMotor motorDriveRightFront;
-    private DcMotor motorDriveRightRear;
+    private DriveBot robot;
 
     // Sideways movement
     private boolean sidewaysMovement;
@@ -25,15 +23,8 @@ public class DriveOp extends OpMode {
 
     @Override
     public void init() {
-        // Get hardware references from the robot controller's configuration for hardware devices
-        motorDriveLeftFront  = hardwareMap.get(DcMotor.class, "motor_drive_lf");
-        motorDriveLeftRear   = hardwareMap.get(DcMotor.class, "motor_drive_lr");
-        motorDriveRightFront = hardwareMap.get(DcMotor.class, "motor_drive_rf");
-        motorDriveRightRear  = hardwareMap.get(DcMotor.class, "motor_drive_rr");
-
-        // Reverses the right drive motors' direction
-        motorDriveRightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorDriveRightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        robot = new DriveBot();
+        robot.init(hardwareMap, telemetry);
 
         // Tells the user that the robot is ready to start
         telemetry.addData(">", "ROBOT READY!!!!");
@@ -58,73 +49,33 @@ public class DriveOp extends OpMode {
             sidewaysMovementButtonDown = false;
         }
 
+        // Drives the robot around
         if (sidewaysMovement) {
             if (gamepad1.dpad_down) {
-                motorDriveLeftFront.setPower(DRIVE_SPEED);
-                motorDriveLeftRear.setPower(DRIVE_SPEED);
-                motorDriveRightFront.setPower(DRIVE_SPEED);
-                motorDriveRightRear.setPower(DRIVE_SPEED);
+                robot.setDrivePower(DRIVE_SPEED, DRIVE_SPEED);
             } else if (gamepad1.dpad_up) {
-                motorDriveLeftFront.setPower(-DRIVE_SPEED);
-                motorDriveLeftRear.setPower(-DRIVE_SPEED);
-                motorDriveRightFront.setPower(-DRIVE_SPEED);
-                motorDriveRightRear.setPower(-DRIVE_SPEED);
-
+                robot.setDrivePower(-DRIVE_SPEED, -DRIVE_SPEED);
             } else if (gamepad1.dpad_left) {
-                motorDriveLeftFront.setPower(DRIVE_SPEED);
-                motorDriveLeftRear.setPower(-DRIVE_SPEED);
-                motorDriveRightFront.setPower(-DRIVE_SPEED);
-                motorDriveRightRear.setPower(DRIVE_SPEED);
-
+                robot.setDrivePowerSideways(-DRIVE_SPEED, -DRIVE_SPEED);
             } else if (gamepad1.dpad_right) {
-                motorDriveLeftFront.setPower(-DRIVE_SPEED);
-                motorDriveLeftRear.setPower(DRIVE_SPEED);
-                motorDriveRightFront.setPower(DRIVE_SPEED);
-                motorDriveRightRear.setPower(-DRIVE_SPEED);
+                robot.setDrivePowerSideways(DRIVE_SPEED, DRIVE_SPEED);
             } else {
-                motorDriveLeftFront.setPower(-joystickLeftXOne);
-                motorDriveLeftRear.setPower(joystickLeftXOne);
-                motorDriveRightFront.setPower(joystickLeftXOne);
-                motorDriveRightRear.setPower(-joystickLeftXOne);
+                robot.setDrivePowerSideways(joystickLeftXOne, joystickLeftXOne);
             }
-
         } else {
             if (gamepad1.dpad_down) {
-                motorDriveLeftFront.setPower(DRIVE_SPEED);
-                motorDriveLeftRear.setPower(DRIVE_SPEED);
-                motorDriveRightFront.setPower(DRIVE_SPEED);
-                motorDriveRightRear.setPower(DRIVE_SPEED);
+                robot.setDrivePower(DRIVE_SPEED, DRIVE_SPEED);
             } else if (gamepad1.dpad_up) {
-                motorDriveLeftFront.setPower(-DRIVE_SPEED);
-                motorDriveLeftRear.setPower(-DRIVE_SPEED);
-                motorDriveRightFront.setPower(-DRIVE_SPEED);
-                motorDriveRightRear.setPower(-DRIVE_SPEED);
-
+                robot.setDrivePower(-DRIVE_SPEED, -DRIVE_SPEED);
             } else if (gamepad1.dpad_left) {
-                motorDriveLeftFront.setPower(DRIVE_SPEED);
-                motorDriveLeftRear.setPower(DRIVE_SPEED);
-                motorDriveRightFront.setPower(-DRIVE_SPEED);
-                motorDriveRightRear.setPower(-DRIVE_SPEED);
-
+                robot.setDrivePower(DRIVE_SPEED, -DRIVE_SPEED);
             } else if (gamepad1.dpad_right) {
-                motorDriveLeftFront.setPower(-DRIVE_SPEED);
-                motorDriveLeftRear.setPower(-DRIVE_SPEED);
-                motorDriveRightFront.setPower(DRIVE_SPEED);
-                motorDriveRightRear.setPower(DRIVE_SPEED);
+                robot.setDrivePower(-DRIVE_SPEED, DRIVE_SPEED);
             } else {
-                // Set the drive motors' power from the joystick values
-                motorDriveLeftFront.setPower(joystickLeftYOne);
-                motorDriveLeftRear.setPower(joystickLeftYOne);
-                motorDriveRightFront.setPower(joystickRightYOne);
-                motorDriveRightRear.setPower(joystickRightYOne);
+                robot.setDrivePower(joystickLeftYOne, joystickRightYOne);
             }
-
         }
 
-        telemetry.addData("LF Power", motorDriveLeftFront.getPower());
-        telemetry.addData("LR Power", motorDriveLeftRear.getPower());
-        telemetry.addData("RF Power", motorDriveRightFront.getPower());
-        telemetry.addData("RR Power", motorDriveRightRear.getPower());
         telemetry.addData("Movement Mode", sidewaysMovement ? "Sideways" : "Normal");
         telemetry.update();
     }

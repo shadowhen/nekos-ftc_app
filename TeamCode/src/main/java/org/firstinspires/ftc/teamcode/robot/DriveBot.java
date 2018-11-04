@@ -1,47 +1,81 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class DriveBot extends Bot {
+/**
+ * This class provides as the framework for the robot which can be used for any purposes
+ */
+public class DriveBot implements Bot {
 
-    private double driveSpeedLimit = 1.00;
+    protected HardwareMap hwMap;
+    protected Telemetry telemetry;
 
-    public DriveBot(){
-        super();
+    // Drive motors
+    protected DcMotor motorDriveLeftFront;
+    protected DcMotor motorDriveLeftRear;
+    protected DcMotor motorDriveRightFront;
+    protected DcMotor motorDriveRightRear;
+
+    public void init(HardwareMap ahwMap, Telemetry atelemetry) {
+        hwMap = ahwMap;
+        telemetry = atelemetry;
+
+        // Get hardware references from the robot controller's configuration for hardware devices
+        motorDriveLeftFront  = hwMap.get(DcMotor.class, "motor_drive_lf");
+        motorDriveLeftRear   = hwMap.get(DcMotor.class, "motor_drive_lr");
+        motorDriveRightFront = hwMap.get(DcMotor.class, "motor_drive_rf");
+        motorDriveRightRear  = hwMap.get(DcMotor.class, "motor_drive_rr");
+
+        // Reverses the right drive motors' direction
+        motorDriveRightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorDriveRightRear.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    @Override
-    public void init(HardwareMap ahwMap, Telemetry _telemetry){
-        super.init(ahwMap, _telemetry);
-
-        for (int i = 0; i < getMotorDrive().length; i++) {
-            getMotorDrive()[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            getMotorDrive()[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            getMotorDrive()[i].setPower(0.0);
+    public void addData() {
+        if (telemetry != null) {
+            addData(telemetry);
         }
-
-        telemetry.addData(">", "Press START button to run the robot");
-        telemetry.update();
     }
 
-    @Override
+    public void addData(Telemetry telemetry) {
+        telemetry.addData("LF Power", motorDriveLeftFront.getPower());
+        telemetry.addData("LR Power", motorDriveLeftRear.getPower());
+        telemetry.addData("RF Power", motorDriveRightFront.getPower());
+        telemetry.addData("RR Power", motorDriveRightRear.getPower());
+    }
+
+    public void setDriveMode(DcMotor.RunMode runMode) {
+        motorDriveLeftFront.setMode(runMode);
+        motorDriveLeftRear.setMode(runMode);
+        motorDriveRightFront.setMode(runMode);
+        motorDriveRightRear.setMode(runMode);
+    }
+
+    /**
+     * Set the drive power of the left and right motors.
+     * @param leftPower  Left Power
+     * @param rightPower Right Power
+     */
     public void setDrivePower(double leftPower, double rightPower) {
-        // Limits the drive power in specific range
-        leftPower  = Range.clip(leftPower,  -getDriveSpeedLimit(), getDriveSpeedLimit());
-        rightPower = Range.clip(rightPower, -getDriveSpeedLimit(), getDriveSpeedLimit());
-
-        super.setDrivePower(leftPower, rightPower);
+        motorDriveLeftFront.setPower(leftPower);
+        motorDriveLeftRear.setPower(leftPower);
+        motorDriveRightFront.setPower(rightPower);
+        motorDriveRightRear.setPower(rightPower);
     }
 
-    public double getDriveSpeedLimit() {
-        return driveSpeedLimit;
-    }
-
-    public void setDriveSpeedLimit(double driveSpeedLimit) {
-        this.driveSpeedLimit = driveSpeedLimit;
+    /**
+     * Set the drive power of the left and right motors which the robot drives sideways.
+     * @param leftPower  Left Power
+     * @param rightPower Right Power
+     */
+    public void setDrivePowerSideways(double leftPower, double rightPower) {
+        motorDriveLeftFront.setPower(-leftPower);
+        motorDriveLeftRear.setPower(leftPower);
+        motorDriveRightFront.setPower(rightPower);
+        motorDriveRightRear.setPower(-rightPower);
     }
 }

@@ -9,8 +9,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 public class TensorFlowDetector {
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
-    private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
-    private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
+    public static final String LABEL_GOLD_MINERAL = "Gold Mineral";
+    public static final String LABEL_SILVER_MINERAL = "Silver Mineral";
 
     private TFObjectDetector tfod;
 

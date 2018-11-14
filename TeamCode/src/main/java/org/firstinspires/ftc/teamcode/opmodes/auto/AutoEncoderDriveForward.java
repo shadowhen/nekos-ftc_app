@@ -14,6 +14,9 @@ public class AutoEncoderDriveForward extends AutoOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
+
+        telemetry.addData(">", "Press START to start encoder drive forward");
+        telemetry.update();
         waitForStart();
 
         robot.moveByEncoder(0.4, 100, 100, 5);

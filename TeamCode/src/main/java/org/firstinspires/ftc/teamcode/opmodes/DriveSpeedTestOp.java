@@ -5,23 +5,20 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.robot.DriveBot;
-import org.firstinspires.ftc.teamcode.robot.Lift;
 
 /**
- * This class provides the drive functionality for the driver to drive the robot on the field
- * and during competition.
+ * This class provides the drivers to experiment speed levels for their tank and sideways movement
  * @author Henry
  */
-@TeleOp(name = "Drive Op 1.1", group = "drive")
-public class DriveOp extends OpMode {
+@TeleOp(name = "Drive Speed Test", group = "drive")
+public class DriveSpeedTestOp extends OpMode {
 
     private static final double DRIVE_SPEED = 0.5;
-    private static final double LIFT_POWER = 0.25;
-    private static final double LIFT_SPEED = 0.02;
-
-    private double liftPosition = 0.5;
 
     private DriveBot robot;
+
+    private double driveSpeed = 1.00;
+    private double sidewaysSpeed = 1.00;
 
     // Sideways movement
     private boolean sidewaysMovement;
@@ -39,14 +36,6 @@ public class DriveOp extends OpMode {
 
     @Override
     public void loop() {
-        drive();
-        lift();
-
-        telemetry.addData("Movement Mode", sidewaysMovement ? "Sideways" : "Normal");
-        telemetry.update();
-    }
-
-    private void drive() {
         // Get joystick y values from gamepad one
         float joystickLeftYOne = gamepad1.left_stick_y;
         float joystickRightYOne = gamepad1.right_stick_y;
@@ -66,48 +55,53 @@ public class DriveOp extends OpMode {
         // Drives the robot around
         if (sidewaysMovement) {
             if (gamepad1.dpad_down) {
-                robot.setDrivePower(DRIVE_SPEED, DRIVE_SPEED);
+                robot.setDrivePower(driveSpeed, driveSpeed);
             } else if (gamepad1.dpad_up) {
-                robot.setDrivePower(-DRIVE_SPEED, -DRIVE_SPEED);
+                robot.setDrivePower(-driveSpeed, -driveSpeed);
             } else if (gamepad1.dpad_left) {
-                robot.setDrivePowerSideways(-DRIVE_SPEED, -DRIVE_SPEED);
+                robot.setDrivePowerSideways(-sidewaysSpeed, -sidewaysSpeed);
             } else if (gamepad1.dpad_right) {
-                robot.setDrivePowerSideways(DRIVE_SPEED, DRIVE_SPEED);
+                robot.setDrivePowerSideways(sidewaysSpeed, sidewaysSpeed);
             } else {
                 robot.setDrivePowerSideways(joystickLeftXOne, joystickLeftXOne);
             }
         } else {
             if (gamepad1.dpad_down) {
-                robot.setDrivePower(DRIVE_SPEED, DRIVE_SPEED);
+                robot.setDrivePower(driveSpeed, driveSpeed);
             } else if (gamepad1.dpad_up) {
-                robot.setDrivePower(-DRIVE_SPEED, -DRIVE_SPEED);
+                robot.setDrivePower(-driveSpeed, -driveSpeed);
             } else if (gamepad1.dpad_left) {
-                robot.setDrivePower(DRIVE_SPEED, -DRIVE_SPEED);
+                robot.setDrivePower(driveSpeed, -driveSpeed);
             } else if (gamepad1.dpad_right) {
-                robot.setDrivePower(-DRIVE_SPEED, DRIVE_SPEED);
+                robot.setDrivePower(-driveSpeed, driveSpeed);
             } else {
                 robot.setDrivePower(joystickLeftYOne, joystickRightYOne);
             }
         }
-    }
 
-    private void lift() {
-        // Raises or lowers the lift
-        if (gamepad2.dpad_up && !gamepad2.dpad_down) {
-            robot.getLift().setLiftPower(LIFT_POWER);
-        } else if (!gamepad2.dpad_up && gamepad2.dpad_down) {
-            robot.getLift().setLiftPower(-LIFT_POWER);
-        } else {
-            robot.getLift().setLiftPower(0);
+        // Increases or decreases the speed by buttons
+        if (gamepad1.y) {
+            driveSpeed += 0.05;
+        }
+        if (gamepad1.x) {
+            driveSpeed -= 0.05;
+        }
+        if (gamepad1.b) {
+            sidewaysSpeed += 0.05;
+        }
+        if (gamepad1.a) {
+            sidewaysSpeed -= 0.05;
         }
 
-        // Releases or closes the lift
-        if (gamepad2.b) {
-            liftPosition += LIFT_SPEED;
-        } else if (gamepad2.x) {
-            liftPosition += -LIFT_SPEED;
-        }
-        liftPosition = Range.clip(liftPosition, Lift.MIN_LIFT_SERVO_POSITION, Lift.MAX_LIFT_SERVO_POSITION);
-        robot.getLift().setLiftPosition(liftPosition);
+        // Clips the speed between 0 to 1
+        driveSpeed = Range.clip(driveSpeed, 0, 1);
+        sidewaysSpeed = Range.clip(sidewaysSpeed, 0, 1);
+
+        telemetry.addData("Instructions", "Increases or decreases the speed by gamepad1 buttons");
+        telemetry.addData("Y: drive up | X: drive down", "B: sideways up | A: sideways down");
+        telemetry.addData("drive speed", driveSpeed);
+        telemetry.addData("sideways speed", sidewaysSpeed);
+        telemetry.addData("Movement Mode", sidewaysMovement ? "Sideways" : "Normal");
+        telemetry.update();
     }
 }

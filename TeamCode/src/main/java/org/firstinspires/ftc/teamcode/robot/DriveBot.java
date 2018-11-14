@@ -26,6 +26,8 @@ public class DriveBot implements Bot {
         hwMap = ahwMap;
         telemetry = atelemetry;
 
+        lift = new Lift();
+
         // Get hardware references from the robot controller's configuration for hardware devices
         motorDriveLeftFront  = hwMap.get(DcMotor.class, "motor_drive_lf");
         motorDriveLeftRear   = hwMap.get(DcMotor.class, "motor_drive_lr");

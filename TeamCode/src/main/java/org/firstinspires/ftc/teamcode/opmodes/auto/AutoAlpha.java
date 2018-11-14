@@ -15,6 +15,6 @@ public class AutoAlpha extends AutoOpMode {
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
 
-
+        //robot.getSensors().init(hardwareMap);
     }
 }

@@ -19,16 +19,21 @@ public class AutoBot extends DriveBot {
     private static final double COUNTS_PER_MM = (COUNTS_PER_REV) / (WHEEL_DIAMETER_MM * Math.PI);
 
     private ElapsedTime timer;
+    private SensorBot sensors;
 
     @Override
     public void init(HardwareMap ahwMap, Telemetry atelemetry) {
         super.init(ahwMap, atelemetry);
 
+        sensors = new SensorBot();
         timer = new ElapsedTime();
 
         // Reset the encoders and allow the drive motors to run with encoder
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Initializes the sensors by fetching hardware configuration from robot controller
+        sensors.init(hwMap);
     }
 
     /**
@@ -71,5 +76,64 @@ public class AutoBot extends DriveBot {
 
         // Turns off RUN_TO_TARGET mode
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    /**
+     * Turns the robot by angle
+     * @param speed    Speed
+     * @param angle    Turn angle
+     * @param offset   Offset angle
+     * @param timeoutS Timeout seconds
+     */
+    public void turnByGyro(double speed, int angle, int offset, double timeoutS) {
+        int targetAngle = sensors.getGyro().getHeading() + angle;
+        int angleToTarget;
+        int currentHeading;
+        boolean turnRight = (angle > 0);
+
+        // When a gyro sensor's heading goes to 360, the heading loops back to zero. Since
+        // the target angle can go over 360, the target angle would be sustracted by 180
+        // to make up the heading looping back to zero from 180.
+        if (targetAngle > 360) {
+            targetAngle = targetAngle - 360;
+        }
+
+        timer.reset();
+        do {
+            // Get the angle distance to the target angle
+            currentHeading = sensors.getGyro().getHeading();
+            angleToTarget = currentHeading - targetAngle;
+
+            // Right side of the target angle
+            if (angleToTarget + offset > targetAngle) {
+                if (turnRight) {
+                    setDrivePower(speed, -speed);
+                } else {
+                    setDrivePower(-speed, speed);
+                }
+            }
+
+            // :eft side of the target angle
+            if (angleToTarget - offset < targetAngle) {
+                if (turnRight) {
+                    setDrivePower(-speed, speed);
+                } else {
+                    setDrivePower(speed, -speed);
+                }
+            }
+
+            telemetry.addData("target", targetAngle);
+            telemetry.addData("current", currentHeading);
+            telemetry.addData("distance", angleToTarget);
+            telemetry.addData("speed", speed);
+            telemetry.update();
+        } while (Math.abs(angleToTarget) < offset && timer.seconds() < timeoutS);
+
+        // Stops the robot from turning
+        setDrivePower(0, 0);
+    }
+
+    public SensorBot getSensors() {
+        return sensors;
     }
 }

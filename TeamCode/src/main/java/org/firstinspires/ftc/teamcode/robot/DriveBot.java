@@ -20,6 +20,8 @@ public class DriveBot implements Bot {
     protected DcMotor motorDriveRightFront;
     protected DcMotor motorDriveRightRear;
 
+    protected Lift lift;
+
     public void init(HardwareMap ahwMap, Telemetry atelemetry) {
         hwMap = ahwMap;
         telemetry = atelemetry;
@@ -33,19 +35,8 @@ public class DriveBot implements Bot {
         // Reverses the right drive motors' direction
         motorDriveRightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         motorDriveRightRear.setDirection(DcMotorSimple.Direction.REVERSE);
-    }
 
-    public void addData() {
-        if (telemetry != null) {
-            addData(telemetry);
-        }
-    }
-
-    public void addData(Telemetry telemetry) {
-        telemetry.addData("LF Power", motorDriveLeftFront.getPower());
-        telemetry.addData("LR Power", motorDriveLeftRear.getPower());
-        telemetry.addData("RF Power", motorDriveRightFront.getPower());
-        telemetry.addData("RR Power", motorDriveRightRear.getPower());
+        lift.init(hwMap);
     }
 
     public void setDriveMode(DcMotor.RunMode runMode) {
@@ -77,5 +68,9 @@ public class DriveBot implements Bot {
         motorDriveLeftRear.setPower(leftPower);
         motorDriveRightFront.setPower(rightPower);
         motorDriveRightRear.setPower(-rightPower);
+    }
+
+    public Lift getLift() {
+        return lift;
     }
 }

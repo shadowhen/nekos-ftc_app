@@ -17,9 +17,11 @@ public class DriveOp extends OpMode {
 
     private static final double DRIVE_SPEED = 0.5;
     private static final double LIFT_POWER = 0.25;
-    private static final double LIFT_SPEED = 0.02;
+    private static final double SLIDER_POWER = 0.25;
 
-    private double liftPosition = 0.5;
+    private static final double DUMPER_SPEED = 0.02;
+
+    private double dumperPosition = 0.5;
 
     private DriveBot robot;
 
@@ -41,6 +43,8 @@ public class DriveOp extends OpMode {
     public void loop() {
         drive();
         lift();
+        dump();
+        sweep();
 
         telemetry.addData("Movement Mode", sidewaysMovement ? "Sideways" : "Normal");
         telemetry.update();
@@ -93,21 +97,39 @@ public class DriveOp extends OpMode {
 
     private void lift() {
         // Raises or lowers the lift
-        if (gamepad2.dpad_up && !gamepad2.dpad_down) {
-            robot.getLift().setLiftPower(LIFT_POWER);
-        } else if (!gamepad2.dpad_up && gamepad2.dpad_down) {
-            robot.getLift().setLiftPower(-LIFT_POWER);
-        } else {
-            robot.getLift().setLiftPower(0);
+        robot.getLift().setLiftPower(gamepad2.left_bumper && !gamepad2.right_bumper ? LIFT_POWER : 0.0);
+        robot.getLift().setLiftPower(!gamepad2.left_bumper && gamepad2.right_bumper ? -LIFT_POWER : 0.0);
+        robot.getLift().setLiftPower((!gamepad2.left_bumper && !gamepad2.right_bumper) ||
+                (gamepad2.left_bumper && gamepad2.right_bumper) ? 1.0 : 0.0);
+    }
+
+    private void dump() {
+        double leftTrigger = gamepad2.left_trigger;
+        double rightTrigger = gamepad2.right_trigger;
+
+        if (leftTrigger > 0 && rightTrigger <= 0) {
+            dumperPosition = dumperPosition + -(leftTrigger * DUMPER_SPEED);
+        } else if (leftTrigger <= 0 && rightTrigger > 0) {
+            dumperPosition = dumperPosition + (rightTrigger * DUMPER_SPEED);
         }
 
-        // Releases or closes the lift
-        if (gamepad2.b) {
-            liftPosition += LIFT_SPEED;
-        } else if (gamepad2.x) {
-            liftPosition += -LIFT_SPEED;
-        }
-        liftPosition = Range.clip(liftPosition, Lift.MIN_LIFT_SERVO_POSITION, Lift.MAX_LIFT_SERVO_POSITION);
-        robot.getLift().setLiftPosition(liftPosition);
+        robot.getDumper().setPosition(dumperPosition);
+    }
+
+    private void sweep() {
+        double joystickSweep = gamepad2.right_stick_y;
+
+        // Moves the slide horizontally
+        robot.getSweeper().setSliderPower(gamepad2.dpad_up && !gamepad2.dpad_down ? SLIDER_POWER : 0.0);
+        robot.getSweeper().setSliderPower(!gamepad2.dpad_up && gamepad2.dpad_down ? -SLIDER_POWER : 0.0);
+        robot.getSweeper().setSliderPower((gamepad2.dpad_up && gamepad2.dpad_down) ? 0.0 : 0.0);
+
+        // Lift the sweeper
+        robot.getSweeper().setLiftPower(gamepad2.y && !gamepad2.a ? LIFT_POWER : 0.0);
+        robot.getSweeper().setLiftPower(!gamepad2.y && gamepad2.a ? -LIFT_POWER : 0.0);
+        robot.getSweeper().setLiftPower(gamepad2.y && gamepad2.a ? 0.0 : 0.0);
+
+        // Sweeps minerals from the floor
+        robot.getSweeper().setSweeperPower(joystickSweep);
     }
 }

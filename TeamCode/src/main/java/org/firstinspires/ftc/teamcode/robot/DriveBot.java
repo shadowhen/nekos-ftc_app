@@ -21,12 +21,18 @@ public class DriveBot implements Bot {
     protected DcMotor motorDriveRightRear;
 
     protected Lift lift;
+    protected Sweeper sweeper;
+    protected Pusher pusher;
+    protected Dumper dumper;
 
     public void init(HardwareMap ahwMap, Telemetry atelemetry) {
         hwMap = ahwMap;
         telemetry = atelemetry;
 
         lift = new Lift();
+        sweeper = new Sweeper();
+        pusher = new Pusher();
+        dumper = new Dumper();
 
         // Get hardware references from the robot controller's configuration for hardware devices
         motorDriveLeftFront  = hwMap.get(DcMotor.class, "motor_drive_lf");
@@ -39,6 +45,9 @@ public class DriveBot implements Bot {
         motorDriveRightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         lift.init(hwMap);
+        sweeper.init(hwMap);
+        pusher.init(hwMap);
+        dumper.init(hwMap);
     }
 
     public void setDriveMode(DcMotor.RunMode runMode) {
@@ -74,5 +83,17 @@ public class DriveBot implements Bot {
 
     public Lift getLift() {
         return lift;
+    }
+
+    public Sweeper getSweeper() {
+        return sweeper;
+    }
+
+    public Pusher getPusher() {
+        return pusher;
+    }
+
+    public Dumper getDumper() {
+        return dumper;
     }
 }

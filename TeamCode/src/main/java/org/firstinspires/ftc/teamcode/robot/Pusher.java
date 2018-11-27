@@ -11,7 +11,7 @@ public class Pusher {
         pusherServo = hwMap.get(Servo.class, "servo_pusher");
     }
 
-    public Servo getPusherServo() {
+    public Servo getServoPusher() {
         return pusherServo;
     }
 }

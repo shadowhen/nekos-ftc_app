@@ -21,6 +21,7 @@ public class TensorFlowDetectorOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         List<Recognition> recognitions;
         boolean detectedGold = false;
+        float leftMost = 0.0f;
 
         vuforiaDetector = new VuforiaDetector();
         tfod = new TensorFlowDetector();
@@ -38,6 +39,8 @@ public class TensorFlowDetectorOp extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
+            boolean leftMostBool = false;
+
             // Get new list of updated recognitions
             recognitions = tfod.getDetector().getUpdatedRecognitions();
 
@@ -45,11 +48,16 @@ public class TensorFlowDetectorOp extends LinearOpMode {
                 for (Recognition recognition : recognitions) {
                     if (recognition.getLabel().equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
                         detectedGold = true;
+                        if (!leftMostBool) {
+                            leftMostBool = true;
+                            leftMost = recognition.getLeft();
+                        }
                     }
                 }
 
                 telemetry.addData("# objects", recognitions.size());
                 telemetry.addData("detected gold", detectedGold);
+                telemetry.addData("leftmost", leftMost);
             }
             telemetry.update();
 

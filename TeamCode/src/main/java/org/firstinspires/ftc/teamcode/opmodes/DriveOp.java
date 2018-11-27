@@ -2,10 +2,8 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.robot.DriveBot;
-import org.firstinspires.ftc.teamcode.robot.Lift;
 
 /**
  * This class provides the drive functionality for the driver to drive the robot on the field
@@ -19,15 +17,14 @@ public class DriveOp extends OpMode {
     private static final double LIFT_POWER = 0.25;
     private static final double SLIDER_POWER = 0.25;
 
-    private static final double DUMPER_SPEED = 0.02;
+    private static final double DUMPER_SPEED = 0.002;
+    private static final double PUSHER_SPEED = 0.001;
 
     private double dumperPosition = 0.5;
+    private boolean lockPusherStateButtonDown;
+    private boolean lockPusherState = true;
 
     private DriveBot robot;
-
-    // Sideways movement
-    private boolean sidewaysMovement;
-    private boolean sidewaysMovementButtonDown;
 
     @Override
     public void init() {
@@ -46,7 +43,18 @@ public class DriveOp extends OpMode {
         dump();
         sweep();
 
-        telemetry.addData("Movement Mode", sidewaysMovement ? "Sideways" : "Normal");
+        //telemetry.addData("Movement Mode", sidewaysMovement ? "Sideways" : "Normal");
+        telemetry.addData("PUSHER LOCKED", lockPusherState ? "ON" : "OFF");
+        telemetry.addData("Left Motor Front Power", robot.getMotorDriveLeftFront().getPower());
+        telemetry.addData("Left Motor Rear Power", robot.getMotorDriveLeftRear().getPower());
+        telemetry.addData("Right Motor Front Power", robot.getMotorDriveRightFront().getPower());
+        telemetry.addData("Right Motor Rear Power", robot.getMotorDriveRightRear().getPower());
+        telemetry.addData("Sweeper Motor Power", robot.getSweeper().getSweeperMotor().getPower());
+        telemetry.addData("Sweeper Lift Motor Power", robot.getSweeper().getLiftMotor().getPower());
+        telemetry.addData("Sweeper Slider Motor Power", robot.getSweeper().getSliderMotor().getPower());
+        telemetry.addData("Lift Motor Power", robot.getLift().getLiftMotor().getPower());
+        telemetry.addData("Pusher Position", robot.getPusher().getServoPusher().getPosition());
+        telemetry.addData("Dumper Position", robot.getDumper().getServoDumper().getPosition());
         telemetry.update();
     }
 
@@ -59,58 +67,43 @@ public class DriveOp extends OpMode {
         float joystickLeftXOne = gamepad1.left_stick_x;
         float joystickRightXOne = gamepad1.right_stick_x;
 
-        // When the user presses the button, the robot switches from normal to sideways movement
-        if (gamepad1.a && !sidewaysMovementButtonDown) {
-            sidewaysMovement = !sidewaysMovement;
-            sidewaysMovementButtonDown = true;
-        } else if (!gamepad1.a && sidewaysMovementButtonDown) {
-            sidewaysMovementButtonDown = false;
-        }
+        float leftTrigger = gamepad1.left_trigger;
+        float rightTrigger = gamepad1.right_trigger;
+        float totalTrigger = Math.abs(leftTrigger - rightTrigger);
 
-        // Drives the robot around
-        if (sidewaysMovement) {
-            if (gamepad1.dpad_down) {
-                robot.setDrivePower(DRIVE_SPEED, DRIVE_SPEED);
-            } else if (gamepad1.dpad_up) {
-                robot.setDrivePower(-DRIVE_SPEED, -DRIVE_SPEED);
-            } else if (gamepad1.dpad_left) {
-                robot.setDrivePowerSideways(-DRIVE_SPEED, -DRIVE_SPEED);
-            } else if (gamepad1.dpad_right) {
-                robot.setDrivePowerSideways(DRIVE_SPEED, DRIVE_SPEED);
-            } else {
-                robot.setDrivePowerSideways(joystickLeftXOne, joystickLeftXOne);
-            }
+        if ((leftTrigger >= 0.0f) && (leftTrigger > rightTrigger)) {
+            robot.setDrivePowerSideways(-totalTrigger, totalTrigger);
+        } else if ((rightTrigger >= 0.0f) && (rightTrigger > leftTrigger)) {
+            robot.setDrivePowerSideways(totalTrigger, -totalTrigger);
+        } else if (gamepad1.dpad_down) {
+            robot.setDrivePower(DRIVE_SPEED, DRIVE_SPEED);
+        } else if (gamepad1.dpad_up) {
+            robot.setDrivePower(-DRIVE_SPEED, -DRIVE_SPEED);
+        } else if (gamepad1.dpad_left) {
+            robot.setDrivePower(DRIVE_SPEED, -DRIVE_SPEED);
+        } else if (gamepad1.dpad_right) {
+            robot.setDrivePower(-DRIVE_SPEED, DRIVE_SPEED);
         } else {
-            if (gamepad1.dpad_down) {
-                robot.setDrivePower(DRIVE_SPEED, DRIVE_SPEED);
-            } else if (gamepad1.dpad_up) {
-                robot.setDrivePower(-DRIVE_SPEED, -DRIVE_SPEED);
-            } else if (gamepad1.dpad_left) {
-                robot.setDrivePower(DRIVE_SPEED, -DRIVE_SPEED);
-            } else if (gamepad1.dpad_right) {
-                robot.setDrivePower(-DRIVE_SPEED, DRIVE_SPEED);
-            } else {
-                robot.setDrivePower(joystickLeftYOne, joystickRightYOne);
-            }
+            robot.setDrivePower(joystickLeftYOne, joystickRightYOne);
         }
     }
 
     private void lift() {
         // Raises or lowers the lift
-        robot.getLift().setLiftPower(gamepad2.left_bumper && !gamepad2.right_bumper ? LIFT_POWER : 0.0);
-        robot.getLift().setLiftPower(!gamepad2.left_bumper && gamepad2.right_bumper ? -LIFT_POWER : 0.0);
-        robot.getLift().setLiftPower((!gamepad2.left_bumper && !gamepad2.right_bumper) ||
-                (gamepad2.left_bumper && gamepad2.right_bumper) ? 1.0 : 0.0);
+        if (gamepad2.left_bumper) {
+            robot.getLift().setLiftPower(-LIFT_POWER);
+        } else if (gamepad2.right_bumper) {
+            robot.getLift().setLiftPower(LIFT_POWER);
+        } else {
+            robot.getLift().setLiftPower(0.0);
+        }
     }
 
     private void dump() {
-        double leftTrigger = gamepad2.left_trigger;
-        double rightTrigger = gamepad2.right_trigger;
-
-        if (leftTrigger > 0 && rightTrigger <= 0) {
-            dumperPosition = dumperPosition + -(leftTrigger * DUMPER_SPEED);
-        } else if (leftTrigger <= 0 && rightTrigger > 0) {
-            dumperPosition = dumperPosition + (rightTrigger * DUMPER_SPEED);
+        if (gamepad2.left_trigger > 0.0) {
+            dumperPosition = dumperPosition + -(DUMPER_SPEED);
+        } else if (gamepad2.right_trigger > 0.0) {
+            dumperPosition = dumperPosition + (DUMPER_SPEED);
         }
 
         robot.getDumper().setPosition(dumperPosition);
@@ -120,16 +113,41 @@ public class DriveOp extends OpMode {
         double joystickSweep = gamepad2.right_stick_y;
 
         // Moves the slide horizontally
-        robot.getSweeper().setSliderPower(gamepad2.dpad_up && !gamepad2.dpad_down ? SLIDER_POWER : 0.0);
-        robot.getSweeper().setSliderPower(!gamepad2.dpad_up && gamepad2.dpad_down ? -SLIDER_POWER : 0.0);
-        robot.getSweeper().setSliderPower((gamepad2.dpad_up && gamepad2.dpad_down) ? 0.0 : 0.0);
+        if (gamepad2.dpad_up) {
+            robot.getSweeper().setSliderPower(SLIDER_POWER);
+        } else if (gamepad2.dpad_down) {
+            robot.getSweeper().setSliderPower(-SLIDER_POWER);
+        } else {
+            robot.getSweeper().setSliderPower(0.0);
+        }
 
         // Lift the sweeper
-        robot.getSweeper().setLiftPower(gamepad2.y && !gamepad2.a ? LIFT_POWER : 0.0);
-        robot.getSweeper().setLiftPower(!gamepad2.y && gamepad2.a ? -LIFT_POWER : 0.0);
-        robot.getSweeper().setLiftPower(gamepad2.y && gamepad2.a ? 0.0 : 0.0);
+        if (gamepad2.y) {
+            robot.getSweeper().setLiftPower(LIFT_POWER);
+        } else if (gamepad2.a) {
+            robot.getSweeper().setLiftPower(-LIFT_POWER);
+        } else {
+            robot.getSweeper().setLiftPower(0.0);
+        }
 
         // Sweeps minerals from the floor
         robot.getSweeper().setSweeperPower(joystickSweep);
+    }
+
+    private void push() {
+        if (!lockPusherStateButtonDown && gamepad2.b) {
+            lockPusherStateButtonDown = true;
+            lockPusherState = !lockPusherState;
+        } else if (lockPusherStateButtonDown && !gamepad2.b) {
+            lockPusherStateButtonDown = false;
+        }
+
+        if (!lockPusherState) {
+            if (gamepad2.left_stick_y < 0.0f) {
+                robot.getPusher().getServoPusher().setPosition(robot.getPusher().getServoPusher().getPosition() - PUSHER_SPEED);
+            } else if (gamepad2.left_stick_y > 0.0f) {
+                robot.getPusher().getServoPusher().setPosition(robot.getPusher().getServoPusher().getPosition() + PUSHER_SPEED);
+            }
+        }
     }
 }

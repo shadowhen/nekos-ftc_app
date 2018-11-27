@@ -96,4 +96,28 @@ public class DriveBot implements Bot {
     public Dumper getDumper() {
         return dumper;
     }
+
+    public HardwareMap getHardwareMap() {
+        return hwMap;
+    }
+
+    public Telemetry getTelemetry() {
+        return telemetry;
+    }
+
+    public DcMotor getMotorDriveLeftFront() {
+        return motorDriveLeftFront;
+    }
+
+    public DcMotor getMotorDriveLeftRear() {
+        return motorDriveLeftRear;
+    }
+
+    public DcMotor getMotorDriveRightFront() {
+        return motorDriveRightFront;
+    }
+
+    public DcMotor getMotorDriveRightRear() {
+        return motorDriveRightRear;
+    }
 }

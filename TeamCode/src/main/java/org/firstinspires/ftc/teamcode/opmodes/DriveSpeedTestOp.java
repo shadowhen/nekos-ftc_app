@@ -44,6 +44,11 @@ public class DriveSpeedTestOp extends OpMode {
         float joystickLeftXOne = gamepad1.left_stick_x;
         float joystickRightXOne = gamepad1.right_stick_x;
 
+        double leftSpeedNormal = Range.clip(-driveSpeed, driveSpeed, joystickLeftYOne);
+        double rightSpeedNormal = Range.clip(-driveSpeed, driveSpeed, joystickRightYOne);
+        double leftSpeedSideways = Range.clip(-sidewaysSpeed, sidewaysSpeed, joystickLeftXOne);
+        double rightSpeedSideways = Range.clip(-sidewaysSpeed, sidewaysSpeed, joystickRightXOne);
+
         // When the user presses the button, the robot switches from normal to sideways movement
         if (gamepad1.a && !sidewaysMovementButtonDown) {
             sidewaysMovement = !sidewaysMovement;
@@ -63,7 +68,7 @@ public class DriveSpeedTestOp extends OpMode {
             } else if (gamepad1.dpad_right) {
                 robot.setDrivePowerSideways(sidewaysSpeed, sidewaysSpeed);
             } else {
-                robot.setDrivePowerSideways(joystickLeftXOne, joystickLeftXOne);
+                robot.setDrivePowerSideways(leftSpeedSideways, rightSpeedSideways);
             }
         } else {
             if (gamepad1.dpad_down) {
@@ -75,7 +80,7 @@ public class DriveSpeedTestOp extends OpMode {
             } else if (gamepad1.dpad_right) {
                 robot.setDrivePower(-driveSpeed, driveSpeed);
             } else {
-                robot.setDrivePower(joystickLeftYOne, joystickRightYOne);
+                robot.setDrivePower(leftSpeedNormal, rightSpeedNormal);
             }
         }
 

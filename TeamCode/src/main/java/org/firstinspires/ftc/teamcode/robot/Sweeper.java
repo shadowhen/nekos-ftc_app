@@ -26,4 +26,16 @@ public class Sweeper {
     public void setLiftPower(double power) {
         liftMotor.setPower(power);
     }
+
+    public DcMotor getSweeperMotor() {
+        return sweeperMotor;
+    }
+
+    public DcMotor getLiftMotor() {
+        return liftMotor;
+    }
+
+    public DcMotor getSliderMotor() {
+        return sliderMotor;
+    }
 }

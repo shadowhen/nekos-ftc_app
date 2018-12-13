@@ -8,8 +8,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * This class provides as the framework for the robot which can be used for any purposes
+ * @author Henry
+ * @version 1.0
  */
 public class DriveBot implements Bot {
+
+    public static final double SERVO_CLOSE_POSITION = 1.0;
 
     protected HardwareMap hwMap;
     protected Telemetry telemetry;
@@ -48,6 +52,8 @@ public class DriveBot implements Bot {
         sweeper.init(hwMap);
         pusher.init(hwMap);
         dumper.init(hwMap);
+
+        dumper.setPosition(SERVO_CLOSE_POSITION);
     }
 
     public void setDriveMode(DcMotor.RunMode runMode) {
@@ -79,6 +85,18 @@ public class DriveBot implements Bot {
         motorDriveLeftRear.setPower(leftPower);
         motorDriveRightFront.setPower(rightPower);
         motorDriveRightRear.setPower(-rightPower);
+    }
+
+    public void setDriveZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
+        motorDriveLeftFront.setZeroPowerBehavior(behavior);
+        motorDriveLeftRear.setZeroPowerBehavior(behavior);
+        motorDriveRightFront.setZeroPowerBehavior(behavior);
+        motorDriveRightRear.setZeroPowerBehavior(behavior);
+    }
+
+    public boolean isDriveMotorsBusy() {
+        return (motorDriveLeftFront.isBusy() && motorDriveLeftRear.isBusy()
+                && motorDriveRightFront.isBusy() && motorDriveRightRear.isBusy());
     }
 
     public Lift getLift() {

@@ -3,6 +3,12 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+/**
+ * This class implements the mineral sweeper which sweeps up the minerals from the ground into
+ * the dumper.
+ * @author Henry
+ * @version 1.0
+ */
 public class Sweeper {
 
     private DcMotor sweeperMotor;

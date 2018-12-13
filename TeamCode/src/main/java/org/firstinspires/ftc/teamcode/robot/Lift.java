@@ -5,6 +5,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+/**
+ * This class implements the robotic function known as the lift.
+ * @author Henry
+ * @version 1.0
+ */
 public class Lift {
 
     private DcMotor liftMotor;

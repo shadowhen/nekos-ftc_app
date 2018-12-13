@@ -6,6 +6,12 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
+/**
+ * This class implements the tensor flow object detector, so the robot controller can utilize
+ * the tensor flow software.
+ * @author Henry
+ * @version 1.0
+ */
 public class TensorFlowDetector {
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
@@ -15,6 +21,7 @@ public class TensorFlowDetector {
     private TFObjectDetector tfod;
 
     public void init(HardwareMap hwMap, VuforiaLocalizer vuforia) {
+        // Gets the id for the phone to display the inferface from tensor overflow's perspective
         int tfodMonitorViewId = hwMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hwMap.appContext.getPackageName());
 

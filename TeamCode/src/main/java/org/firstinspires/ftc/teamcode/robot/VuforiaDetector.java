@@ -6,6 +6,12 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
+/**
+ * This class implements the vuforia, so the robot controller can utilize the vuforia for
+ * object detection and scanning keys on the wall.
+ * @author Henry
+ * @version 1.0
+ */
 public class VuforiaDetector {
 
     private VuforiaLocalizer vuforia;

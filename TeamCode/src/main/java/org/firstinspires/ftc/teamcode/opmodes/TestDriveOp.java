@@ -5,7 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp(name = "Cat")
+/**
+ * This class is an example teleop program for new interns and programmers. The program
+ * serves as an example of ordinary OpMode program.
+ *
+ * @author Jayden
+ * @version 1.0
+ */
+@TeleOp(name = "Cat", group = "test")
 public class TestDriveOp extends OpMode {
 
     private DcMotor motorDriveLeftFront;

@@ -11,6 +11,12 @@ import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class implements the tensor flow object detector using vuforia and the provided FTC offical
+ * assets to detect sliver and gold minerals.
+ * @author Henry
+ * @version 0.1
+ */
 @TeleOp(name = "Tensor Flow Detector - DEV")
 public class TensorFlowDetectorOp extends LinearOpMode {
 
@@ -50,7 +56,18 @@ public class TensorFlowDetectorOp extends LinearOpMode {
                         detectedGold = true;
                         if (!leftMostBool) {
                             leftMostBool = true;
-                            leftMost = recognition.getLeft();
+
+                            // Gets the "left most value" from -90 degrees flipped phone
+                            leftMost = recognition.getTop();
+
+                            telemetry.addData("name", recognition.getLabel());
+                            telemetry.addData("image", "%3d:%3d", recognition.getImageWidth(), recognition.getImageHeight());
+                            telemetry.addData("top", recognition.getTop());
+                            telemetry.addData("bottom", recognition.getBottom());
+                            telemetry.addData("left", recognition.getLeft());
+                            telemetry.addData("right", recognition.getRight());
+                            telemetry.addData("width", recognition.getWidth());
+                            telemetry.addData("height", recognition.getHeight());
                         }
                     }
                 }

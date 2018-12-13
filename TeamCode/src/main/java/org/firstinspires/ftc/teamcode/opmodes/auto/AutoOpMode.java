@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.robot.AutoBot;
  * of the nature of this class, other auto opmodes extends this class for specific autonomous tasks.
  *
  * @author Henry
+ * @version 1.0
  */
 public class AutoOpMode extends LinearOpMode {
 
@@ -16,7 +17,7 @@ public class AutoOpMode extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new AutoBot();
+        robot = new AutoBot(this);
 
         robot.init(hardwareMap, telemetry);
     }

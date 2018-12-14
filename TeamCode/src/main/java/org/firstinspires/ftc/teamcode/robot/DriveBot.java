@@ -8,8 +8,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * This class provides as the framework for the robot which can be used for any purposes
+ * @author Henry
+ * @version 1.0
  */
 public class DriveBot implements Bot {
+
+    public static final double SERVO_CLOSE_POSITION = 1.0;
 
     protected HardwareMap hwMap;
     protected Telemetry telemetry;
@@ -20,9 +24,24 @@ public class DriveBot implements Bot {
     protected DcMotor motorDriveRightFront;
     protected DcMotor motorDriveRightRear;
 
+    protected Lift lift;
+    protected Sweeper sweeper;
+    protected Pusher pusher;
+    protected Dumper dumper;
+
+    /**
+     * Initializes the robot
+     * @param ahwMap      Hardware Map
+     * @param atelemetry  Telemetry
+     */
     public void init(HardwareMap ahwMap, Telemetry atelemetry) {
         hwMap = ahwMap;
         telemetry = atelemetry;
+
+        lift = new Lift();
+        sweeper = new Sweeper();
+        pusher = new Pusher();
+        dumper = new Dumper();
 
         // Get hardware references from the robot controller's configuration for hardware devices
         motorDriveLeftFront  = hwMap.get(DcMotor.class, "motor_drive_lf");
@@ -33,21 +52,19 @@ public class DriveBot implements Bot {
         // Reverses the right drive motors' direction
         motorDriveRightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         motorDriveRightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        lift.init(hwMap);
+        sweeper.init(hwMap);
+        pusher.init(hwMap);
+        dumper.init(hwMap);
+
+        dumper.setPosition(SERVO_CLOSE_POSITION);
     }
 
-    public void addData() {
-        if (telemetry != null) {
-            addData(telemetry);
-        }
-    }
-
-    public void addData(Telemetry telemetry) {
-        telemetry.addData("LF Power", motorDriveLeftFront.getPower());
-        telemetry.addData("LR Power", motorDriveLeftRear.getPower());
-        telemetry.addData("RF Power", motorDriveRightFront.getPower());
-        telemetry.addData("RR Power", motorDriveRightRear.getPower());
-    }
-
+    /**
+     * Set the run mode of the drive motors
+     * @param runMode Run Mode
+     */
     public void setDriveMode(DcMotor.RunMode runMode) {
         motorDriveLeftFront.setMode(runMode);
         motorDriveLeftRear.setMode(runMode);
@@ -77,5 +94,105 @@ public class DriveBot implements Bot {
         motorDriveLeftRear.setPower(leftPower);
         motorDriveRightFront.setPower(rightPower);
         motorDriveRightRear.setPower(-rightPower);
+    }
+
+    /**
+     * SEt the drive motors' zero power behavior
+     * @param behavior Zero Power Behavior
+     */
+    public void setDriveZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
+        motorDriveLeftFront.setZeroPowerBehavior(behavior);
+        motorDriveLeftRear.setZeroPowerBehavior(behavior);
+        motorDriveRightFront.setZeroPowerBehavior(behavior);
+        motorDriveRightRear.setZeroPowerBehavior(behavior);
+    }
+
+    /**
+     * Returns if all of the drive motors are busy
+     * @return All drive motors busy
+     */
+    public boolean isDriveMotorsBusy() {
+        return (motorDriveLeftFront.isBusy() && motorDriveLeftRear.isBusy()
+                && motorDriveRightFront.isBusy() && motorDriveRightRear.isBusy());
+    }
+
+    /**
+     * Returns the lift
+     * @return Lift
+     */
+    public Lift getLift() {
+        return lift;
+    }
+
+    /**
+     * Returns the sweeper
+     * @return Sweeper
+     */
+    public Sweeper getSweeper() {
+        return sweeper;
+    }
+
+    /**
+     * Returns the pusher
+     * @return Pusher
+     */
+    public Pusher getPusher() {
+        return pusher;
+    }
+
+    /**
+     * Returns the dumper
+     * @return Dumper
+     */
+    public Dumper getDumper() {
+        return dumper;
+    }
+
+    /**
+     * Returns the hardware map
+     * @return Hardware Map
+     */
+    public HardwareMap getHardwareMap() {
+        return hwMap;
+    }
+
+    /**
+     * Returns the telemetry
+     * @return Telemetry
+     */
+    public Telemetry getTelemetry() {
+        return telemetry;
+    }
+
+    /**
+     * Returns the front left drive motor
+     * @return Front left drive motor
+     */
+    public DcMotor getMotorDriveLeftFront() {
+        return motorDriveLeftFront;
+    }
+
+    /**
+     * Returns the rear left drive motor
+     * @return Rear left drive motor
+     */
+    public DcMotor getMotorDriveLeftRear() {
+        return motorDriveLeftRear;
+    }
+
+    /**
+     * Returns the front right drive motor
+     * @return Front right drive motor
+     */
+    public DcMotor getMotorDriveRightFront() {
+        return motorDriveRightFront;
+    }
+
+    /**
+     * Returns the rear right drive motor
+     * @return Rear right drive motor
+     */
+    public DcMotor getMotorDriveRightRear() {
+        return motorDriveRightRear;
     }
 }

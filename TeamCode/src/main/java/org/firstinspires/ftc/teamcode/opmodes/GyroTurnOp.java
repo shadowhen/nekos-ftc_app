@@ -6,7 +6,9 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AutoOpMode;
 
 /**
  * This class implements the autonomous turn which the drive can specified which direction
- * robot must turn to. When the drive presses the START button, the driver controls where
+ * robot must turn to.
+ *
+ * When the drive presses the START button, the driver controls where
  * the robot must turn in certain direction using its gyro sensor. The driver can adjust
  * how much the robot turns and direction of the turn, and while the robot turns, the driver
  * can see the telemetry data from the robot controller if the methods provide the telemetry data.

@@ -76,6 +76,9 @@ public class DriveOp extends OpMode {
         telemetry.update();
     }
 
+    /**
+     * Drives the robot around
+     */
     private void drive() {
         // Get joystick y values from gamepad one
         float joystickLeftYOne = gamepad1.left_stick_y;
@@ -129,6 +132,9 @@ public class DriveOp extends OpMode {
         }
     }
 
+    /**
+     * Controls the lift
+     */
     private void lift() {
         // Raises or lowers the lift
         if (gamepad2.left_bumper) {
@@ -140,6 +146,9 @@ public class DriveOp extends OpMode {
         }
     }
 
+    /**
+     * Controls the dumper
+     */
     private void dump() {
         // Get both trigger values from the gamepad and the difference between the trigger values
         float leftTrigger = gamepad1.left_trigger;
@@ -190,6 +199,9 @@ public class DriveOp extends OpMode {
         }
     }
 
+    /**
+     * Pulls in or out of the pusher
+     */
     private void push() {
         // Locks or unlocks the pusher which can be moved by the drivers
         if (!lockPusherStateButtonDown && gamepad2.b) {

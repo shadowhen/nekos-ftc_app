@@ -22,10 +22,18 @@ public class Dumper {
         //servoDumper.setPosition(0.5);
     }
 
+    /**
+     * Set the position of the servo dumper
+     * @param position Servo Position
+     */
     public void setPosition(double position) {
         servoDumper.setPosition(position);
     }
 
+    /**
+     * Returns the servo dumper
+     * @return Servo Dumper
+     */
     public Servo getServoDumper() {
         return servoDumper;
     }

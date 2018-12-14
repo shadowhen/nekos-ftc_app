@@ -20,6 +20,11 @@ public class TensorFlowDetector {
 
     private TFObjectDetector tfod;
 
+    /**
+     * Initialises the Tensor Flow Object Detector
+     * @param hwMap   Hardware Map
+     * @param vuforia Vuforia
+     */
     public void init(HardwareMap hwMap, VuforiaLocalizer vuforia) {
         // Gets the id for the phone to display the inferface from tensor overflow's perspective
         int tfodMonitorViewId = hwMap.appContext.getResources().getIdentifier(
@@ -30,6 +35,10 @@ public class TensorFlowDetector {
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
     }
 
+    /**
+     * Returns the detector
+     * @return Detector
+     */
     public TFObjectDetector getDetector() {
         return tfod;
     }

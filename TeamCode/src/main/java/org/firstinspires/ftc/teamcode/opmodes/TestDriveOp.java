@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * This class is an example teleop program for new interns and programmers. The program
  * serves as an example of ordinary OpMode program.
  *
- * @author Jayden
+ * @author Jadyn
  * @version 1.0
  */
 @TeleOp(name = "Cat", group = "test")

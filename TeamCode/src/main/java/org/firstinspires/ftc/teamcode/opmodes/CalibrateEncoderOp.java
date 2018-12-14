@@ -31,6 +31,8 @@ public class CalibrateEncoderOp extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            // When the driver press this button, the robot controller resets the encoders on the
+            // drive motors
             if (gamepad1.x && !resetEncoderButtonDown) {
                 resetEncoderButtonDown = true;
                 robot.setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -39,8 +41,10 @@ public class CalibrateEncoderOp extends LinearOpMode {
                 resetEncoderButtonDown = false;
             }
 
+            // Controls the robot's movement using gamepad joysticks
             robot.setDrivePower(gamepad1.left_stick_y, gamepad1.right_stick_y);
 
+            // Sends telemetry data to the driver station
             telemetry.addData("Reset Status", resetEncoderButtonDown ? "Resetting... Let go the button." : "Done");
             telemetry.addData("Joystick Y", "%.2f %.2f", gamepad1.left_stick_y, gamepad1.right_stick_y);
             telemetry.addData("Left Current Pos", "%d %d",

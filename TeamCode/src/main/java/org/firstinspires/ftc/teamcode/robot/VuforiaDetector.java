@@ -16,6 +16,14 @@ public class VuforiaDetector {
 
     private VuforiaLocalizer vuforia;
 
+    /**
+     * Initializes the vuforia
+     *
+     * @param hwMap       Hardware Map
+     * @param key         Vuforia Key
+     * @param useWebcam   Use webcam
+     * @param webcamName  Webcam name
+     */
     public void init(HardwareMap hwMap, String key, boolean useWebcam, String webcamName) {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.vuforiaLicenseKey = key;
@@ -32,6 +40,10 @@ public class VuforiaDetector {
         init(hwMap, key, false, null);
     }
 
+    /**
+     * Returns vuforia
+     * @return Vuforia
+     */
     public VuforiaLocalizer getVuforia() {
         return vuforia;
     }

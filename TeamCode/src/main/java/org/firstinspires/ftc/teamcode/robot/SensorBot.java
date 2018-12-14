@@ -27,11 +27,23 @@ public class SensorBot {
         //distanceSensor = hwMap.get(DistanceSensor.class, "distance_sensor");
     }
 
+    /**
+     * Returns boolean if the distance sensor between these two distance ranges
+     * @param unit Distance Unit
+     * @param min  Min distance
+     * @param max  Max distance
+     * @return boolean
+     */
     public boolean seeObject(DistanceUnit unit, double min, double max) {
         double distance = distanceSensor.getDistance(unit);
         return (distance >= min && distance <= max);
     }
 
+    /**
+     * Returns the angle error
+     * @param angle Angle
+     * @return Angle error
+     */
     public double getError(double angle) {
         double error = angle - gyro.getIntegratedZValue();
         while (error > 180) {
@@ -43,6 +55,12 @@ public class SensorBot {
         return error;
     }
 
+    /**
+     * Returns the steer
+     * @param error   Error
+     * @param pCoeff  Proportional Coefficient
+     * @return
+     */
     public double getSteer(double error, double pCoeff) {
         return Range.clip(error * pCoeff, 0.0, 1.0);
     }

@@ -13,10 +13,18 @@ public class Pusher {
 
     private Servo pusherServo;
 
+    /**
+     * Initializes the hardware
+     * @param hwMap Hardware Map
+     */
     public void init(HardwareMap hwMap) {
         pusherServo = hwMap.get(Servo.class, "servo_pusher");
     }
 
+    /**
+     * Returns the servo pusher
+     * @return Servo Pusher
+     */
     public Servo getServoPusher() {
         return pusherServo;
     }

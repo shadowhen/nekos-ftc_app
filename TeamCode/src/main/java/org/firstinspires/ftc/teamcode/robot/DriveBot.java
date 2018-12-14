@@ -29,6 +29,11 @@ public class DriveBot implements Bot {
     protected Pusher pusher;
     protected Dumper dumper;
 
+    /**
+     * Initializes the robot
+     * @param ahwMap      Hardware Map
+     * @param atelemetry  Telemetry
+     */
     public void init(HardwareMap ahwMap, Telemetry atelemetry) {
         hwMap = ahwMap;
         telemetry = atelemetry;
@@ -56,6 +61,10 @@ public class DriveBot implements Bot {
         dumper.setPosition(SERVO_CLOSE_POSITION);
     }
 
+    /**
+     * Set the run mode of the drive motors
+     * @param runMode Run Mode
+     */
     public void setDriveMode(DcMotor.RunMode runMode) {
         motorDriveLeftFront.setMode(runMode);
         motorDriveLeftRear.setMode(runMode);
@@ -87,6 +96,10 @@ public class DriveBot implements Bot {
         motorDriveRightRear.setPower(-rightPower);
     }
 
+    /**
+     * SEt the drive motors' zero power behavior
+     * @param behavior Zero Power Behavior
+     */
     public void setDriveZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
         motorDriveLeftFront.setZeroPowerBehavior(behavior);
         motorDriveLeftRear.setZeroPowerBehavior(behavior);
@@ -94,47 +107,91 @@ public class DriveBot implements Bot {
         motorDriveRightRear.setZeroPowerBehavior(behavior);
     }
 
+    /**
+     * Returns if all of the drive motors are busy
+     * @return All drive motors busy
+     */
     public boolean isDriveMotorsBusy() {
         return (motorDriveLeftFront.isBusy() && motorDriveLeftRear.isBusy()
                 && motorDriveRightFront.isBusy() && motorDriveRightRear.isBusy());
     }
 
+    /**
+     * Returns the lift
+     * @return Lift
+     */
     public Lift getLift() {
         return lift;
     }
 
+    /**
+     * Returns the sweeper
+     * @return Sweeper
+     */
     public Sweeper getSweeper() {
         return sweeper;
     }
 
+    /**
+     * Returns the pusher
+     * @return Pusher
+     */
     public Pusher getPusher() {
         return pusher;
     }
 
+    /**
+     * Returns the dumper
+     * @return Dumper
+     */
     public Dumper getDumper() {
         return dumper;
     }
 
+    /**
+     * Returns the hardware map
+     * @return Hardware Map
+     */
     public HardwareMap getHardwareMap() {
         return hwMap;
     }
 
+    /**
+     * Returns the telemetry
+     * @return Telemetry
+     */
     public Telemetry getTelemetry() {
         return telemetry;
     }
 
+    /**
+     * Returns the front left drive motor
+     * @return Front left drive motor
+     */
     public DcMotor getMotorDriveLeftFront() {
         return motorDriveLeftFront;
     }
 
+    /**
+     * Returns the rear left drive motor
+     * @return Rear left drive motor
+     */
     public DcMotor getMotorDriveLeftRear() {
         return motorDriveLeftRear;
     }
 
+    /**
+     * Returns the front right drive motor
+     * @return Front right drive motor
+     */
     public DcMotor getMotorDriveRightFront() {
         return motorDriveRightFront;
     }
 
+    /**
+     * Returns the rear right drive motor
+     * @return Rear right drive motor
+     */
     public DcMotor getMotorDriveRightRear() {
         return motorDriveRightRear;
     }

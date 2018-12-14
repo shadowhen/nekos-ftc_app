@@ -6,6 +6,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoOpMode;
 
+/**
+ * This class extends the AutoOpMode to implement a test program for the distance sensor.
+ *
+ * @author Henry
+ * @version 1.0
+ */
 @TeleOp(name = "Distance Sensor Test")
 public class DistanceSensorTestOp extends AutoOpMode {
 

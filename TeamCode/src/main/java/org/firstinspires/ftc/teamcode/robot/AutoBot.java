@@ -208,11 +208,11 @@ public class AutoBot extends DriveBot {
     }
 
     /**
-     *
-     * @param speed
-     * @param angle
-     * @param pCoeff
-     * @return
+     * Returns boolean if the robot is on the current heading.
+     * @param speed  Speed
+     * @param angle  Angle
+     * @param pCoeff Proportional Coefficient
+     * @return boolean
      */
     public boolean onHeading(double speed, double angle, double pCoeff) {
         double error;
@@ -272,6 +272,10 @@ public class AutoBot extends DriveBot {
         }
     }
 
+    /**
+     * Returns the sensors
+     * @return Sensors
+     */
     public SensorBot getSensors() {
         return sensors;
     }

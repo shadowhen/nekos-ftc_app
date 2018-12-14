@@ -20,11 +20,15 @@ public class PrototypeDetector extends OpenCVPipeline {
     private static final double SCALE_Y = 700;
     private static final Size GAUSSIAN_BLUR_FILTER_SIZE = new Size(7, 7);
 
+    // Gold Range
     private static final Scalar LOW_GOLD = new Scalar(17, 100, 80);
     private static final Scalar UPPER_GOLD = new Scalar(30, 255, 255);
+
+    // Brightness Range
     private static final Scalar LOW_BRIGHT = new Scalar(170, 255, 255);
     private static final Scalar HIGH_BRIGHT = new Scalar(180, 255, 255);
 
+    // Color for draw rectangles around contours
     private static final Scalar BOUNDING_RECT_COLOR = new Scalar(0, 255, 0);
 
     private Mat mRgbaC = new Mat(); // New Copy
@@ -50,17 +54,21 @@ public class PrototypeDetector extends OpenCVPipeline {
     public Mat processFrame(Mat rgba, Mat gray) {
         double scaleX = SCALE_X / rgba.width();
         double scaleY = SCALE_Y / rgba.height();
-        ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        ArrayList<MatOfPoint> contours = new ArrayList<>();
 
+        // Make a copy to work Mat
         rgba.copyTo(mRgbaC);
 
-        // Resize the image
+        // Resize the image to  aspecific size
         Imgproc.resize(rgba, mRgbaC, mRgbaC.size(), scaleX, scaleY);
 
+        // Smooth the entire image
         Imgproc.GaussianBlur(mRgbaC, mRgbaB, GAUSSIAN_BLUR_FILTER_SIZE, 0);
+
+        // Convert from rgb Mat to hsv Mat
         Imgproc.cvtColor(mRgbaB, mRgbaBHsv, Imgproc.COLOR_RGB2HSV);
 
-        // Filter for the gold
+        // Filter for the gold and brightness out of the image
         Core.inRange(mRgbaBHsv, LOW_GOLD, UPPER_GOLD, maskOne);
         Core.inRange(mRgbaBHsv, LOW_BRIGHT, HIGH_BRIGHT, maskTwo);
         Core.add(maskOne, maskTwo, mask);

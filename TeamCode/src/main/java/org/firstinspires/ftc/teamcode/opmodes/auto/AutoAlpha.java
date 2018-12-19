@@ -35,7 +35,11 @@ public class AutoAlpha extends AutoOpMode {
         vuforia.init(hardwareMap, VuforiaKey.VUFORIA_KEY);
         detector.init(hardwareMap, vuforia.getVuforia());
 
-        waitForStart();
+        // Prevents the robot from detaching the REV hub
+        while (opModeIsActive() && !isStarted()) {
+            telemetry.addData(">", "waiting for start command");
+            telemetry.update();
+        }
 
         if (detector.getDetector() != null) {
             detector.getDetector().activate();

@@ -39,11 +39,12 @@ public class AutoPushGoldMineral extends AutoOpMode {
         vuforia.init(hardwareMap, VuforiaKey.VUFORIA_KEY);
         detector.init(hardwareMap, vuforia.getVuforia());
 
-        telemetry.addData("Goal", "Push the gold mineral!");
-        telemetry.addData(">", "Press START to push the gold mineral.");
-        telemetry.update();
-
-        waitForStart();
+        // Prevents the robot detaching from the REV Hub
+        while (opModeIsActive() && !isStarted()) {
+            telemetry.addData("Goal", "Push the gold mineral!");
+            telemetry.addData(">", "waiting for start command");
+            telemetry.update();
+        }
 
         // Activates the detector
         if (detector.getDetector() != null) {

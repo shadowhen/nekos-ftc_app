@@ -21,7 +21,11 @@ public class GryoSensorTestOp extends AutoOpMode {
         telemetry.addData(">", "Robot is ready.");
         telemetry.update();
 
-        waitForStart();
+        // Prevents the robot from detaching the REV hub
+        while (opModeIsActive() && !isStarted()) {
+            telemetry.addData(">", "waiting for start command");
+            telemetry.update();
+        }
 
         while (opModeIsActive()) {
             // The drive presses the buttons which the robot turns using the gyro sensor

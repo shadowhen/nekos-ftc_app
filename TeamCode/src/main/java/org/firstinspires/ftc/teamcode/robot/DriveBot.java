@@ -91,18 +91,10 @@ public class DriveBot implements Bot {
      * @param rightPower Right Power
      */
     public void setDrivePowerSideways(double leftPower, double rightPower) {
-        double leftDifference = .25;
-        double rightDifference = .5;
-        if (leftPower < 0) {
-            leftDifference *= -1;
-        }
-        if (rightPower < 0) {
-            rightDifference *= -1;
-        }
         motorDriveLeftFront.setPower(-leftPower);
-        motorDriveLeftRear.setPower(Range.clip(leftPower - leftDifference, -1.0, 1.0));
+        motorDriveLeftRear.setPower(leftPower);
         motorDriveRightFront.setPower(-rightPower);
-        motorDriveRightRear.setPower(Range.clip(rightPower - rightDifference, -1.0, 1.0));
+        motorDriveRightRear.setPower(rightPower);
     }
 
     public void setDrivePowerTurn(double leftPower, double rightPower) {

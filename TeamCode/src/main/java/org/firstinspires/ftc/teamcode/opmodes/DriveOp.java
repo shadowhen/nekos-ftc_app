@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.robot.DriveBot;
@@ -18,8 +19,7 @@ public class DriveOp extends OpMode {
 
     private static final double DRIVE_SPEED = 0.5;
     private static final double LIFT_POWER = 0.25;
-    private static final double SWEEPER_POWER = 1.0;
-    private static final double SWEEPER_LIFT_POWER = 0.8;
+    private static final double SWEEPER_POWER = 0.8;
     private static final double SLIDER_POWER = 0.25;
 
     private static final double DUMPER_SPEED = 0.002;
@@ -39,6 +39,8 @@ public class DriveOp extends OpMode {
         robot = new DriveBot();
         robot.init(hardwareMap, telemetry);
 
+        robot.setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         // Gets the current position of the server dumper, so the dumper position can match with
         // the servo dumper's position and adjust it when the driver adjusts the position from
         // the gamepads.
@@ -57,7 +59,7 @@ public class DriveOp extends OpMode {
         dump();
         sweep();
 
-        telemetry.addData("Movement Mode", sidewaysState ? "Bumpers" : "Dpad");
+        telemetry.addData("Sideways Motion Controls", sidewaysState ? "Dpad" : "Bumpers");
         telemetry.addData("PUSHER LOCKED", lockPusherState ? "ON" : "OFF");
         telemetry.addLine("-------------------");
         telemetry.addData("Left Motor Front Power", "%.2f", robot.getMotorDriveLeftFront().getPower());
@@ -88,14 +90,14 @@ public class DriveOp extends OpMode {
         float joystickLeftXOne = gamepad1.left_stick_x;
         float joystickRightXOne = gamepad1.right_stick_x;
 
-        if (!sidewaysStateButtonDown && gamepad1.back) {
+        if (!sidewaysStateButtonDown && gamepad1.b) {
             sidewaysState = !sidewaysState;
             sidewaysStateButtonDown = true;
-        } else if (sidewaysStateButtonDown && !gamepad1.back) {
+        } else if (sidewaysStateButtonDown && !gamepad1.b) {
             sidewaysStateButtonDown = false;
         }
 
-        // Robot moves sideways
+        // Set the drive power based on the input
         if (gamepad1.left_bumper) {
             if (!sidewaysState) {
                 robot.setDrivePowerSideways(DRIVE_SPEED, -DRIVE_SPEED);
@@ -108,10 +110,7 @@ public class DriveOp extends OpMode {
             } else {
                 robot.setDrivePower(-DRIVE_SPEED, DRIVE_SPEED);
             }
-        }
-
-        // Set the drive power based on the input
-        if (gamepad1.dpad_down) {
+        } else if (gamepad1.dpad_down) {
             robot.setDrivePower(DRIVE_SPEED, DRIVE_SPEED);
         } else if (gamepad1.dpad_up) {
             robot.setDrivePower(-DRIVE_SPEED, -DRIVE_SPEED);
@@ -137,9 +136,9 @@ public class DriveOp extends OpMode {
      */
     private void lift() {
         // Raises or lowers the lift
-        if (gamepad2.left_bumper) {
+        if (gamepad2.a) {
             robot.getLift().setLiftPower(-LIFT_POWER);
-        } else if (gamepad2.right_bumper) {
+        } else if (gamepad2.y) {
             robot.getLift().setLiftPower(LIFT_POWER);
         } else {
             robot.getLift().setLiftPower(0.0);
@@ -155,20 +154,25 @@ public class DriveOp extends OpMode {
         float rightTrigger = gamepad1.right_trigger;
         float totalTrigger = leftTrigger - rightTrigger;
 
-        if (totalTrigger > 0.1f) {
+        if (totalTrigger < -0.1f) {
             dumperPosition = dumperPosition + DUMPER_SPEED;
-        } else if (totalTrigger < -0.1f) {
+        } else if (totalTrigger > 0.1f) {
             dumperPosition = dumperPosition - DUMPER_SPEED;
         }
         dumperPosition = Range.clip(dumperPosition, Dumper.MIN_POSITION, Dumper.MAX_POSITION);
 
+        // Opens up or down of the dumper
         robot.getDumper().setPosition(dumperPosition);
     }
 
+    /**
+     * Controls the sweeper on the robot
+     */
     private void sweep() {
-        //float leftTrigger = gamepad1.left_trigger;
-        //float rightTrigger = gamepad1.right_trigger;
-        //float totalTrigger = leftTrigger - rightTrigger;
+        // Gets the difference between the two triggers which makes up the total
+        float leftTrigger = gamepad1.left_trigger;
+        float rightTrigger = gamepad1.right_trigger;
+        float totalTrigger = leftTrigger - rightTrigger;
 
         // Moves the slide horizontally
         if (gamepad2.dpad_up) {
@@ -179,24 +183,27 @@ public class DriveOp extends OpMode {
             robot.getSweeper().setSliderPower(0.0);
         }
 
-        // Lift the sweeper
-        if (gamepad2.y) {
+        // Lift the sweeper up or down
+        /*if (gamepad2.y) {
             robot.getSweeper().setLiftPower(SWEEPER_LIFT_POWER);
         } else if (gamepad2.a) {
             robot.getSweeper().setLiftPower(-SWEEPER_LIFT_POWER);
         } else {
             robot.getSweeper().setLiftPower(0.0);
-        }
+        }*/
+        //robot.getSweeper().setLiftPower(gamepad2.right_stick_y);
+        robot.getSweeper().setLiftPower(gamepad2.left_stick_y);
 
         // Sweeps minerals from the floor
         //robot.getSweeper().setSweeperPower(totalTrigger);
-        if (gamepad2.x) {
+        if (gamepad1.x) {
             robot.getSweeper().setSweeperPower(-SWEEPER_POWER);
-        } else if (gamepad2.b) {
+        } else if (gamepad1.b) {
             robot.getSweeper().setSweeperPower(SWEEPER_POWER);
         } else {
             robot.getSweeper().setSweeperPower(0.0);
         }
+        //robot.getSweeper().setSweeperPower(gamepad2.right_stick_y);
     }
 
     /**

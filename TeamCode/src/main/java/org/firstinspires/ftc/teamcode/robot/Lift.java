@@ -12,6 +12,10 @@ import com.qualcomm.robotcore.util.Range;
  */
 public class Lift {
 
+    private static final double WHEEL_DIAMETER_MM = 0.0;
+    private static final double COUNTS_PER_REV = 1440;
+    private static final double COUNTS_PER_MM = (COUNTS_PER_REV / (WHEEL_DIAMETER_MM * Math.PI));
+
     private DcMotor liftMotor;
 
     /**
@@ -20,6 +24,10 @@ public class Lift {
      */
     public void init(HardwareMap hwMap) {
         liftMotor = hwMap.get(DcMotor.class, "motor_lift");
+
+        // Uncomment the line below if the motor uses an encoder.
+        //liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**

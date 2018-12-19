@@ -26,6 +26,10 @@ public class AutoEncoderDriveForward extends AutoOpMode {
         telemetry.update();
         waitForStart();
 
+        // It turned left
         robot.moveByEncoder(0.4, 500, 500, 5);
+
+        // It went straight
+        robot.moveByEncoder(0.4, -200, 200, 5);
     }
 }

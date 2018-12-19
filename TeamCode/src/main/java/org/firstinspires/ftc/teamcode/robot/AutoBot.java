@@ -8,6 +8,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 /**
  * This class extends the DriveBot.class to implement autonomous features into the robot, so
@@ -60,15 +63,7 @@ public class AutoBot extends DriveBot {
         return (int)(distance * COUNTS_PER_MM);
     }
 
-    /**
-     * The robot travels at a specified distance using its drive motors' encoders, and
-     *
-     * @param speed     Drive speed
-     * @param leftDist  Left Distance
-     * @param rightDist Right Distance
-     * @param timeoutS  Timeout in seconds
-     */
-    public void moveByEncoder(double speed, double leftDist, double rightDist, double timeoutS) {
+    public void setDriveTargetPosition(double leftDist, double rightDist) {
         // Convert the distance values into target values
         int newLeftTarget = convertDistanceToPosition(leftDist);
         int newRightTarget = convertDistanceToPosition(rightDist);
@@ -78,6 +73,18 @@ public class AutoBot extends DriveBot {
         motorDriveLeftRear.setTargetPosition(motorDriveLeftRear.getCurrentPosition() + newLeftTarget);
         motorDriveRightFront.setTargetPosition(motorDriveRightFront.getCurrentPosition() + newRightTarget);
         motorDriveRightRear.setTargetPosition(motorDriveRightRear.getCurrentPosition() + newRightTarget);
+    }
+
+    /**
+     * The robot travels at a specified distance using its drive motors' encoders, and
+     *
+     * @param speed     Drive speed
+     * @param leftDist  Left Distance
+     * @param rightDist Right Distance
+     * @param timeoutS  Timeout in seconds
+     */
+    public void moveByEncoder(double speed, double leftDist, double rightDist, double timeoutS) {
+        setDriveTargetPosition(leftDist, rightDist);
 
         // Turns on RUN_TO_TARGET mode on the drive motors
         setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -90,7 +97,7 @@ public class AutoBot extends DriveBot {
             setDrivePower(Math.abs(speed), Math.abs(speed));
 
             telemetry.addData("current pos", "%d %d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
-            telemetry.addData("target pos", "%d %d", newLeftTarget, newRightTarget);
+            telemetry.addData("target pos", "%d %d", motorDriveLeftFront.getTargetPosition(), motorDriveRightFront.getCurrentPosition());
             telemetry.update();
         }
 

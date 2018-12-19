@@ -1,6 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
+import org.firstinspires.ftc.teamcode.robot.VuforiaDetector;
+import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
+
+import java.util.List;
 
 /**
  * This class expands the AutoOpMode.class to tell the robot to knock off the gold mineral, drop
@@ -12,11 +20,26 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous(name = "Auto Alpha", group = "auto")
 public class AutoAlpha extends AutoOpMode {
 
+    private VuforiaDetector vuforia;
+    private TensorFlowDetector detector;
+
+    private List<Recognition> recognitions;
+
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
 
+        vuforia = new VuforiaDetector();
+        detector = new TensorFlowDetector();
+
+        vuforia.init(hardwareMap, VuforiaKey.VUFORIA_KEY);
+        detector.init(hardwareMap, vuforia.getVuforia());
+
         waitForStart();
+
+        if (detector.getDetector() != null) {
+            detector.getDetector().activate();
+        }
 
         // INSTRUCTIONS FOR THIS PROGRAM
         // 1.) Lowers down the robot
@@ -34,7 +57,7 @@ public class AutoAlpha extends AutoOpMode {
         // 13.) Park
 
         // Lowers the robot using the lift. WIll add later
-        // TODO: Add a function that the robot lowers itself onto the gtound
+        // TODO: Add a function that the robot lowers itself onto the ground
 
         robot.turnByGyro(0.4, -90, 2, 5);
         sleep(500);
@@ -50,8 +73,22 @@ public class AutoAlpha extends AutoOpMode {
         }
 
         // TODO: Implement a function that the robot would drive to its destination.
+        robot.setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.setDriveTargetPosition(100, 100);
+        while (robot.isDriveMotorsBusy()) {
+            recognitions = detector.getDetector().getUpdatedRecognitions();
+            robot.setDrivePower(0.4, 0.4);
+
+            for (Recognition recognition : recognitions) {
+                if (recognition.getLabel().equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
+                    if (recognition.getTop() > 10.0 && recognition.getTop() < 100.0) {
+                        robot.setDrivePower(0, 0);
+                    }
+                }
+            }
+        }
         // The robot drives to its destination, but the robot also scans for the gold mineral at
-        // the same time. If the robot sees a gold mineral, the robot stops and thens the pushes
+        // the same time. If the robot sees a gold mineral, the robot stops and then the pushes
         // the mineral away to earn some points.
 
         sleep(500);
@@ -65,5 +102,9 @@ public class AutoAlpha extends AutoOpMode {
         sleep(500);
 
         // Drop the team marker and be happy. Send help.
+
+        if (detector.getDetector() != null) {
+            detector.getDetector().deactivate();
+        }
     }
 }

@@ -76,7 +76,7 @@ public class AutoBot extends DriveBot {
     }
 
     /**
-     * The robot travels at a specified distance using its drive motors' encoders, and
+     * The robot travels at a specified distance using its drive motors' encoders.
      *
      * @param speed     Drive speed
      * @param leftDist  Left Distance
@@ -253,16 +253,16 @@ public class AutoBot extends DriveBot {
     public void setAutoDrive(AutoDrive autoDrive) {
         switch (autoDrive) {
             case FORWARD:
-                motorDriveLeftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-                motorDriveLeftRear.setDirection(DcMotorSimple.Direction.FORWARD);
+                motorDriveLeftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+                motorDriveLeftRear.setDirection(DcMotorSimple.Direction.REVERSE);
                 motorDriveRightFront.setDirection(DcMotorSimple.Direction.FORWARD);
                 motorDriveRightRear.setDirection(DcMotorSimple.Direction.FORWARD);
                 break;
             case BACKWARD:
                 motorDriveLeftFront.setDirection(DcMotorSimple.Direction.REVERSE);
                 motorDriveLeftRear.setDirection(DcMotorSimple.Direction.REVERSE);
-                motorDriveRightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-                motorDriveRightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+                motorDriveRightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+                motorDriveRightRear.setDirection(DcMotorSimple.Direction.FORWARD);
                 break;
             case SIDEWAYS_LEFT:
                 motorDriveLeftFront.setDirection(DcMotorSimple.Direction.FORWARD);

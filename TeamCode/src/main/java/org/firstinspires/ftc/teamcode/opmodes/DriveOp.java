@@ -18,6 +18,14 @@ import org.firstinspires.ftc.teamcode.robot.Dumper;
 public class DriveOp extends OpMode {
 
     private static final double DRIVE_SPEED = 0.5;
+    private static final double DRIVE_SIDEWAYS_SPEED = 0.8;
+
+    private static final double SIDEWAYS_LF_SPEED = 0.87;
+    private static final double SIDEWAYS_LR_SPEED = 0.8;
+    private static final double SIDEWAYS_RF_SPEED = 0.85;
+    private static final double SIDEWAYS_RR_SPEED = 0.78;
+
+    private static final double TURN_SPEED = 0.8;
     private static final double LIFT_POWER = 0.25;
     private static final double SWEEPER_POWER = 0.8;
     private static final double SLIDER_POWER = 0.25;
@@ -39,15 +47,19 @@ public class DriveOp extends OpMode {
         robot = new DriveBot();
         robot.init(hardwareMap, telemetry);
 
+        // Drive motors will use encoders for setting the speed value
         robot.setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Gets the current position of the server dumper, so the dumper position can match with
         // the servo dumper's position and adjust it when the driver adjusts the position from
         // the gamepads.
         dumperPosition = robot.getDumper().getServoDumper().getPosition();
+    }
 
+    @Override
+    public void init_loop() {
         // Tells the user that the robot is ready to start
-        telemetry.addData(">", "ROBOT READY!!!!");
+        telemetry.addData(">", "waiting for START...");
         telemetry.addData("position", robot.getDumper().getServoDumper().getPosition());
         telemetry.update();
     }
@@ -99,34 +111,49 @@ public class DriveOp extends OpMode {
 
         // Set the drive power based on the input
         if (gamepad1.left_bumper) {
+            // Move the robot sideways left or turn left using the left bumper
             if (!sidewaysState) {
-                robot.setDrivePowerSideways(DRIVE_SPEED, -DRIVE_SPEED);
+                //robot.setDrivePowerSideways(DRIVE_SIDEWAYS_SPEED, -DRIVE_SIDEWAYS_SPEED);
+                robot.getMotorDriveLeftFront().setPower(-SIDEWAYS_LF_SPEED);
+                robot.getMotorDriveLeftRear().setPower(SIDEWAYS_LR_SPEED);
+                robot.getMotorDriveRightFront().setPower(SIDEWAYS_RF_SPEED);
+                robot.getMotorDriveRightRear().setPower(-SIDEWAYS_RR_SPEED);
             } else {
-                robot.setDrivePower(DRIVE_SPEED, -DRIVE_SPEED);
+                robot.setDrivePowerTurn(TURN_SPEED, TURN_SPEED);
             }
         } else if (gamepad1.right_bumper) {
+            // Move the robot sideways right or turn right using the right bumper
             if (!sidewaysState) {
-                robot.setDrivePowerSideways(-DRIVE_SPEED, DRIVE_SPEED);
+                //robot.setDrivePowerSideways(-DRIVE_SIDEWAYS_SPEED, DRIVE_SIDEWAYS_SPEED);
+                robot.getMotorDriveLeftFront().setPower(SIDEWAYS_LF_SPEED);
+                robot.getMotorDriveLeftRear().setPower(-SIDEWAYS_LR_SPEED);
+                robot.getMotorDriveRightFront().setPower(-SIDEWAYS_RF_SPEED);
+                robot.getMotorDriveRightRear().setPower(SIDEWAYS_RR_SPEED);
             } else {
-                robot.setDrivePower(-DRIVE_SPEED, DRIVE_SPEED);
+                robot.setDrivePowerTurn(-TURN_SPEED, -TURN_SPEED);
             }
-        } else if (gamepad1.dpad_down) {
-            robot.setDrivePower(DRIVE_SPEED, DRIVE_SPEED);
         } else if (gamepad1.dpad_up) {
+            // Moves the robot forwards
             robot.setDrivePower(-DRIVE_SPEED, -DRIVE_SPEED);
+        } else if (gamepad1.dpad_down) {
+            // Moves the robot backwards
+            robot.setDrivePower(DRIVE_SPEED, DRIVE_SPEED);
         } else if (gamepad1.dpad_left) {
+            // Moves the robots sideways left or turn left using left dpad
             if (sidewaysState) {
-                robot.setDrivePowerSideways(DRIVE_SPEED, -DRIVE_SPEED);
+                robot.setDrivePowerSideways(DRIVE_SIDEWAYS_SPEED, -DRIVE_SIDEWAYS_SPEED);
             } else {
-                robot.setDrivePower(DRIVE_SPEED, -DRIVE_SPEED);
+                robot.setDrivePowerTurn(-TURN_SPEED, -TURN_SPEED);
             }
         } else if (gamepad1.dpad_right) {
+            // Moves the robots sideways right or turn right using right dpad
             if (sidewaysState) {
-                robot.setDrivePowerSideways(-DRIVE_SPEED, DRIVE_SPEED);
+                robot.setDrivePowerSideways(-DRIVE_SIDEWAYS_SPEED, DRIVE_SIDEWAYS_SPEED);
             } else {
-                robot.setDrivePower(-DRIVE_SPEED, DRIVE_SPEED);
+                robot.setDrivePowerTurn(TURN_SPEED, TURN_SPEED);
             }
         } else {
+            // Controls the movement of the robot using joysticks on gamepad 1
             robot.setDrivePower(joystickLeftYOne, joystickRightYOne);
         }
     }
@@ -154,6 +181,7 @@ public class DriveOp extends OpMode {
         float rightTrigger = gamepad1.right_trigger;
         float totalTrigger = leftTrigger - rightTrigger;
 
+        // Increments or decrements the dumper's servo position
         if (totalTrigger < -0.1f) {
             dumperPosition = dumperPosition + DUMPER_SPEED;
         } else if (totalTrigger > 0.1f) {
@@ -203,7 +231,6 @@ public class DriveOp extends OpMode {
         } else {
             robot.getSweeper().setSweeperPower(0.0);
         }
-        //robot.getSweeper().setSweeperPower(gamepad2.right_stick_y);
     }
 
     /**

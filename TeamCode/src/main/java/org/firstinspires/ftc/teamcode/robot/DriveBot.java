@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -90,10 +91,25 @@ public class DriveBot implements Bot {
      * @param rightPower Right Power
      */
     public void setDrivePowerSideways(double leftPower, double rightPower) {
+        double leftDifference = .25;
+        double rightDifference = .5;
+        if (leftPower < 0) {
+            leftDifference *= -1;
+        }
+        if (rightPower < 0) {
+            rightDifference *= -1;
+        }
         motorDriveLeftFront.setPower(-leftPower);
-        motorDriveLeftRear.setPower(leftPower);
-        motorDriveRightFront.setPower(rightPower);
-        motorDriveRightRear.setPower(-rightPower);
+        motorDriveLeftRear.setPower(Range.clip(leftPower - leftDifference, -1.0, 1.0));
+        motorDriveRightFront.setPower(-rightPower);
+        motorDriveRightRear.setPower(Range.clip(rightPower - rightDifference, -1.0, 1.0));
+    }
+
+    public void setDrivePowerTurn(double leftPower, double rightPower) {
+        motorDriveLeftFront.setPower(leftPower);
+        motorDriveLeftRear.setPower(-leftPower);
+        motorDriveRightFront.setPower(-rightPower);
+        motorDriveRightRear.setPower(rightPower);
     }
 
     /**

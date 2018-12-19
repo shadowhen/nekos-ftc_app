@@ -32,6 +32,13 @@ public class TestDriveOp extends OpMode {
     }
 
     @Override
+    public void init_loop() {
+        // Tells the user that the robot is ready to start
+        telemetry.addData(">", "waiting for START...");
+        telemetry.update();
+    }
+
+    @Override
     public void loop() {
         motorDriveLeftFront.setPower(gamepad1.left_stick_y);
         motorDriveLeftRear.setPower(gamepad1.left_stick_y);

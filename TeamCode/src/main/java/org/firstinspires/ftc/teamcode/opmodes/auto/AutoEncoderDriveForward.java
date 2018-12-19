@@ -22,9 +22,10 @@ public class AutoEncoderDriveForward extends AutoOpMode {
         robot.setDriveZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         robot.setAutoDrive(AutoDrive.FORWARD);
 
-        telemetry.addData(">", "Press START to start encoder drive forward");
-        telemetry.update();
-        waitForStart();
+        while (opModeIsActive() && !isStarted()) {
+            telemetry.addData(">", "Press START to start encoder drive forward");
+            telemetry.update();
+        }
 
         // It turned left
         robot.moveByEncoder(0.4, 500, 500, 5);

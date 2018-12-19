@@ -26,9 +26,12 @@ public class CalibrateEncoderOp extends LinearOpMode {
         robot.setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        telemetry.addData(">", "Ready to start.");
-        telemetry.update();
-        waitForStart();
+        // Prevents the robot detaching from the REV Hub
+        while (opModeIsActive() && !isStarted()) {
+            telemetry.addData("Goal", "Push the gold mineral!");
+            telemetry.addData(">", "waiting for start command");
+            telemetry.update();
+        }
 
         while (opModeIsActive()) {
             // When the driver press this button, the robot controller resets the encoders on the

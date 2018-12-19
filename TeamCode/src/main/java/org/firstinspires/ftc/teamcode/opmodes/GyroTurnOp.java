@@ -30,10 +30,11 @@ public class GyroTurnOp extends AutoOpMode {
             telemetry.update();
         }
 
-        telemetry.addData("Status", "Ready to start");
-        telemetry.update();
-
-        waitForStart();
+        // Prevents the robot from detaching the REV hub
+        while (opModeIsActive() && !isStarted()) {
+            telemetry.addData(">", "waiting for start command");
+            telemetry.update();
+        }
 
         while (opModeIsActive()) {
             // When the player presses one of the buttons, the robot turns using its gyro sensor.

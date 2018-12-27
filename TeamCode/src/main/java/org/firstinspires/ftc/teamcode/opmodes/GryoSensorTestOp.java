@@ -22,7 +22,7 @@ public class GryoSensorTestOp extends AutoOpMode {
         telemetry.update();
 
         // Prevents the robot from detaching the REV hub
-        while (opModeIsActive() && !isStarted()) {
+        while (!isStarted()) {
             telemetry.addData(">", "waiting for start command");
             telemetry.update();
         }

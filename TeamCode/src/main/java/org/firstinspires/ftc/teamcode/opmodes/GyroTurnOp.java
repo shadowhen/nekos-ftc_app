@@ -31,7 +31,7 @@ public class GyroTurnOp extends AutoOpMode {
         }
 
         // Prevents the robot from detaching the REV hub
-        while (opModeIsActive() && !isStarted()) {
+        while (!isStarted()) {
             telemetry.addData(">", "waiting for start command");
             telemetry.update();
         }

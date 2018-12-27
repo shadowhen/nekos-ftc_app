@@ -40,7 +40,7 @@ public class AutoPushGoldMineral extends AutoOpMode {
         detector.init(hardwareMap, vuforia.getVuforia());
 
         // Prevents the robot detaching from the REV Hub
-        while (opModeIsActive() && !isStarted()) {
+        while (!isStarted()) {
             telemetry.addData("Goal", "Push the gold mineral!");
             telemetry.addData(">", "waiting for start command");
             telemetry.update();

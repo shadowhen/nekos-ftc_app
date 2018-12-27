@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  */
 public class VuforiaDetector {
 
+    public static final String WEBCAM_NAME = "Webcam 1";
     private VuforiaLocalizer vuforia;
 
     /**
@@ -21,15 +22,14 @@ public class VuforiaDetector {
      *
      * @param hwMap       Hardware Map
      * @param key         Vuforia Key
-     * @param useWebcam   Use webcam
      * @param webcamName  Webcam name
      */
-    public void init(HardwareMap hwMap, String key, boolean useWebcam, String webcamName) {
+    public void init(HardwareMap hwMap, String key, String webcamName) {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.vuforiaLicenseKey = key;
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         
-        if (useWebcam) {
+        if (!webcamName.isEmpty()) {
             parameters.cameraName = hwMap.get(WebcamName.class, webcamName);
         }
 
@@ -37,7 +37,7 @@ public class VuforiaDetector {
     }
 
     public void init(HardwareMap hwMap, String key) {
-        init(hwMap, key, false, null);
+        init(hwMap, key, "");
     }
 
     /**

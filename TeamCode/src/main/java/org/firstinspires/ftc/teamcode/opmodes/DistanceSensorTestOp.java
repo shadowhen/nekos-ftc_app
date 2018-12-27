@@ -22,7 +22,7 @@ public class DistanceSensorTestOp extends AutoOpMode {
         robot.setDriveMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Prevents the robot from detaching the REV hub
-        while (opModeIsActive() && !isStarted()) {
+        while (!isStarted()) {
             telemetry.addData(">", "waiting for start command");
             telemetry.update();
         }

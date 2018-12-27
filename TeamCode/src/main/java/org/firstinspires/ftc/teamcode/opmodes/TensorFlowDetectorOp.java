@@ -8,7 +8,6 @@ import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
 import org.firstinspires.ftc.teamcode.robot.VuforiaDetector;
 import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,14 +31,14 @@ public class TensorFlowDetectorOp extends LinearOpMode {
         vuforiaDetector = new VuforiaDetector();
         tfod = new TensorFlowDetector();
 
-        vuforiaDetector.init(hardwareMap, VuforiaKey.VUFORIA_KEY);
+        vuforiaDetector.init(hardwareMap, VuforiaKey.VUFORIA_KEY, VuforiaDetector.WEBCAM_NAME);
         tfod.init(hardwareMap, vuforiaDetector.getVuforia());
 
         telemetry.addData(">", "Press START to start tracking minerals");
         telemetry.update();
 
         // Prevents the robot from detaching the REV hub
-        while (opModeIsActive() && !isStarted()) {
+        while (!isStarted()) {
             telemetry.addData(">", "waiting for start command");
             telemetry.update();
         }

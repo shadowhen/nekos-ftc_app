@@ -35,8 +35,8 @@ public class AutoBeta extends AutoOpMode {
         robot.getLift().getLanderMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         // Lower the robot onto the floor from the lander
-        setLiftPower(0.5, 1000);
-        sleep(500);
+        //setLiftPower(0.5, 1000);
+        //sleep(500);
 
         // Moves to the left sideways
         robot.moveSidewaysByEncoder(0.1, -60, 5);
@@ -47,13 +47,13 @@ public class AutoBeta extends AutoOpMode {
         sleep(1000);
 
         // Deposits the team marker in the depot for autonomous points
-        setSweeperLiftPower(0.5, 500);
         setSweeperLiftPower(-0.5, 500);
+        setSweeperLiftPower(0.5, 1000);
 
         // Turns the robot and moves towards the pit for parking points
         robot.moveByEncoder(TURN_SPEED, -740, 740, 5);
         sleep(1000);
         robot.moveByEncoder(DRIVE_SPEED, 1500, 1500, 10);
-        setSweeperLiftPower(0.5, 500);
+        setSweeperLiftPower(-0.5, 500);
     }
 }

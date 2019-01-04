@@ -12,11 +12,12 @@ import com.qualcomm.robotcore.util.Range;
  */
 public class Lift {
 
-    private static final double WHEEL_DIAMETER_MM = 0.0;
+    private static final double GEAR_DIAMETER_MM = 3.0;
     private static final double COUNTS_PER_REV = 1440;
-    private static final double COUNTS_PER_MM = (COUNTS_PER_REV / (WHEEL_DIAMETER_MM * Math.PI));
+    private static final double COUNTS_PER_MM = (COUNTS_PER_REV / (GEAR_DIAMETER_MM * Math.PI));
 
     private DcMotor liftMotor;
+    private DcMotor landerMotor;
 
     /**
      * Initializes the hardware
@@ -24,14 +25,22 @@ public class Lift {
      */
     public void init(HardwareMap hwMap) {
         liftMotor = hwMap.get(DcMotor.class, "motor_lift");
+        landerMotor = hwMap.get(DcMotor.class, "motor_lander");
+
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        landerMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Uncomment the line below if the motor uses an encoder.
         //liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public static int convertDistanceToTarget(double distance) {
+        return (int)(distance * COUNTS_PER_MM);
+    }
+
     /**
-     * Set the lift power
+     * Set the power of the lift motor
      * @param power Power
      */
     public void setLiftPower(double power) {
@@ -39,10 +48,34 @@ public class Lift {
     }
 
     /**
-     * Returns the lift motor
-     * @return Lift Motor
+     * Set the power of the lander motor
+     * @param power Power
      */
+    public void setLanderPower(double power) {
+        landerMotor.setPower(power);
+    }
+
     public DcMotor getLiftMotor() {
         return liftMotor;
+    }
+
+    public DcMotor getLanderMotor() {
+        return landerMotor;
+    }
+
+    /**
+     * Returns the power of the lift motor
+     * @return Lift Motor Power
+     */
+    public double getLiftPower() {
+        return liftMotor.getPower();
+    }
+
+    /**
+     * Returns the power of the lander motor
+     * @return Lander Motor Power
+     */
+    public double getLanderPower() {
+        return landerMotor.getPower();
     }
 }

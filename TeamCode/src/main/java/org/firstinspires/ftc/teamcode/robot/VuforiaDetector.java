@@ -27,12 +27,15 @@ public class VuforiaDetector {
     public void init(HardwareMap hwMap, String key, String webcamName) {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.vuforiaLicenseKey = key;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        
-        if (!webcamName.isEmpty()) {
-            parameters.cameraName = hwMap.get(WebcamName.class, webcamName);
-        }
 
+        if (!webcamName.isEmpty()) {
+            WebcamName webcam = hwMap.get(WebcamName.class, webcamName);
+            if (webcam.isAttached()) {
+                parameters.cameraName = webcam;
+            }
+        } else {
+            parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+        }
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
     }
 

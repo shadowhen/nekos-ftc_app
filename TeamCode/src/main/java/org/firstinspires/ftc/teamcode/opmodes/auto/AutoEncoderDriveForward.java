@@ -20,20 +20,22 @@ public class AutoEncoderDriveForward extends AutoOpMode {
         super.runOpMode();
 
         robot.setDriveZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        robot.setAutoDrive(AutoDrive.FORWARD);
 
         while (!isStarted()) {
             telemetry.addData(">", "Press START to start encoder drive forward");
             telemetry.update();
         }
 
-        // It turned left
-        //robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
+        // Moves to the left sideways
+        robot.moveSidewaysByEncoder(0.1, -60, 5);
 
-        // It went straight
-        //robot.moveByEncoder(TURN_SPEED, -200, 200, 5);
+        waitForSeconds(1);
 
-        robot.setAutoDrive(AutoDrive.SIDEWAYS_LEFT);
-        robot.moveByEncoder(SIDEWAYS_SPEED, 500, 500, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 1010, 1010, 5);
+        waitForSeconds(1);
+        //setSweeperLiftPower(0.5, 500);
+        robot.moveByEncoder(TURN_SPEED, -740, 740, 5);
+        waitForSeconds(1);
+        robot.moveByEncoder(DRIVE_SPEED, 1500, 1500, 10);
     }
 }

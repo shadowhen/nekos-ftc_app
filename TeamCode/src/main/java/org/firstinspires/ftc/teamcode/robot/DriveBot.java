@@ -27,7 +27,6 @@ public class DriveBot implements Bot {
 
     protected Lift lift;
     protected Sweeper sweeper;
-    protected Pusher pusher;
     protected Dumper dumper;
 
     /**
@@ -41,7 +40,6 @@ public class DriveBot implements Bot {
 
         lift = new Lift();
         sweeper = new Sweeper();
-        pusher = new Pusher();
         dumper = new Dumper();
 
         // Get hardware references from the robot controller's configuration for hardware devices
@@ -54,9 +52,13 @@ public class DriveBot implements Bot {
         motorDriveRightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         motorDriveRightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        motorDriveLeftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorDriveLeftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorDriveRightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorDriveRightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         lift.init(hwMap);
         sweeper.init(hwMap);
-        pusher.init(hwMap);
         dumper.init(hwMap);
 
         dumper.setPosition(SERVO_CLOSE_POSITION);
@@ -91,13 +93,6 @@ public class DriveBot implements Bot {
      * @param rightPower Right Power
      */
     public void setDrivePowerSideways(double leftPower, double rightPower) {
-        motorDriveLeftFront.setPower(-leftPower);
-        motorDriveLeftRear.setPower(leftPower);
-        motorDriveRightFront.setPower(-rightPower);
-        motorDriveRightRear.setPower(rightPower);
-    }
-
-    public void setDrivePowerTurn(double leftPower, double rightPower) {
         motorDriveLeftFront.setPower(leftPower);
         motorDriveLeftRear.setPower(-leftPower);
         motorDriveRightFront.setPower(-rightPower);
@@ -105,7 +100,19 @@ public class DriveBot implements Bot {
     }
 
     /**
-     * SEt the drive motors' zero power behavior
+     * Set the drive power to turn the robot
+     * @param leftPower  Left Power
+     * @param rightPower Right Power
+     */
+    public void setDrivePowerTurn(double leftPower, double rightPower) {
+        motorDriveLeftFront.setPower(-leftPower);
+        motorDriveLeftRear.setPower(-leftPower);
+        motorDriveRightFront.setPower(rightPower);
+        motorDriveRightRear.setPower(rightPower);
+    }
+
+    /**
+     * Set the drive motors' zero power behavior
      * @param behavior Zero Power Behavior
      */
     public void setDriveZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
@@ -113,6 +120,15 @@ public class DriveBot implements Bot {
         motorDriveLeftRear.setZeroPowerBehavior(behavior);
         motorDriveRightFront.setZeroPowerBehavior(behavior);
         motorDriveRightRear.setZeroPowerBehavior(behavior);
+    }
+
+    /**
+     * Set the power of the lift
+     * @param power Lift Power
+     */
+    public void setLiftPower(double power) {
+        lift.setLiftPower(power);
+        lift.setLanderPower(power);
     }
 
     /**
@@ -138,14 +154,6 @@ public class DriveBot implements Bot {
      */
     public Sweeper getSweeper() {
         return sweeper;
-    }
-
-    /**
-     * Returns the pusher
-     * @return Pusher
-     */
-    public Pusher getPusher() {
-        return pusher;
     }
 
     /**

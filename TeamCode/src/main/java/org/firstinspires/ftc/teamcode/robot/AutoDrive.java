@@ -5,5 +5,5 @@ package org.firstinspires.ftc.teamcode.robot;
  * @version 1.0
  */
 public enum AutoDrive {
-    FORWARD, BACKWARD, SIDEWAYS_LEFT, SIDEWAYS_RIGHT
+    FORWARD, BACKWARD, SIDEWAYS
 }

@@ -31,7 +31,7 @@ public class TensorFlowDetectorOp extends LinearOpMode {
         vuforiaDetector = new VuforiaDetector();
         tfod = new TensorFlowDetector();
 
-        vuforiaDetector.init(hardwareMap, VuforiaKey.VUFORIA_KEY, VuforiaDetector.WEBCAM_NAME);
+        vuforiaDetector.init(hardwareMap, VuforiaKey.VUFORIA_KEY);
         tfod.init(hardwareMap, vuforiaDetector.getVuforia());
 
         telemetry.addData(">", "Press START to start tracking minerals");

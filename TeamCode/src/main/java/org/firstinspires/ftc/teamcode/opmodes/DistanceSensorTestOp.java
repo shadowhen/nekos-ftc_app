@@ -8,7 +8,6 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AutoOpMode;
 
 /**
  * This class extends the AutoOpMode to implement a test program for the distance sensor.
- *
  * @author Henry
  * @version 1.0
  */
@@ -18,8 +17,6 @@ public class DistanceSensorTestOp extends AutoOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
-
-        robot.setDriveMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Prevents the robot from detaching the REV hub
         while (!isStarted()) {

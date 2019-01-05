@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * This class implements the mineral sweeper which sweeps up the minerals from the ground into
@@ -24,6 +23,14 @@ public class Sweeper {
         sweeperServo = hwMap.get(CRServo.class, "servo_sweeper");
 
         liftMotor = hwMap.get(DcMotor.class, "motor_sweeper_lift");
+    }
+
+    public DcMotor getLiftMotor() {
+        return liftMotor;
+    }
+
+    public CRServo getSweeperServo() {
+        return sweeperServo;
     }
 
     /**

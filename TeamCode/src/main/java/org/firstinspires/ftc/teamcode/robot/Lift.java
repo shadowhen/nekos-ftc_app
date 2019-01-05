@@ -2,8 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * This class implements the robotic function known as the lift.
@@ -27,12 +26,17 @@ public class Lift {
         liftMotor = hwMap.get(DcMotor.class, "motor_lift");
         landerMotor = hwMap.get(DcMotor.class, "motor_lander");
 
-        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        landerMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //landerMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Uncomment the line below if the motor uses an encoder.
-        //liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        landerMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        landerMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //landerMotor.setTargetPosition(0);
+        //landerMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        landerMotor.setPower(Math.abs(0));
     }
 
     public static int convertDistanceToTarget(double distance) {

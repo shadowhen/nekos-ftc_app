@@ -28,8 +28,7 @@ public class DriveOp extends OpMode {
     private static final double TURN_SPEED = 0.8;
     private static final double LIFT_POWER = 0.5;
     private static final double SWEEPER_POWER = 0.5;
-    private static final double SWEEPER_LIFT_POWER = 0.45
-            ;
+    private static final double SWEEPER_LIFT_POWER = 0.45;
 
     private static final double DUMPER_SPEED = 0.002;
 
@@ -48,6 +47,8 @@ public class DriveOp extends OpMode {
         // Drive motors will use encoders for setting the speed value
         robot.setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        robot.getLift().setLiftPower(0.0);
+
         // Gets the current position of the server dumper, so the dumper position can match with
         // the servo dumper's position and adjust it when the driver adjusts the position from
         // the gamepads.
@@ -58,8 +59,15 @@ public class DriveOp extends OpMode {
     public void init_loop() {
         // Tells the user that the robot is ready to start
         telemetry.addData(">", "waiting for START...");
+        telemetry.addData("sweeper lift power", robot.getLift().getLiftMotor().getPower());
         telemetry.addData("position", robot.getDumper().getServoDumper().getPosition());
         telemetry.update();
+    }
+
+    @Override
+    public void start() {
+        robot.getSweeper().getLiftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        robot.getLift().getLanderMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     @Override

@@ -4,6 +4,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoOpMode;
 
+/**
+ * This class serves the purpose of stalling the robot on the lander
+ * @author Henry
+ * @version 1.0
+ */
 @TeleOp(name = "Stall Test", group = "test")
 public class StallTest extends AutoOpMode {
 

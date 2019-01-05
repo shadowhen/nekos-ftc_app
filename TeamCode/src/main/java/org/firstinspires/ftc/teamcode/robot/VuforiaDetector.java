@@ -14,12 +14,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  */
 public class VuforiaDetector {
 
+    // Name for webcam on the hardware configuration file
     public static final String WEBCAM_NAME = "Webcam 1";
+
     private VuforiaLocalizer vuforia;
 
     /**
      * Initializes the vuforia
-     *
      * @param hwMap       Hardware Map
      * @param key         Vuforia Key
      * @param webcamName  Webcam name
@@ -39,6 +40,11 @@ public class VuforiaDetector {
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
     }
 
+    /**
+     * Initializes the vuforia
+     * @param hwMap Hardware Map
+     * @param key   Vuforia
+     */
     public void init(HardwareMap hwMap, String key) {
         init(hwMap, key, "");
     }

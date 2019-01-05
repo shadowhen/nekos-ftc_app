@@ -4,12 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
- * The autonomous program known as Beta is designed in a way that the robot ignores the mineral
- * and deposits the team marker in the depot. After depositing the team marker, the robot makes
- * its way to the pit for parking bonus. The pit itself is always on the opposite alliance side;
- * therefore, the robot goes the farthest right of the pit. For now, the program is competition
- * ready and has a high chance of success if everything goes smoothly.
- *
+ * The class provides an autonomous sweeper lift test for depositing the team marker in the depot.
  * @author Henry
  * @version 1.0
  */

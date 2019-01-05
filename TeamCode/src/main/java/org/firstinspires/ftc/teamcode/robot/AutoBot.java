@@ -24,6 +24,7 @@ public class AutoBot extends DriveBot {
     private static final double COUNTS_PER_MM = (COUNTS_PER_REV) / (WHEEL_DIAMETER_MM * Math.PI);
 
     private ElapsedTime timer;
+    private ElapsedTime stalledTimer;
     private SensorBot sensors;
 
     private LinearOpMode linearOpMode;
@@ -42,6 +43,7 @@ public class AutoBot extends DriveBot {
 
         sensors = new SensorBot();
         timer = new ElapsedTime();
+        stalledTimer = new ElapsedTime();
 
         // Reset the encoders and allow the drive motors to run with encoders
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -140,6 +142,41 @@ public class AutoBot extends DriveBot {
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public void setStallPower(double power, double timeoutS, double stallTimeS) {
+        // Get the position for the stall
+        int stalledPosition = lift.getLanderMotor().getCurrentPosition();
+        int currentPosition;
+        double motorPower;
+        double prevTime = stalledTimer.seconds();
+
+        // Set the target position since the motor works on finding the stall
+        lift.getLanderMotor().setTargetPosition(stalledPosition);
+        lift.getLanderMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        timer.reset();
+        while ((timer.seconds() < timeoutS) && (timer.seconds() - prevTime < stallTimeS) && (linearOpMode.opModeIsActive())) {
+            currentPosition = lift.getLanderMotor().getCurrentPosition();
+            if (currentPosition == stalledPosition) {
+                motorPower = 0.0;
+            } else {
+                motorPower = power;
+                prevTime = timer.seconds();
+            }
+
+            lift.setLanderPower(Math.abs(motorPower));
+
+            telemetry.addData("motor power", lift.getLanderPower());
+            telemetry.addData("stall target", stalledPosition);
+            telemetry.addData("position", currentPosition);
+            telemetry.addData("time", "%.2f", timer.seconds() - timeoutS);
+            telemetry.addData("stall time", "%.2f", Math.abs((timer.seconds() - prevTime)));
+            telemetry.update();
+        }
+
+        lift.getLanderMotor().setPower(0.0);
+        lift.getLanderMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
     /**
      * Very similar to moveByEncoder method. This method utilizes the gyro sensor to keep the robot
      * from veering off. For an example, the robot is set to 0.0 degrees, and while the robot
@@ -193,15 +230,15 @@ public class AutoBot extends DriveBot {
 
     public void moveLift(double speed, double distance, double timeoutS) {
         int newTarget = Lift.convertDistanceToTarget(distance);
-        lift.getLiftMotor().setTargetPosition(lift.getLiftMotor().getCurrentPosition() + newTarget);
-        lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift.getLanderMotor().setTargetPosition(lift.getLanderMotor().getCurrentPosition() + newTarget);
+        lift.getLanderMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         timer.reset();
         while (linearOpMode.opModeIsActive() && timer.seconds() < timeoutS) {
-            lift.setLiftPower(Math.abs(speed));
+            lift.setLanderPower(Math.abs(speed));
 
-            telemetry.addData("current", lift.getLiftMotor().getCurrentPosition());
-            telemetry.addData("target", lift.getLiftMotor().getTargetPosition());
+            telemetry.addData("current", lift.getLanderMotor().getCurrentPosition());
+            telemetry.addData("target", lift.getLanderMotor().getTargetPosition());
             telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
             telemetry.update();
         }

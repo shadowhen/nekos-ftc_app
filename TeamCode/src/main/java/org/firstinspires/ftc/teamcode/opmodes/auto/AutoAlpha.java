@@ -77,7 +77,6 @@ public class AutoAlpha extends AutoOpMode {
                 break;
             default:
                 // If the robot cannot find a gold mineral or finds the gold mineral at the center
-
                 robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
                 sleep(SLEEP_DRIVE);
                 dropTeamMarker(400, 2000, 400);

@@ -8,6 +8,13 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
+/**
+ * This class serves the purpose to test the external camera rather the camera on the Android
+ * phone.
+ *
+ * @author Henry
+ * @version 1.0
+ */
 @TeleOp(name = "External Camera Test", group = "test")
 public class ExternalCameraTestOp extends LinearOpMode {
 

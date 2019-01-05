@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 /**
+ * This enumerator provides the autonomous functions
  * @author Henry
  * @version 1.0
  */

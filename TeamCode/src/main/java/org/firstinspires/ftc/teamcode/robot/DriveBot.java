@@ -25,6 +25,7 @@ public class DriveBot implements Bot {
     protected DcMotor motorDriveRightFront;
     protected DcMotor motorDriveRightRear;
 
+    // External functions
     protected Lift lift;
     protected Sweeper sweeper;
     protected Dumper dumper;
@@ -57,6 +58,7 @@ public class DriveBot implements Bot {
         motorDriveRightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorDriveRightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        // Initializes other hardware on the robot
         lift.init(hwMap);
         sweeper.init(hwMap);
         dumper.init(hwMap);

@@ -33,7 +33,7 @@ public class AutoEncoderDriveForward extends AutoOpMode {
 
         robot.moveByEncoder(DRIVE_SPEED, 1010, 1010, 5);
         waitForSeconds(1);
-        //setSweeperLiftPower(0.5, 500);
+        setSweeperLiftPower(-0.5, 500);
         robot.moveByEncoder(TURN_SPEED, -740, 740, 5);
         waitForSeconds(1);
         robot.moveByEncoder(DRIVE_SPEED, 1500, 1500, 10);

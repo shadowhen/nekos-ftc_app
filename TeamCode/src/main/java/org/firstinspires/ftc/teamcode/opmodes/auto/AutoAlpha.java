@@ -2,6 +2,11 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.robot.AutoDrive;
+import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
+import org.firstinspires.ftc.teamcode.robot.VuforiaDetector;
+import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
+
 /**
  * This class expands the AutoOpMode.class to tell the robot to knock off the gold mineral, drop
  * its team marker, and park in one of the spots which gives the team points.
@@ -16,54 +21,85 @@ public class AutoAlpha extends AutoOpMode {
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
 
-        waitForStart();
+        vuforia = new VuforiaDetector();
+        detector = new TensorFlowDetector();
 
-        // INSTRUCTIONS FOR THIS PROGRAM
-        // 1.) Lowers down the robot
-        // 2.) Turn left?
-        // 3.) Go straight?
-        // 4.) Turn right?
-        // 5.) Go straight?
-        // 6.) Turn right
-        // 7.) Scans the gold mineral and drive until gold mineral appears
-        // 8.) Finish the driveby
-        // 9.) Turn left by 45 degrees
-        // 10.) Go straight?
-        // 11.) Turn left
-        // 12.) Drop the game market
-        // 13.) Park
+        vuforia.init(hardwareMap, VuforiaKey.VUFORIA_KEY, "Webcam 1");
+        detector.init(hardwareMap, vuforia.getVuforia());
 
-        // Lowers the robot using the lift. WIll add later
-        // TODO: Add a function that the robot lowers itself onto the gtound
-
-        robot.turnByGyro(0.4, -90, 2, 5);
-        sleep(500);
-        robot.moveByEncoder(0.4, 100, 100, 5);
-        sleep(500);
-        robot.turnByGyro(0.4, 90, 2, 5);
-        sleep(500);
-        robot.moveByEncoder(0.4, 100, 100, 5);
-        sleep(500);
-        while (robot.onHeading(0.4, robot.getSensors().getGyro().getIntegratedZValue() + 90, 0.15)) {
-            telemetry.addData("Do something", "Going to turn and scan gold minerals");
+        // Prevents the robot from detaching the REV hub
+        while (!isStarted()) {
+            telemetry.addData(">", "waiting for start command");
             telemetry.update();
         }
 
-        // TODO: Implement a function that the robot would drive to its destination.
-        // The robot drives to its destination, but the robot also scans for the gold mineral at
-        // the same time. If the robot sees a gold mineral, the robot stops and thens the pushes
-        // the mineral away to earn some points.
+        if (detector.getDetector() != null) {
+            detector.getDetector().activate();
+        }
 
-        sleep(500);
-        robot.turnByGyro(0.4, -45, 2, 5);
-        sleep(500);
-        robot.moveByEncoder(0.4, 100, 100, 5);
-        sleep(500);
-        robot.turnByGyro(0.4, -90, 2, 5);
-        sleep(500);
-        robot.moveByEncoder(0.4, 500, 500, 5);
-        sleep(500);
+        robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
 
-        // Drop the team marker and be happy. Send help.
+        sleep(SLEEP_DRIVE);
+
+        switch (findGoldMineralFromPosition(5)) {
+            case LEFT:
+                robot.setAutoDrive(AutoDrive.SIDEWAYS);
+                robot.moveByEncoder(SIDEWAYS_SPEED, 400, 400, 5);
+
+                sleep(SLEEP_DRIVE);
+                robot.setAutoDrive(AutoDrive.FORWARD);
+                robot.moveByEncoder(DRIVE_SPEED, 400, 400, 5);
+
+                sleep(SLEEP_DRIVE);
+                robot.setAutoDrive(AutoDrive.SIDEWAYS);
+                robot.moveByEncoder(SIDEWAYS_SPEED, 400, 400, 5);
+
+                sleep(SLEEP_DRIVE);
+                dropTeamMarker(400, 2000, 400);
+                break;
+            case RIGHT:
+                robot.setAutoDrive(AutoDrive.SIDEWAYS);
+                robot.moveByEncoder(SIDEWAYS_SPEED, 400, 400, 5);
+
+                sleep(SLEEP_DRIVE);
+                robot.setAutoDrive(AutoDrive.FORWARD);
+                robot.moveByEncoder(DRIVE_SPEED, 400, 400, 5);
+
+                sleep(SLEEP_DRIVE);
+                robot.setAutoDrive(AutoDrive.SIDEWAYS);
+                robot.moveByEncoder(SIDEWAYS_SPEED, 400, 400, 5);
+
+                sleep(SLEEP_DRIVE);
+                dropTeamMarker(400, 2000, 400);
+
+                sleep(SLEEP_DRIVE);
+                robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
+                break;
+            default:
+                // If the robot cannot find a gold mineral or finds the gold mineral at the center
+                robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
+                sleep(SLEEP_DRIVE);
+                dropTeamMarker(400, 2000, 400);
+                sleep(SLEEP_DRIVE);
+                robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
+        }
+
+        if (detector.getDetector() != null) {
+            detector.getDetector().shutdown();
+        }
+    }
+
+    private void dropTeamMarker(double distance, long ms, double turnDistance) {
+        robot.setAutoDrive(AutoDrive.FORWARD);
+
+        robot.moveByEncoder(DRIVE_SPEED, distance, distance,5);
+
+        sleep(SLEEP_DRIVE);
+
+        robot.getSweeper().setLiftPower(0.8);
+        sleep(ms);
+        robot.getSweeper().setLiftPower(0);
+
+        robot.moveByEncoder(TURN_SPEED, -turnDistance, turnDistance, 5);
     }
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -11,18 +12,24 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 public class Sweeper {
 
-    private DcMotor sweeperMotor;
     private DcMotor liftMotor;
-    private DcMotor sliderMotor;
+    private CRServo sweeperServo;
 
     /**
      * Initializes the hardware
      * @param hwMap Hardware Map
      */
     public void init(HardwareMap hwMap) {
-        sweeperMotor = hwMap.get(DcMotor.class, "motor_sweeper");
-        sliderMotor = hwMap.get(DcMotor.class, "motor_sweeper_slider");
+        sweeperServo = hwMap.get(CRServo.class, "servo_sweeper");
         liftMotor = hwMap.get(DcMotor.class, "motor_sweeper_lift");
+    }
+
+    public DcMotor getLiftMotor() {
+        return liftMotor;
+    }
+
+    public CRServo getSweeperServo() {
+        return sweeperServo;
     }
 
     /**
@@ -30,15 +37,7 @@ public class Sweeper {
      * @param power Power
      */
     public void setSweeperPower(double power) {
-        sweeperMotor.setPower(power);
-    }
-
-    /**
-     * Set the slider power
-     * @param power Power
-     */
-    public void setSliderPower(double power) {
-        sliderMotor.setPower(power);
+        sweeperServo.setPower(power);
     }
 
     /**
@@ -49,27 +48,11 @@ public class Sweeper {
         liftMotor.setPower(power);
     }
 
-    /**
-     * Returns the sweeper motor
-     * @return Sweeper Motor
-     */
-    public DcMotor getSweeperMotor() {
-        return sweeperMotor;
+    public double getSweeperPower() {
+        return sweeperServo.getPower();
     }
 
-    /**
-     * Returns the lift motor
-     * @return Lift Motor
-     */
-    public DcMotor getLiftMotor() {
-        return liftMotor;
-    }
-
-    /**
-     * Returns the slider motor
-     * @return Slider Motor
-     */
-    public DcMotor getSliderMotor() {
-        return sliderMotor;
+    public double getLiftPower() {
+        return liftMotor.getPower();
     }
 }

@@ -14,30 +14,39 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  */
 public class VuforiaDetector {
 
+    // Name for webcam on the hardware configuration file
+    public static final String WEBCAM_NAME = "Webcam 1";
+
     private VuforiaLocalizer vuforia;
 
     /**
      * Initializes the vuforia
-     *
      * @param hwMap       Hardware Map
      * @param key         Vuforia Key
-     * @param useWebcam   Use webcam
      * @param webcamName  Webcam name
      */
-    public void init(HardwareMap hwMap, String key, boolean useWebcam, String webcamName) {
+    public void init(HardwareMap hwMap, String key, String webcamName) {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.vuforiaLicenseKey = key;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        
-        if (useWebcam) {
-            parameters.cameraName = hwMap.get(WebcamName.class, webcamName);
-        }
 
+        if (!webcamName.isEmpty()) {
+            WebcamName webcam = hwMap.get(WebcamName.class, webcamName);
+            if (webcam.isAttached()) {
+                parameters.cameraName = webcam;
+            }
+        } else {
+            parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+        }
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
     }
 
+    /**
+     * Initializes the vuforia
+     * @param hwMap Hardware Map
+     * @param key   Vuforia
+     */
     public void init(HardwareMap hwMap, String key) {
-        init(hwMap, key, false, null);
+        init(hwMap, key, "");
     }
 
     /**

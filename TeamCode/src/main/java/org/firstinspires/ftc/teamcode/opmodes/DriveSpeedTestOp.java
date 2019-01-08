@@ -43,6 +43,14 @@ public class DriveSpeedTestOp extends OpMode {
     }
 
     @Override
+    public void init_loop() {
+        // Tells the user that the robot is ready to start
+        telemetry.addData(">", "waiting for START...");
+        telemetry.addData("position", robot.getDumper().getServoDumper().getPosition());
+        telemetry.update();
+    }
+
+    @Override
     public void loop() {
         // Get joystick y values from gamepad one
         float joystickLeftYOne = gamepad1.left_stick_y;

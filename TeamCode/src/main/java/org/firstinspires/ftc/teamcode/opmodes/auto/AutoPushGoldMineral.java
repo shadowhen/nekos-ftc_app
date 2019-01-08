@@ -30,6 +30,8 @@ public class AutoPushGoldMineral extends AutoOpMode {
     private List<Recognition> recognitions;
     private float leftMostGold = 0.0f;
 
+    private MineralPosition mineralPosition;
+
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
@@ -39,30 +41,35 @@ public class AutoPushGoldMineral extends AutoOpMode {
         vuforia.init(hardwareMap, VuforiaKey.VUFORIA_KEY);
         detector.init(hardwareMap, vuforia.getVuforia());
 
-        telemetry.addData("Goal", "Push the gold mineral!");
-        telemetry.addData(">", "Press START to push the gold mineral.");
-        telemetry.update();
-
-        waitForStart();
+        // Prevents the robot detaching from the REV Hub
+        while (!isStarted()) {
+            telemetry.addData("Goal", "Push the gold mineral!");
+            telemetry.addData(">", "waiting for start command");
+            telemetry.update();
+        }
 
         // Activates the detector
         if (detector.getDetector() != null) {
             detector.getDetector().activate();
         }
 
-        while (!foundGold && opModeIsActive()) {
-            recognitions = detector.getDetector().getRecognitions();
+        // Moves to the left sideways
+        robot.moveSidewaysByEncoder(0.1, -60, 5);
+        sleep(1000);
 
-            // Set the robot's drive power to a very slow speed
-            robot.setDrivePower(.1, .1);
-
-            if (recognitions != null) {
-                for (Recognition recognition : recognitions) {
-                    if (recognition.equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
-                        break;
-                    }
-                }
-            }
+        // The robot finds the gold mineral's position using its external camera
+        mineralPosition = findGoldMineralFromPosition(5);
+        switch (mineralPosition) {
+            case LEFT:
+                robot.moveSidewaysByEncoder(0.1, -50, 5);
+                robot.moveByEncoder(DRIVE_SPEED, 1010, 1010, 5);
+                break;
+            case RIGHT:
+                robot.moveSidewaysByEncoder(0.1, 50, 5);
+                robot.moveByEncoder(DRIVE_SPEED, 1010, 1010, 5);
+                break;
+            default:
+                robot.moveByEncoder(DRIVE_SPEED, 1010, 1010, 5);
         }
 
         // Deactivates the detector

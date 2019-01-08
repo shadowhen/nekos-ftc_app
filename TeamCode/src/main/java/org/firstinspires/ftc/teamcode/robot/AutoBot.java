@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.opmodes.DriveOp;
 
 /**
  * This class extends the DriveBot.class to implement autonomous features into the robot, so
@@ -23,6 +24,7 @@ public class AutoBot extends DriveBot {
     private static final double COUNTS_PER_MM = (COUNTS_PER_REV) / (WHEEL_DIAMETER_MM * Math.PI);
 
     private ElapsedTime timer;
+    private ElapsedTime stalledTimer;
     private SensorBot sensors;
 
     private LinearOpMode linearOpMode;
@@ -41,6 +43,7 @@ public class AutoBot extends DriveBot {
 
         sensors = new SensorBot();
         timer = new ElapsedTime();
+        stalledTimer = new ElapsedTime();
 
         // Reset the encoders and allow the drive motors to run with encoders
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -60,15 +63,7 @@ public class AutoBot extends DriveBot {
         return (int)(distance * COUNTS_PER_MM);
     }
 
-    /**
-     * The robot travels at a specified distance using its drive motors' encoders, and
-     *
-     * @param speed     Drive speed
-     * @param leftDist  Left Distance
-     * @param rightDist Right Distance
-     * @param timeoutS  Timeout in seconds
-     */
-    public void moveByEncoder(double speed, double leftDist, double rightDist, double timeoutS) {
+    public void setDriveTargetPosition(double leftDist, double rightDist) {
         // Convert the distance values into target values
         int newLeftTarget = convertDistanceToPosition(leftDist);
         int newRightTarget = convertDistanceToPosition(rightDist);
@@ -78,6 +73,19 @@ public class AutoBot extends DriveBot {
         motorDriveLeftRear.setTargetPosition(motorDriveLeftRear.getCurrentPosition() + newLeftTarget);
         motorDriveRightFront.setTargetPosition(motorDriveRightFront.getCurrentPosition() + newRightTarget);
         motorDriveRightRear.setTargetPosition(motorDriveRightRear.getCurrentPosition() + newRightTarget);
+    }
+
+    /**
+     * The robot travels at a specified distance using its drive motors' encoders.
+     *
+     * @param speed     Drive speed
+     * @param leftDist  Left Distance
+     * @param rightDist Right Distance
+     * @param timeoutS  Timeout in seconds
+     */
+    public void moveByEncoder(double speed, double leftDist, double rightDist, double timeoutS) {
+        setAutoDrive(AutoDrive.FORWARD);
+        setDriveTargetPosition(leftDist, rightDist);
 
         // Turns on RUN_TO_TARGET mode on the drive motors
         setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -89,8 +97,9 @@ public class AutoBot extends DriveBot {
         while (isDriveMotorsBusy() && (timer.seconds() < timeoutS) && linearOpMode.opModeIsActive()) {
             setDrivePower(Math.abs(speed), Math.abs(speed));
 
+            telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
             telemetry.addData("current pos", "%d %d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
-            telemetry.addData("target pos", "%d %d", newLeftTarget, newRightTarget);
+            telemetry.addData("target pos", "%d %d", motorDriveLeftFront.getTargetPosition(), motorDriveRightFront.getCurrentPosition());
             telemetry.update();
         }
 
@@ -102,7 +111,74 @@ public class AutoBot extends DriveBot {
     }
 
     /**
-     * Very similar to moveByEncoder method. This method utilzes the gyro sensor to keep the robot
+     * Moves the robot sideways using encoders
+     * @param percent  Percent of sideways speed
+     * @param distance Distance in millimeters
+     * @param timeoutS Timeout in seconds
+     */
+    public void moveSidewaysByEncoder(double percent, double distance, double timeoutS) {
+        percent = Range.clip(percent, 0, 1);
+        setAutoDrive(AutoDrive.SIDEWAYS);
+        setDriveTargetPosition(distance, distance);
+        setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        timer.reset();
+        while (isDriveMotorsBusy() && (timer.seconds() < timeoutS) && linearOpMode.opModeIsActive()) {
+            motorDriveLeftFront.setPower(Math.abs(DriveOp.SIDEWAYS_LF_SPEED * percent));
+            motorDriveLeftRear.setPower(Math.abs(DriveOp.SIDEWAYS_LR_SPEED * percent));
+            motorDriveRightFront.setPower(Math.abs(DriveOp.SIDEWAYS_RF_SPEED * percent));
+            motorDriveRightRear.setPower(Math.abs(DriveOp.SIDEWAYS_RR_SPEED * percent));
+
+            telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
+            telemetry.addData("current pos", "%d %d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
+            telemetry.addData("target pos", "%d %d", motorDriveLeftFront.getTargetPosition(), motorDriveRightFront.getCurrentPosition());
+            telemetry.update();
+        }
+
+        // Stop the drive motors
+        setDrivePower(0, 0);
+
+        // Turns off RUN_TO_TARGET mode
+        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void setStallPower(double power, double timeoutS, double stallTimeS) {
+        // Get the position for the stall
+        int stalledPosition = lift.getLanderMotor().getCurrentPosition();
+        int currentPosition;
+        double motorPower;
+        double prevTime = stalledTimer.seconds();
+
+        // Set the target position since the motor works on finding the stall
+        lift.getLanderMotor().setTargetPosition(stalledPosition);
+        lift.getLanderMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        timer.reset();
+        while ((timer.seconds() < timeoutS) && (timer.seconds() - prevTime < stallTimeS) && (linearOpMode.opModeIsActive())) {
+            currentPosition = lift.getLanderMotor().getCurrentPosition();
+            if (currentPosition == stalledPosition) {
+                motorPower = 0.0;
+            } else {
+                motorPower = power;
+                prevTime = timer.seconds();
+            }
+
+            lift.setLanderPower(Math.abs(motorPower));
+
+            telemetry.addData("motor power", lift.getLanderPower());
+            telemetry.addData("stall target", stalledPosition);
+            telemetry.addData("position", currentPosition);
+            telemetry.addData("time", "%.2f", timer.seconds() - timeoutS);
+            telemetry.addData("stall time", "%.2f", Math.abs((timer.seconds() - prevTime)));
+            telemetry.update();
+        }
+
+        lift.getLanderMotor().setPower(0.0);
+        lift.getLanderMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    /**
+     * Very similar to moveByEncoder method. This method utilizes the gyro sensor to keep the robot
      * from veering off. For an example, the robot is set to 0.0 degrees, and while the robot
      * travels to its destination by distance, the robot adjusts its current heading to match
      * specified angle using proportional coefficient to determine the left and right motors'
@@ -150,6 +226,25 @@ public class AutoBot extends DriveBot {
 
         setDrivePower(0,0);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void moveLift(double speed, double distance, double timeoutS) {
+        int newTarget = Lift.convertDistanceToTarget(distance);
+        lift.getLanderMotor().setTargetPosition(lift.getLanderMotor().getCurrentPosition() + newTarget);
+        lift.getLanderMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        timer.reset();
+        while (linearOpMode.opModeIsActive() && timer.seconds() < timeoutS) {
+            lift.setLanderPower(Math.abs(speed));
+
+            telemetry.addData("current", lift.getLanderMotor().getCurrentPosition());
+            telemetry.addData("target", lift.getLanderMotor().getTargetPosition());
+            telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
+            telemetry.update();
+        }
+
+        lift.setLiftPower(0.0);
+        lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
@@ -246,28 +341,22 @@ public class AutoBot extends DriveBot {
     public void setAutoDrive(AutoDrive autoDrive) {
         switch (autoDrive) {
             case FORWARD:
-                motorDriveLeftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-                motorDriveLeftRear.setDirection(DcMotorSimple.Direction.FORWARD);
+                motorDriveLeftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+                motorDriveLeftRear.setDirection(DcMotorSimple.Direction.REVERSE);
                 motorDriveRightFront.setDirection(DcMotorSimple.Direction.FORWARD);
                 motorDriveRightRear.setDirection(DcMotorSimple.Direction.FORWARD);
                 break;
             case BACKWARD:
-                motorDriveLeftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-                motorDriveLeftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+                motorDriveLeftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+                motorDriveLeftRear.setDirection(DcMotorSimple.Direction.FORWARD);
                 motorDriveRightFront.setDirection(DcMotorSimple.Direction.REVERSE);
                 motorDriveRightRear.setDirection(DcMotorSimple.Direction.REVERSE);
                 break;
-            case SIDEWAYS_LEFT:
-                motorDriveLeftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-                motorDriveLeftRear.setDirection(DcMotorSimple.Direction.REVERSE);
-                motorDriveRightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-                motorDriveRightRear.setDirection(DcMotorSimple.Direction.FORWARD);
-                break;
-            case SIDEWAYS_RIGHT:
+            case SIDEWAYS:
                 motorDriveLeftFront.setDirection(DcMotorSimple.Direction.REVERSE);
                 motorDriveLeftRear.setDirection(DcMotorSimple.Direction.FORWARD);
-                motorDriveRightFront.setDirection(DcMotorSimple.Direction.FORWARD);
-                motorDriveRightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+                motorDriveRightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+                motorDriveRightRear.setDirection(DcMotorSimple.Direction.FORWARD);
                 break;
         }
     }

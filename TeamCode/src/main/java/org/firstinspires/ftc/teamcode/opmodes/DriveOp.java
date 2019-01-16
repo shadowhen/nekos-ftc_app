@@ -19,19 +19,24 @@ public class DriveOp extends OpMode {
 
     private static final double DRIVE_SPEED = 0.5;
     private static final double DRIVE_SIDEWAYS_SPEED = 0.8;
+    private static final double TURN_SPEED = 0.8;
 
+    // Speed for sideways motion
+    // Note: This setting is used if the robot is unbalanced, but the builders might want to
+    // look at the robot anf find the center of mass.
     public static final double SIDEWAYS_LF_SPEED = 0.8;
     public static final double SIDEWAYS_LR_SPEED = 0.8;
     public static final double SIDEWAYS_RF_SPEED = 0.8;
     public static final double SIDEWAYS_RR_SPEED = 0.8;
 
-    private static final double TURN_SPEED = 0.8;
     private static final double LIFT_POWER = 0.5;
     private static final double SWEEPER_POWER = 0.5;
     private static final double SWEEPER_LIFT_POWER = 0.45;
 
+    // Speed of the dumper's servo
     private static final double DUMPER_SPEED = 0.002;
 
+    // Position of the dumper's eervo
     private double dumperPosition = 0.5;
 
     private boolean sidewaysState = false;
@@ -77,6 +82,7 @@ public class DriveOp extends OpMode {
         dump();
         sweep();
 
+        // Sends the info to the driver station for debugging and important acoustics
         telemetry.addData("Sideways Motion Controls", sidewaysState ? "Dpad" : "Bumpers");
         telemetry.addLine("-------------------");
         telemetry.addData("Left Motor-Front Power", "%.2f", robot.getMotorDriveLeftFront().getPower());
@@ -177,7 +183,7 @@ public class DriveOp extends OpMode {
      * Controls the lift
      */
     private void lift() {
-        // Raises or lowers the lift of the robot using gamepad 2 buttons
+        // Raises or lowers the lift of the robot using lift motor attached to the lift
         if (gamepad2.a) {
             // Lowers the lift
             robot.getLift().setLiftPower(-LIFT_POWER);
@@ -192,6 +198,7 @@ public class DriveOp extends OpMode {
 
         }
 
+        // Raises or lower the lift using the lander motor
         if (gamepad2.x) {
             robot.getLift().setLanderPower(-LIFT_POWER);
         } else if (gamepad2.b) {

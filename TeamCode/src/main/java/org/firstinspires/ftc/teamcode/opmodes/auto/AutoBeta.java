@@ -11,32 +11,22 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * ready and has a high chance of success if everything goes smoothly.
  *
  * @author Henry
- * @version 1.0
+ * @version 1.1
  */
-@Autonomous(name = "Auto Beta - Competition", group = "auto")
+@Autonomous(name = "Auto Beta - Competition - NO LANDING", group = "auto")
 public class AutoBeta extends AutoOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
 
-        // No reason for this line but commenting lines below may affect the chances of success
+        // This line below makes the robot's mechanum wheels to work properly under normal conditions
         robot.setDriveZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        robot.getLift().getLiftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        robot.getLift().getLanderMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         while (!isStarted()) {
             telemetry.addData(">", "Press START to start encoder drive forward");
             telemetry. update();
         }
-
-        robot.getLift().getLiftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        robot.getLift().getLanderMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
-        // Lower the robot onto the floor from the lander
-        //setLiftPower(0.5, 1000);
-        //sleep(500);
 
         // Moves to the left sideways
         robot.moveSidewaysByEncoder(0.1, -60, 5);

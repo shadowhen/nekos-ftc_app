@@ -29,13 +29,13 @@ public class Lift {
         //landerMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Uncomment the line below if the motor uses an encoder.
-        landerMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        landerMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //landerMotor.setTargetPosition(0);
         //landerMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        landerMotor.setPower(Math.abs(0));
+        liftMotor.setPower(Math.abs(0));
     }
 
     public static int convertDistanceToTarget(double distance) {

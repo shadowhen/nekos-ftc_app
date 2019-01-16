@@ -4,29 +4,37 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
- * The autonomous program known as Beta is designed in a way that the robot ignores the mineral
- * and deposits the team marker in the depot. After depositing the team marker, the robot makes
- * its way to the pit for parking bonus. The pit itself is always on the opposite alliance side;
- * therefore, the robot goes the farthest right of the pit. For now, the program is competition
- * ready and has a high chance of success if everything goes smoothly.
+ * The class is based on the AutoBeta class with the robot being able to land on the ground from
+ * the lander. Unlike AutoBeta, the class implements the landing in the autonomous, making this
+ * class more viable for autonomous period and alliance matching.
  *
  * @author Henry
- * @version 1.1
+ * @version 1.0
  */
-@Autonomous(name = "Auto Beta - Competition - NO LANDING", group = "auto")
-public class AutoBeta extends AutoOpMode {
+@Autonomous(name = "Auto Charlie", group = "auto")
+public class AutoCharlie extends AutoOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
 
-        // This line below makes the robot's mechanum wheels to work properly under normal conditions
+        // No reason for this line but commenting lines below may affect the chances of success
         robot.setDriveZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // The robot would hold on the lander
+        robot.getLift().getLiftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.getLift().getLanderMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         while (!isStarted()) {
             telemetry.addData(">", "Press START to start encoder drive forward");
             telemetry. update();
         }
+
+        robot.getLift().getLiftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        robot.getLift().getLanderMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        // Lower the robot onto the floor from the lander
+        robot.moveLiftByDistance(0.5, 1000, 5);
 
         // Moves to the left sideways
         robot.moveSidewaysByEncoder(0.1, -60, 5);

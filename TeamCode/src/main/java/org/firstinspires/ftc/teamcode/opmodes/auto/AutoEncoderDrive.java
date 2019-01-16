@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.robot.AutoDrive;
  * @version 1.0
  */
 @Autonomous(name = "Auto Encoder Drive Forward", group = "test")
-public class AutoEncoderDriveForward extends AutoOpMode {
+public class AutoEncoderDrive extends AutoOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.robot.MineralPosition;
 import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
 import org.firstinspires.ftc.teamcode.robot.VuforiaDetector;
 import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
@@ -69,6 +70,8 @@ public class AutoPushGoldMineral extends AutoOpMode {
                 robot.moveByEncoder(DRIVE_SPEED, 1010, 1010, 5);
                 break;
             default:
+                // If the camera cannot find the gold mineral or the find the gold mineral
+                // in the center, the robot would not need to sidestep.
                 robot.moveByEncoder(DRIVE_SPEED, 1010, 1010, 5);
         }
 

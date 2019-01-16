@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public interface Bot {
 
     /**
-     * Intializes the robot
+     * Initializes the robot
      * @param hwMap Hardware Map
      * @param telemetry Telemetry
      */

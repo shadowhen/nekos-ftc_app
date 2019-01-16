@@ -21,6 +21,7 @@ public class TensorFlowDetector {
     public static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     public static final String LABEL_SILVER_MINERAL = "Silver Mineral";
 
+    // Tensor Flow Object Detection Library
     private TFObjectDetector tfod;
 
     /**

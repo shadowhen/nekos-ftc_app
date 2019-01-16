@@ -23,6 +23,9 @@ public class AutoBot extends DriveBot {
     private static final double WHEEL_DIAMETER_MM = 100;
     private static final double COUNTS_PER_MM = (COUNTS_PER_REV) / (WHEEL_DIAMETER_MM * Math.PI);
 
+    private static final double LIFT_WHEEL_DIAMETER_MM = 10;
+    private static final double COUNTS_LIFT_PER_MM = (COUNTS_PER_REV) / (LIFT_WHEEL_DIAMETER_MM * Math.PI);
+
     private ElapsedTime timer;
     private ElapsedTime stalledTimer;
     private SensorBot sensors;
@@ -98,8 +101,8 @@ public class AutoBot extends DriveBot {
             setDrivePower(Math.abs(speed), Math.abs(speed));
 
             telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
-            telemetry.addData("current pos", "%d %d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
-            telemetry.addData("target pos", "%d %d", motorDriveLeftFront.getTargetPosition(), motorDriveRightFront.getCurrentPosition());
+            telemetry.addData("current pos", "%07d %07d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
+            telemetry.addData("target pos", "%07d %07d", motorDriveLeftFront.getTargetPosition(), motorDriveRightFront.getCurrentPosition());
             telemetry.update();
         }
 
@@ -130,8 +133,8 @@ public class AutoBot extends DriveBot {
             motorDriveRightRear.setPower(Math.abs(DriveOp.SIDEWAYS_RR_SPEED * percent));
 
             telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
-            telemetry.addData("current pos", "%d %d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
-            telemetry.addData("target pos", "%d %d", motorDriveLeftFront.getTargetPosition(), motorDriveRightFront.getCurrentPosition());
+            telemetry.addData("current pos", "%07d %07d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
+            telemetry.addData("target pos", "%07d %07d", motorDriveLeftFront.getTargetPosition(), motorDriveRightFront.getCurrentPosition());
             telemetry.update();
         }
 
@@ -140,6 +143,52 @@ public class AutoBot extends DriveBot {
 
         // Turns off RUN_TO_TARGET mode
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void moveLiftByTime(double speed, double time) {
+        lift.setLiftPower(speed);
+        timer.reset();
+        while (linearOpMode.opModeIsActive() && timer.seconds() < time) {
+            telemetry.addData("status", "moving the lift");
+            telemetry.addData("speed", "%.2f", lift.getLiftPower());
+            telemetry.addData("current", "%07d", lift.getLiftMotor().getCurrentPosition());
+            telemetry.update();
+        }
+        lift.setLiftPower(0);
+    }
+
+    public void moveLiftByCounts(double speed, int counts, double timeoutS) {
+        lift.getLiftMotor().setTargetPosition(counts + lift.getLiftMotor().getTargetPosition());
+        lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        lift.setLiftPower(Math.abs(speed));
+        timer.reset();
+        while (linearOpMode.opModeIsActive() && timer.seconds() < timeoutS && lift.getLiftMotor().isBusy()) {
+            telemetry.addData("status", "moving the lift");
+            telemetry.addData("speed", "%.2f", lift.getLiftPower());
+            telemetry.addData("target", "%07d", counts);
+            telemetry.addData("current", "%07d", lift.getLiftMotor().getCurrentPosition());
+            telemetry.update();
+        }
+        lift.setLiftPower(0);
+        lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void moveLiftByDistance(double speed, double distance, double timeoutS) {
+        lift.getLiftMotor().setTargetPosition((int)(distance * COUNTS_LIFT_PER_MM) + lift.getLiftMotor().getCurrentPosition());
+        lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        lift.setLiftPower(Math.abs(speed));
+        timer.reset();
+        while (linearOpMode.opModeIsActive() && timer.seconds() < timeoutS && lift.getLiftMotor().isBusy()) {
+            telemetry.addData("status", "moving the lift");
+            telemetry.addData("speed", "%.2f", lift.getLiftPower());
+            telemetry.addData("target", "%07d", lift.getLiftMotor().getTargetPosition());
+            telemetry.addData("current", "%07d", lift.getLiftMotor().getCurrentPosition());
+            telemetry.update();
+        }
+        lift.setLiftPower(0);
+        lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void setStallPower(double power, double timeoutS, double stallTimeS) {

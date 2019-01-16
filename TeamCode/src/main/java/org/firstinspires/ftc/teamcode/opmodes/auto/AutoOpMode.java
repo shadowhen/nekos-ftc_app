@@ -6,7 +6,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.robot.AutoBot;
 import org.firstinspires.ftc.teamcode.robot.AutoDrive;
+import org.firstinspires.ftc.teamcode.robot.MineralPosition;
 import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
+import org.firstinspires.ftc.teamcode.robot.TfODSide;
 import org.firstinspires.ftc.teamcode.robot.VuforiaDetector;
 import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
 
@@ -21,27 +23,23 @@ import java.util.List;
  */
 public class AutoOpMode extends LinearOpMode {
 
-    public enum TFODSide {
-        TOP, BOTTOM, LEFT, RIGHT
-    }
-
-    public enum MineralPosition {
-        LEFT, CENTER, RIGHT, NONE
-    }
-
     public static final double DRIVE_SPEED = 0.5;
     public static final double TURN_SPEED = 0.25;
     public static final double SIDEWAYS_SPEED = 0.4;
 
     public static final long SLEEP_DRIVE = 500;
+    public static final TfODSide CAMERA_SIDE = TfODSide.LEFT;
 
     protected ElapsedTime timer;
 
+    // Computer Vision
     protected VuforiaDetector vuforia;
     protected TensorFlowDetector detector;
 
+    // Handles with recongitions by Tensof Flow Object Detection
     protected List<Recognition> recognitions;
 
+    // Autonomous robot
     protected AutoBot robot;
 
     @Override
@@ -75,10 +73,20 @@ public class AutoOpMode extends LinearOpMode {
         }
     }
 
+    /**
+     * Set the lift power for certain amount of time
+     * @param power Power
+     * @param ms    S;eep
+     */
     public void setLiftPower(double power, long ms) {
+        // Set the power for the robot to raise or lower
         robot.getLift().setLiftPower(power);
         robot.getLift().setLanderPower(power);
+
+        // Sleeps for certian amount of time
         sleep(ms);
+
+        // Zero the power to raise or lower the robot on the lander
         robot.getLift().setLiftPower(0.0);
         robot.getLift().setLanderPower(0.0);
     }
@@ -89,8 +97,14 @@ public class AutoOpMode extends LinearOpMode {
      * @param ms    Milliseconds to sleep
      */
     public void setSweeperLiftPower(double power, long ms) {
+        // Deploys or retracts the sweeper
         robot.getSweeper().setLiftPower(power);
+
+        // Waits for certain amount of time
         sleep(ms);
+
+        // Zeros the power of the sweeper motor's power,
+        // so the sweeper motor does not keeping going
         robot.getSweeper().setLiftPower(0.0);
     }
 
@@ -101,9 +115,9 @@ public class AutoOpMode extends LinearOpMode {
      * @param side     Image side to compare distance from
      * @param min      Min
      * @param max      Max
-     * @return
+     * @return         Found Gold Mineral
      */
-    public boolean findGoldMineralFromSide(double timeoutS, TFODSide side, float min, float max) {
+    public boolean findGoldMineralFromSide(double timeoutS, TfODSide side, float min, float max) {
         timer.reset();
         while (timer.seconds() < timeoutS) {
             recognitions = detector.getDetector().getUpdatedRecognitions();
@@ -139,7 +153,7 @@ public class AutoOpMode extends LinearOpMode {
     }
 
     public MineralPosition findGoldMineralFromPosition(double timeoutS) {
-        return findGoldMineralFromPosition(timeoutS, TFODSide.LEFT);
+        return findGoldMineralFromPosition(timeoutS, CAMERA_SIDE);
     }
 
     /**
@@ -154,7 +168,7 @@ public class AutoOpMode extends LinearOpMode {
      * @param timeoutS Timeout in seconds
      * @return Gold Mineral Position
      */
-    public MineralPosition findGoldMineralFromPosition(double timeoutS, TFODSide side) {
+    public MineralPosition findGoldMineralFromPosition(double timeoutS, TfODSide side) {
         // Used to determine the position of the gold mineral
         int goldMineralX;
         int silverMineral1X;
@@ -179,9 +193,12 @@ public class AutoOpMode extends LinearOpMode {
             // go. On the other hand, using OpenCV could avoid this problem, and the robot only
             // needs to center the camera towards the target.
             if (recognitions != null && recognitions.size() == 3) {
+                // The position of minerals start off with negative number since zero is a value
+                // returned by the recognitions
                 goldMineralX = -1;
                 silverMineral1X = -1;
                 silverMineral2X = -1;
+
                 for (Recognition recognition : recognitions) {
                     switch (side) {
                         case LEFT:

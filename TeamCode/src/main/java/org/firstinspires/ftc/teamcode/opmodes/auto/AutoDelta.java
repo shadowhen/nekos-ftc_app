@@ -5,11 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.robot.MineralPosition;
 import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
-import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
 
 /**
- * This class expands the AutoOpMode.class to tell the robot to knock off the gold mineral, drop
- * its team marker, and park in one of the spots which gives the team points.
+ * This class allows the robot to scan for the gold mineral for the sampling points, and the robot
+ * carries out the same tasks as Auto Beta after knocking off the gold mineral.
  *
  * @author Henry
  * @version 1.0

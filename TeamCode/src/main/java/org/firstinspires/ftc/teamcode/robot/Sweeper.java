@@ -22,6 +22,8 @@ public class Sweeper {
     public void init(HardwareMap hwMap) {
         sweeperServo = hwMap.get(CRServo.class, "servo_sweeper");
         liftMotor = hwMap.get(DcMotor.class, "motor_sweeper_lift");
+
+        sweeperServo.setPower(0.0);
     }
 
     public DcMotor getLiftMotor() {

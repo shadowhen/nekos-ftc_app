@@ -49,6 +49,9 @@ public class AutoOpMode extends LinearOpMode {
 
         robot.init(hardwareMap, telemetry);
         robot.setAutoDrive(AutoDrive.FORWARD);
+
+        vuforia = new VuforiaDetector();
+        detector = new TensorFlowDetector();
     }
 
     public void initDetector(boolean useWebcam) {
@@ -59,18 +62,6 @@ public class AutoOpMode extends LinearOpMode {
         }
 
         detector.init(hardwareMap, vuforia.getVuforia());
-    }
-
-    /**
-     * The robot waits for certain amount of time.
-     * @param seconds Time in seconds
-     */
-    public void waitForSeconds(double seconds) {
-        timer.reset();
-        while (timer.seconds() < seconds && opModeIsActive()) {
-            telemetry.addData("Waiting time", seconds - timer.seconds());
-            telemetry.update();
-        }
     }
 
     /**
@@ -106,50 +97,6 @@ public class AutoOpMode extends LinearOpMode {
         // Zeros the power of the sweeper motor's power,
         // so the sweeper motor does not keeping going
         robot.getSweeper().setLiftPower(0.0);
-    }
-
-    /**
-     * Finds the gold mineral from a camera's presecptive using its side to find a gold mineral
-     * between two value.
-     * @param timeoutS Timeout in seconds
-     * @param side     Image side to compare distance from
-     * @param min      Min
-     * @param max      Max
-     * @return         Found Gold Mineral
-     */
-    public boolean findGoldMineralFromSide(double timeoutS, TfODSide side, float min, float max) {
-        timer.reset();
-        while (timer.seconds() < timeoutS) {
-            recognitions = detector.getDetector().getUpdatedRecognitions();
-            for (Recognition recognition : recognitions) {
-                if (recognition.getLabel().equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
-                    switch (side) {
-                        case TOP:
-                            if (recognition.getTop() > min && recognition.getTop() < max) {
-                                return true;
-                            }
-                            break;
-                        case BOTTOM:
-                            if (recognition.getBottom() > min && recognition.getBottom() < max) {
-                                return true;
-                            }
-                            break;
-                        case LEFT:
-                            if (recognition.getLeft() > min && recognition.getLeft() < max) {
-                                return true;
-                            }
-                            break;
-                        case RIGHT:
-                            if (recognition.getRight() > min && recognition.getRight() < max) {
-                                return true;
-                            }
-                            break;
-                    }
-                }
-            }
-        }
-
-        return false;
     }
 
     public MineralPosition findGoldMineralFromPosition(double timeoutS) {
@@ -261,5 +208,40 @@ public class AutoOpMode extends LinearOpMode {
         }
 
         return MineralPosition.NONE;
+    }
+
+    /**
+     * Scans for gold from looking at two minerals for certain amount of time.
+     * @param timeoutS
+     * @return Position of the gold mineral
+     */
+    public MineralPosition detectGoldFromTwoMinerals(double timeoutS) {
+        MineralPosition mineralPosition = MineralPosition.NONE;
+        int goldMineralX = -1;
+        int silverMineralX = -1;
+
+        timer.reset();
+        while (timer.seconds() < timeoutS) {
+            recognitions = detector.getDetector().getRecognitions();
+            if (recognitions != null && recognitions.size() == 2) {
+                for (Recognition recognition : recognitions) {
+                    if (recognition.getLabel().equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
+                        goldMineralX = (int) recognition.getLeft();
+                    } else {
+                        silverMineralX = (int) recognition.getLeft();
+                    }
+                }
+
+                if (goldMineralX > silverMineralX) {
+                    mineralPosition = MineralPosition.RIGHT;
+                    break;
+                } else if (goldMineralX < silverMineralX) {
+                    mineralPosition = MineralPosition.LEFT;
+                    break;
+                }
+            }
+        }
+
+        return mineralPosition;
     }
 }

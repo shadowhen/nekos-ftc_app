@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.robot.AutoDrive;
-import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
-import org.firstinspires.ftc.teamcode.robot.VuforiaDetector;
 import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
 
 /**
@@ -20,9 +18,6 @@ public class AutoAlpha extends AutoOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
-
-        vuforia = new VuforiaDetector();
-        detector = new TensorFlowDetector();
 
         vuforia.init(hardwareMap, VuforiaKey.VUFORIA_KEY, "Webcam 1");
         detector.init(hardwareMap, vuforia.getVuforia());

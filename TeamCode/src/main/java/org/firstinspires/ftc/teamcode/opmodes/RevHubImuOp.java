@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.robot.AutoBot;
 
+@TeleOp(name = "REV Hub IMU", group = "test")
 public class RevHubImuOp extends LinearOpMode {
 
     private static final double TURN_SPEED = 0.25;
@@ -19,7 +21,7 @@ public class RevHubImuOp extends LinearOpMode {
 
     private BNO055IMU imu;
     private Orientation lastAngles = new Orientation();
-    private double globalAngle, power = .30, correction;
+    private double globalAngle;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -38,12 +40,22 @@ public class RevHubImuOp extends LinearOpMode {
         while (opModeIsActive()) {
             boolean aButton = gamepad1.a;
             boolean bButton = gamepad1.b;
+            boolean xButton = gamepad1.x;
 
             if (aButton && !bButton) {
                 rotate(-90, TURN_SPEED);
             } else if (!aButton && bButton) {
                 rotate(90, TURN_SPEED);
             }
+
+            if (xButton) {
+                resetAngle();
+            }
+
+            telemetry.addData("a button", aButton);
+            telemetry.addData("b button", bButton);
+            telemetry.addData("x button", xButton);
+            telemetry.update();
         }
     }
 

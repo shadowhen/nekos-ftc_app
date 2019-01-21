@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -14,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 public class DriveBot implements Bot {
 
-    public static final double SERVO_CLOSE_POSITION = 1.0;
+    public static final double DUMPER_SERVO_CLOSE_POSITION = 1.0;
 
     protected HardwareMap hwMap;
     protected Telemetry telemetry;
@@ -53,6 +52,8 @@ public class DriveBot implements Bot {
         motorDriveRightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         motorDriveRightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        // Because the drive motors affect the motion of the meachum wheels, the
+        // zero power behavior would be in BRAKE.
         motorDriveLeftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorDriveLeftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorDriveRightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -63,7 +64,8 @@ public class DriveBot implements Bot {
         sweeper.init(hwMap);
         dumper.init(hwMap);
 
-        dumper.setPosition(SERVO_CLOSE_POSITION);
+        // Reset the position of the dumper
+        dumper.setPosition(DUMPER_SERVO_CLOSE_POSITION);
     }
 
     /**

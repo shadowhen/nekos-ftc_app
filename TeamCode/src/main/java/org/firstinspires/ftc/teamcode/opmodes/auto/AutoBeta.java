@@ -33,7 +33,7 @@ public class AutoBeta extends AutoOpMode {
         sleep(1000);
 
         // Runs through the minerals
-        robot.moveByEncoder(DRIVE_SPEED, 1010, 1010, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 1010+200+170, 1010+200+170, 5);
         sleep(1000);
 
         // Deposits the team marker in the depot for autonomous points
@@ -43,7 +43,9 @@ public class AutoBeta extends AutoOpMode {
         // Turns the robot and moves towards the pit for parking points
         robot.moveByEncoder(TURN_SPEED, -740, 740, 5);
         sleep(1000);
-        robot.moveByEncoder(DRIVE_SPEED, 1500, 1500, 10);
+        robot.moveByEncoder(DRIVE_SPEED, 1000, 1000, 10);
+        robot.moveByEncoder(TURN_SPEED, -100, 100, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 1000, 1000, 10);
         setSweeperLiftPower(-0.5, 500);
     }
 }

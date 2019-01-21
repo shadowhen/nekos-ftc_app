@@ -6,6 +6,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.PrototypeDetector;
 
+/**
+ * This class implements the prototype detector which uses OpenCv for its computer vision library,
+ * and while the program runs, the detector activates and can be seen on the robot controller.
+ * In this case, the class is an example of a program using OpenCv for computer vision.
+ *
+ * @author Henry
+ * @version 0.1
+ */
 @TeleOp(name = "Prototype Detector - 0.1", group = "prototype")
 public class ProtoypeDetectorOpMode extends OpMode {
 

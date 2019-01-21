@@ -14,6 +14,14 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class implements the OpenCVPipeline using examples provided by the OpenCV repository, and
+ * the detector is custom and designed to detect gold minerals and find the closest gold mineral
+ * from the camera perspective.
+ *
+ * @author Henry
+ * @version 1.0
+ */
 public class PrototypeDetector extends OpenCVPipeline {
 
     private static final double SCALE_X = 700;

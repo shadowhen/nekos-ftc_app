@@ -29,7 +29,6 @@ public class AutoBot extends DriveBot {
     private static final double COUNTS_LIFT_PER_MM = (COUNTS_PER_REV) / (LIFT_WHEEL_DIAMETER_MM * Math.PI);
 
     private ElapsedTime timer;
-    private ElapsedTime stalledTimer;
     private SensorBot sensors;
 
     private LinearOpMode linearOpMode;
@@ -48,7 +47,6 @@ public class AutoBot extends DriveBot {
 
         sensors = new SensorBot();
         timer = new ElapsedTime();
-        stalledTimer = new ElapsedTime();
 
         // Reset the encoders and allow the drive motors to run with encoders
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -208,41 +206,6 @@ public class AutoBot extends DriveBot {
         }
         lift.setLiftPower(0);
         lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    public void setStallPower(double power, double timeoutS, double stallTimeS) {
-        // Get the position for the stall
-        int stalledPosition = lift.getLanderMotor().getCurrentPosition();
-        int currentPosition;
-        double motorPower;
-        double prevTime = stalledTimer.seconds();
-
-        // Set the target position since the motor works on finding the stall
-        lift.getLanderMotor().setTargetPosition(stalledPosition);
-        lift.getLanderMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        timer.reset();
-        while ((timer.seconds() < timeoutS) && (timer.seconds() - prevTime < stallTimeS) && (linearOpMode.opModeIsActive())) {
-            currentPosition = lift.getLanderMotor().getCurrentPosition();
-            if (currentPosition == stalledPosition) {
-                motorPower = 0.0;
-            } else {
-                motorPower = power;
-                prevTime = timer.seconds();
-            }
-
-            lift.setLanderPower(Math.abs(motorPower));
-
-            telemetry.addData("motor power", lift.getLanderPower());
-            telemetry.addData("stall target", stalledPosition);
-            telemetry.addData("position", currentPosition);
-            telemetry.addData("time", "%.2f", timer.seconds() - timeoutS);
-            telemetry.addData("stall time", "%.2f", Math.abs((timer.seconds() - prevTime)));
-            telemetry.update();
-        }
-
-        lift.getLanderMotor().setPower(0.0);
-        lift.getLanderMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**

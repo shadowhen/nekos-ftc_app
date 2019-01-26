@@ -88,21 +88,31 @@ public class DriveOp extends OpMode {
         drive();
         lift();
         dump();
+        slide();
         sweep();
 
         // Sends the info to the driver station for debugging and important acoustics
         telemetry.addData("Sideways Motion Controls", sidewaysControlState ? "D-Pad" : "Bumpers");
+
+        // DRIVE MOTORS
         telemetry.addLine("-------------------");
         telemetry.addData("Left Motor-Front Power", "%.2f", robot.getMotorDriveLeftFront().getPower());
         telemetry.addData("Left Motor-Rear Power", "%.2f", robot.getMotorDriveLeftRear().getPower());
         telemetry.addData("Right Motor-Front Power", "%.2f", robot.getMotorDriveRightFront().getPower());
         telemetry.addData("Right Motor-Rear Power", "%.2f", robot.getMotorDriveRightRear().getPower());
+
+        // SWEEPER
         telemetry.addLine("-------------------");
         telemetry.addData("Sweeper Power", "%.2f", robot.getSweeper().getSweeperPower());
         telemetry.addData("Sweeper-Lift Power", "%.2f", robot.getSweeper().getLiftPower());
+        telemetry.addData("Sweeper-Slider Power", "%.2f", robot.getSweeper().getSliderPower());
+
+        // LIFT
         telemetry.addLine("-------------------");
         telemetry.addData("Lift Power", "%.2f", robot.getLift().getLiftPower());
         telemetry.addData("Lander Power", "%.2f", robot.getLift().getLanderPower());
+
+        // DUMPER
         telemetry.addLine("-------------------");
         telemetry.addData("Dumper Position", "%.2f",robot.getDumper().getServoDumper().getPosition());
         telemetry.update();
@@ -191,22 +201,6 @@ public class DriveOp extends OpMode {
      * Controls the lift
      */
     private void lift() {
-        // TODO: Fix these references. They are actually the slider now.
-        // Raises or lowers the lift of the robot using lift motor attached to the lift
-        if (gamepad2.a) {
-            // Lowers the lift
-            robot.getLift().setLiftPower(-SLIDER_POWER);
-
-        } else if (gamepad2.y) {
-            // Raises the lift
-            robot.getLift().setLiftPower(SLIDER_POWER);
-
-        } else {
-            // Zeros the power of the lift if the driver does not press the lift button
-            robot.getLift().setLiftPower(0.0);
-
-        }
-
         // Raises or lower the lift using the lander motor
         if (gamepad2.x) {
             robot.getLift().setLanderPower(-LIFT_POWER);
@@ -215,6 +209,8 @@ public class DriveOp extends OpMode {
         } else {
             robot.getLift().setLanderPower(0.0);
         }
+
+        // TODO: Add the lander motor controls for lifting the bobot onto the lander.
     }
 
     /**
@@ -257,5 +253,19 @@ public class DriveOp extends OpMode {
 
         // Sweeps minerals from the floor using gamepad 1 buttons
         robot.getSweeper().setSweeperPower(Range.clip(totalTrigger, -SWEEPER_POWER, SWEEPER_POWER));
+    }
+
+    /**
+     * Controls the drawer slider which slides in and out the sweeper.
+     */
+    private void slide() {
+        // TODO: Fix the references in the config file.
+        if (gamepad2.a) {
+            robot.getSweeper().setSweeperPower(-SLIDER_POWER);
+        } else if (gamepad2.y) {
+            robot.getSweeper().setSweeperPower(SLIDER_POWER);
+        } else {
+            robot.getSweeper().setSweeperPower(0.0);
+        }
     }
 }

@@ -19,10 +19,12 @@ import org.firstinspires.ftc.teamcode.opmodes.DriveOp;
  */
 public class AutoBot extends DriveBot {
 
+    // Values for drive motors with encoders
     private static final double COUNTS_PER_REV = 1120;
     private static final double WHEEL_DIAMETER_MM = 100;
     private static final double COUNTS_PER_MM = (COUNTS_PER_REV) / (WHEEL_DIAMETER_MM * Math.PI);
 
+    // Values for lift motor with an encoder
     private static final double LIFT_WHEEL_DIAMETER_MM = 10;
     private static final double COUNTS_LIFT_PER_MM = (COUNTS_PER_REV) / (LIFT_WHEEL_DIAMETER_MM * Math.PI);
 
@@ -145,6 +147,11 @@ public class AutoBot extends DriveBot {
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    /**
+     * Moves the lift up or down using speed and time
+     * @param speed Lfit Speed
+     * @param time  Time that the lift should move
+     */
     public void moveLiftByTime(double speed, double time) {
         lift.setLiftPower(speed);
         timer.reset();
@@ -157,6 +164,12 @@ public class AutoBot extends DriveBot {
         lift.setLiftPower(0);
     }
 
+    /**
+     * Moves the lift by encoder counts
+     * @param speed    Lift Speed
+     * @param counts   Lift Encoder Counts
+     * @param timeoutS Timeout in seconds
+     */
     public void moveLiftByCounts(double speed, int counts, double timeoutS) {
         lift.getLiftMotor().setTargetPosition(counts + lift.getLiftMotor().getTargetPosition());
         lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -174,6 +187,12 @@ public class AutoBot extends DriveBot {
         lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    /**
+     * Moves the lift by distance
+     * @param speed    Lift Speed
+     * @param distance Distance that the lift motor should move
+     * @param timeoutS Timeout in seconds
+     */
     public void moveLiftByDistance(double speed, double distance, double timeoutS) {
         lift.getLiftMotor().setTargetPosition((int)(distance * COUNTS_LIFT_PER_MM) + lift.getLiftMotor().getCurrentPosition());
         lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);

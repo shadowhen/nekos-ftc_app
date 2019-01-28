@@ -1,2 +1,27 @@
-## Team NEKOS - 6302 
-Welcome to the NEKOS 6302 repository. This is a working repository, so you should expect commits and pushes from time to time. Otherwise, feel free to download or fork this repository. 
+# NEKOS - 6302 FTC Team
+
+Welcome to the NEKOS 6302 FTC Team repository. This repository is where 
+we upload our source code for our programers to understand and other teams to use 
+as examples. In the spirit of gracious professionalism, we will share our code for 
+other teams to understand and how we code our robot in certain way.
+
+To download the original FTC App Master: https://github.com/ftctechnh/ftc_app
+
+## Requirements
+*  Android Studio
+
+## Install
+1. Download or clone this repository
+2. Import this project into Android Studio
+
+### OpenCV
+If you want to see our OpenCV custom detection, you should checkout the 
+[dogecv](https://github.com/shadowhen/ftc_app/tree/dogecv) branch.
+
+## Contributing
+Please read [CONTRIBUTING.md](/.github/CONTRIBUTING.md) for
+contributing to this repository.
+
+## Acknowledgements
+* FIRST for distributing FTC App Master
+* MechanicalMemes for [DogeCV](https://github.com/MechanicalMemes/DogeCV)

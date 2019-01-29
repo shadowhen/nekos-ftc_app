@@ -203,11 +203,11 @@ public class DriveOp extends OpMode {
     private void lift() {
         // Raises or lower the lift using the lander motor
         if (gamepad2.x) {
-            robot.getLift().setLanderPower(-LIFT_POWER);
+            robot.getLift().setLiftPower(-LIFT_POWER);
         } else if (gamepad2.b) {
-            robot.getLift().setLanderPower(LIFT_POWER);
+            robot.getLift().setLiftPower(LIFT_POWER);
         } else {
-            robot.getLift().setLanderPower(0.0);
+            robot.getLift().setLiftPower(0.0);
         }
 
         // TODO: Add the lander motor controls for lifting the bobot onto the lander.
@@ -251,7 +251,7 @@ public class DriveOp extends OpMode {
             robot.getSweeper().setLiftPower(Range.clip(gamepad2.left_stick_y, -SWEEPER_LIFT_POWER, SWEEPER_LIFT_POWER));
         }
 
-        // Sweeps minerals from the floor using gamepad 1 buttons
+        // Sweeps minerals from the floor using gamepad 1 triggers
         robot.getSweeper().setSweeperPower(Range.clip(totalTrigger, -SWEEPER_POWER, SWEEPER_POWER));
     }
 
@@ -259,13 +259,12 @@ public class DriveOp extends OpMode {
      * Controls the drawer slider which slides in and out the sweeper.
      */
     private void slide() {
-        // TODO: Fix the references in the config file.
         if (gamepad2.a) {
-            robot.getSweeper().setSweeperPower(-SLIDER_POWER);
+            robot.getSweeper().setSliderPower(-SLIDER_POWER);
         } else if (gamepad2.y) {
-            robot.getSweeper().setSweeperPower(SLIDER_POWER);
+            robot.getSweeper().setSliderPower(SLIDER_POWER);
         } else {
-            robot.getSweeper().setSweeperPower(0.0);
+            robot.getSweeper().setSliderPower(0.0);
         }
     }
 }

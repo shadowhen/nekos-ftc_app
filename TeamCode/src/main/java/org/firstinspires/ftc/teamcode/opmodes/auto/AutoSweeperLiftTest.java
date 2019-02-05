@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * @version 1.0
  */
 @Autonomous(name = "Auto Sweeper Lift Test", group = "test")
+@Disabled
 public class AutoSweeperLiftTest extends AutoOpMode {
 
     @Override

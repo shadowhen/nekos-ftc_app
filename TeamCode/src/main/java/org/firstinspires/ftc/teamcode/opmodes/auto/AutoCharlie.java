@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * @version 1.0
  */
 @Autonomous(name = "Auto Charlie", group = "auto")
+@Disabled
 public class AutoCharlie extends AutoOpMode {
 
     @Override

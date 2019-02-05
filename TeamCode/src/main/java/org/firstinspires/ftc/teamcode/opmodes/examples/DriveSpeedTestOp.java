@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.examples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.robot.DriveBot;
  * @version 1.0
  */
 @TeleOp(name = "Drive Speed Test", group = "test")
+@Disabled
 public class DriveSpeedTestOp extends OpMode {
 
     private static final double DRIVE_SPEED = 0.5;

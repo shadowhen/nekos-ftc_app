@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.examples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.robot.DriveBot;
  * @version 1.0
  */
 @TeleOp(name = "Calibrate Encoders - X to reset", group = "test")
+@Disabled
 public class CalibrateEncoderOp extends LinearOpMode {
 
     private DriveBot robot;

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.robot.AutoDrive;
 import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
  * @version 1.0
  */
 @Autonomous(name = "Auto Alpha", group = "auto")
+@Disabled
 public class AutoAlpha extends AutoOpMode {
 
     @Override

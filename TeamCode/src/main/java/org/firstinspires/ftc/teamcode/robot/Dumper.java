@@ -18,7 +18,6 @@ public class Dumper {
 
     public void init(HardwareMap hwMap) {
         servoDumper = hwMap.get(Servo.class, "servo_dumper");
-        //servoDumper.setPosition(0.5);
     }
 
     /**

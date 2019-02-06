@@ -15,7 +15,6 @@ public class Lift {
     private static final double COUNTS_PER_MM = (COUNTS_PER_REV / (GEAR_DIAMETER_MM * Math.PI));
 
     private DcMotor liftMotor;
-    private DcMotor landerMotor;
 
     /**
      * Initializes the hardware
@@ -23,17 +22,9 @@ public class Lift {
      */
     public void init(HardwareMap hwMap) {
         liftMotor = hwMap.get(DcMotor.class, "motor_lift");
-        landerMotor = hwMap.get(DcMotor.class, "motor_lander");
 
-        //liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //landerMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Uncomment the line below if the motor uses an encoder.
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //landerMotor.setTargetPosition(0);
-        //landerMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         liftMotor.setPower(Math.abs(0));
     }
@@ -50,20 +41,8 @@ public class Lift {
         liftMotor.setPower(power);
     }
 
-    /**
-     * Set the power of the lander motor
-     * @param power Power
-     */
-    public void setLanderPower(double power) {
-        landerMotor.setPower(power);
-    }
-
     public DcMotor getLiftMotor() {
         return liftMotor;
-    }
-
-    public DcMotor getLanderMotor() {
-        return landerMotor;
     }
 
     /**
@@ -72,13 +51,5 @@ public class Lift {
      */
     public double getLiftPower() {
         return liftMotor.getPower();
-    }
-
-    /**
-     * Returns the power of the lander motor
-     * @return Lander Motor Power
-     */
-    public double getLanderPower() {
-        return landerMotor.getPower();
     }
 }

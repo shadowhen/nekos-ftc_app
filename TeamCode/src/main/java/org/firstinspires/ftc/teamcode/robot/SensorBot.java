@@ -1,11 +1,16 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /**
  * This class implements the functionality of the sensors on the robot.
@@ -15,27 +20,35 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  */
 public class SensorBot {
 
-    private static double minDistanceMm = 0;
-    private static double maxDistanceMm = 1;
+    private Orientation lastAngles = new Orientation();
+    private double globalAngle = 0.0;
 
-    private ModernRoboticsI2cGyro gyro;
-    private DistanceSensor distanceSensor;
+    private BNO055IMU imu;
 
     public void init(HardwareMap hwMap) {
-        //gyro = (ModernRoboticsI2cGyro) hwMap.get(GyroSensor.class, "gyro");
-        //distanceSensor = hwMap.get(DistanceSensor.class, "distance_sensor");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+
+        imu = hwMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
     }
 
-    /**
-     * Returns boolean if the distance sensor between these two distance ranges
-     * @param unit Distance Unit
-     * @param min  Min distance
-     * @param max  Max distance
-     * @return boolean
-     */
-    public boolean seeObject(DistanceUnit unit, double min, double max) {
-        double distance = distanceSensor.getDistance(unit);
-        return (distance >= min && distance <= max);
+    public double getAngle() {
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+        if (deltaAngle < -180) {
+            deltaAngle += 360;
+        } else if (deltaAngle > 180) {
+            deltaAngle -= 360;
+        }
+
+        globalAngle += deltaAngle;
+        lastAngles = angles;
+
+        return globalAngle;
     }
 
     /**
@@ -44,7 +57,7 @@ public class SensorBot {
      * @return Angle error
      */
     public double getError(double angle) {
-        double error = angle - gyro.getIntegratedZValue();
+        double error = angle - getAngle();
         while (error > 180) {
             error -= 360;
         }
@@ -62,13 +75,5 @@ public class SensorBot {
      */
     public double getSteer(double error, double pCoeff) {
         return Range.clip(error * pCoeff, 0.0, 1.0);
-    }
-
-    public ModernRoboticsI2cGyro getGyro() {
-        return gyro;
-    }
-
-    public DistanceSensor getDistanceSensor() {
-        return distanceSensor;
     }
 }

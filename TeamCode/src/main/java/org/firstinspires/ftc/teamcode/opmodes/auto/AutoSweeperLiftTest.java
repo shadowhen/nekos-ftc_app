@@ -21,7 +21,6 @@ public class AutoSweeperLiftTest extends AutoOpMode {
         robot.setDriveZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         robot.getLift().getLiftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        robot.getLift().getLanderMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         while (!isStarted()) {
             telemetry.addData(">", "Press START to start encoder drive forward");

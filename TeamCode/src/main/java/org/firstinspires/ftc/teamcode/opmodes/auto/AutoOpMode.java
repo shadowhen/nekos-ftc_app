@@ -72,14 +72,12 @@ public class AutoOpMode extends LinearOpMode {
     public void setLiftPower(double power, long ms) {
         // Set the power for the robot to raise or lower
         robot.getLift().setLiftPower(power);
-        robot.getLift().setLanderPower(power);
 
         // Sleeps for certian amount of time
         sleep(ms);
 
         // Zero the power to raise or lower the robot on the lander
         robot.getLift().setLiftPower(0.0);
-        robot.getLift().setLanderPower(0.0);
     }
 
     /**
@@ -216,13 +214,18 @@ public class AutoOpMode extends LinearOpMode {
      * @return Position of the gold mineral
      */
     public MineralPosition detectGoldFromTwoMinerals(double timeoutS) {
+        // Detected Mineral Position for Gold
         MineralPosition mineralPosition = MineralPosition.NONE;
+
+        // Positions of the minerals
         int goldMineralX = -1;
         int silverMineralX = -1;
 
         timer.reset();
         while (timer.seconds() < timeoutS) {
             recognitions = detector.getDetector().getRecognitions();
+
+            // Will continue to make decision if the detected minerals is exactly TWO
             if (recognitions != null && recognitions.size() == 2) {
                 for (Recognition recognition : recognitions) {
                     if (recognition.getLabel().equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
@@ -232,13 +235,14 @@ public class AutoOpMode extends LinearOpMode {
                     }
                 }
 
+                // Determine the position based on the minerals
                 if (goldMineralX > silverMineralX) {
                     mineralPosition = MineralPosition.RIGHT;
-                    break;
                 } else if (goldMineralX < silverMineralX) {
                     mineralPosition = MineralPosition.LEFT;
-                    break;
                 }
+
+                break;
             }
         }
 

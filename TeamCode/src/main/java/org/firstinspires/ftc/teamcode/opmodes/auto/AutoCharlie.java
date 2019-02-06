@@ -25,7 +25,6 @@ public class AutoCharlie extends AutoOpMode {
 
         // The robot would hold on the lander
         robot.getLift().getLiftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        robot.getLift().getLanderMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         while (!isStarted()) {
             telemetry.addData(">", "Press START to start encoder drive forward");
@@ -33,7 +32,6 @@ public class AutoCharlie extends AutoOpMode {
         }
 
         robot.getLift().getLiftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        robot.getLift().getLanderMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         // Lower the robot onto the floor from the lander
         robot.moveLiftByDistance(0.5, 1000, 5);

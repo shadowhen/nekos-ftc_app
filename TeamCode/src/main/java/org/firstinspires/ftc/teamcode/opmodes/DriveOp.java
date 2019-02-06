@@ -42,9 +42,11 @@ public class DriveOp extends OpMode {
     // Position of the dumper's eervo
     private double dumperPosition = 0.5;
 
+    // Control button for the sideways control on gamepad 1
     private boolean sidewaysControlState = false;
     private boolean sidewaysControlStateButtonDown;
 
+    // Needed for moving lift using encoder counts
     private DriveBot robot;
 
     @Override
@@ -79,7 +81,6 @@ public class DriveOp extends OpMode {
     public void start() {
         // Allow the robot's lift and latch to work properly
         robot.getSweeper().getLiftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        robot.getLift().getLanderMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     @Override
@@ -110,7 +111,6 @@ public class DriveOp extends OpMode {
         // LIFT
         telemetry.addLine("-------------------");
         telemetry.addData("Lift Power", "%.2f", robot.getLift().getLiftPower());
-        telemetry.addData("Lander Power", "%.2f", robot.getLift().getLanderPower());
 
         // DUMPER
         telemetry.addLine("-------------------");
@@ -211,6 +211,13 @@ public class DriveOp extends OpMode {
         }
 
         // TODO: Add the lander motor controls for lifting the bobot onto the lander.
+        if (gamepad2.dpad_up) {
+            // Moves the lift to the latch height
+
+        } else if (gamepad2.dpad_left) {
+            // Moves the lift to halfway to the height of the lander
+
+        }
     }
 
     /**
@@ -242,7 +249,7 @@ public class DriveOp extends OpMode {
         float rightTrigger = gamepad1.right_trigger;
         float totalTrigger = rightTrigger - leftTrigger;
 
-        // Raises the sweeper up or lowers the sweeper down using gamepad 2 joystick
+        // Deploys or retracts the sweeper using the lift motor
         if (gamepad2.dpad_up) {
             robot.getSweeper().setLiftPower(SWEEPER_LIFT_POWER);
         } else if (gamepad2.dpad_down) {
@@ -251,7 +258,7 @@ public class DriveOp extends OpMode {
             robot.getSweeper().setLiftPower(Range.clip(gamepad2.left_stick_y, -SWEEPER_LIFT_POWER, SWEEPER_LIFT_POWER));
         }
 
-        // Sweeps minerals from the floor using gamepad 1 triggers
+        // Sweeps the minerals from the ground
         robot.getSweeper().setSweeperPower(Range.clip(totalTrigger, -SWEEPER_POWER, SWEEPER_POWER));
     }
 

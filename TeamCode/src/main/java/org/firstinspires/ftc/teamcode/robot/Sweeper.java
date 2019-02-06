@@ -38,6 +38,10 @@ public class Sweeper {
         return liftMotor;
     }
 
+    /**
+     * Get the slider motor
+     * @return Slider Motor
+     */
     public DcMotor getSliderMotor() {
         return sliderMotor;
     }
@@ -66,6 +70,10 @@ public class Sweeper {
         liftMotor.setPower(power);
     }
 
+    /**
+     * Set the power of the silder power
+     * @param power Slider Power
+     */
     public void setSliderPower(double power) {
         sliderMotor.setPower(power);
     }
@@ -86,6 +94,10 @@ public class Sweeper {
         return liftMotor.getPower();
     }
 
+    /**
+     * Gets the slider motor's current power
+     * @return Slider Motor's Power
+     */
     public double getSliderPower() {
         return sliderMotor.getPower();
     }

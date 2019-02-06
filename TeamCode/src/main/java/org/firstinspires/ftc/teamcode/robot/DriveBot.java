@@ -25,9 +25,9 @@ public class DriveBot implements Bot {
     protected DcMotor motorDriveRightRear;
 
     // External functions
-    protected Lift lift;
-    protected Sweeper sweeper;
-    protected Dumper dumper;
+    protected Lift lift = new Lift();
+    protected Sweeper sweeper = new Sweeper();
+    protected Dumper dumper = new Dumper();
 
     /**
      * Initializes the robot
@@ -37,10 +37,6 @@ public class DriveBot implements Bot {
     public void init(HardwareMap ahwMap, Telemetry atelemetry) {
         hwMap = ahwMap;
         telemetry = atelemetry;
-
-        lift = new Lift();
-        sweeper = new Sweeper();
-        dumper = new Dumper();
 
         // Get hardware references from the robot controller's configuration for hardware devices
         motorDriveLeftFront  = hwMap.get(DcMotor.class, "motor_drive_lf");
@@ -132,7 +128,6 @@ public class DriveBot implements Bot {
      */
     public void setLiftPower(double power) {
         lift.setLiftPower(power);
-        lift.setLanderPower(power);
     }
 
     /**

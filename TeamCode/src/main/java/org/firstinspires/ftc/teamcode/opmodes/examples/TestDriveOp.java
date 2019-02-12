@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.examples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,6 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * @version 1.0
  */
 @TeleOp(name = "Cat", group = "test")
+@Disabled
 public class TestDriveOp extends OpMode {
 
     private DcMotor motorDriveLeftFront;

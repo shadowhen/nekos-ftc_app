@@ -7,6 +7,8 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
+import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
 
 /**
  * This class serves the purpose to test the external camera rather the camera on the Android
@@ -45,23 +47,32 @@ public class ExternalCameraTestOp extends LinearOpMode {
             telemetry.update();
         }
 
+        if (tfod != null) {
+            tfod.activate();
+        }
+
         while (opModeIsActive()) {
             telemetry.addData(">", "running");
             telemetry.update();
+        }
+
+        if (tfod != null) {
+            tfod.deactivate();
         }
     }
 
     private void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.cameraName = hardwareMap.get(WebcamName.class, CAMERA_NAME);
+        parameters.vuforiaLicenseKey = VuforiaKey.VUFORIA_KEY;
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
     }
 
     private void initTfod() {
-        int cameraViewId = hardwareMap.appContext.getResources().
-                getIdentifier("tfodMonitorViewId", "id",
-                        hardwareMap.appContext.getPackageName());
+        int cameraViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters parameters = new TFObjectDetector.Parameters(cameraViewId);
         tfod = ClassFactory.getInstance().createTFObjectDetector(parameters, vuforia);
+        tfod.loadModelFromAsset(TensorFlowDetector.TFOD_MODEL_ASSET, TensorFlowDetector.LABEL_GOLD_MINERAL, TensorFlowDetector.LABEL_SILVER_MINERAL);
     }
 }

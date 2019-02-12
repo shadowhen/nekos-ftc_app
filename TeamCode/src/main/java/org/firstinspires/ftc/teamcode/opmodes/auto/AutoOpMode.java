@@ -36,7 +36,7 @@ public class AutoOpMode extends LinearOpMode {
     protected VuforiaDetector vuforia;
     protected TensorFlowDetector detector;
 
-    // Handles with recongitions by Tensof Flow Object Detection
+    // Handles with recognitions by Tensorflow Object Detection
     protected List<Recognition> recognitions;
 
     // Autonomous robot
@@ -46,15 +46,40 @@ public class AutoOpMode extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot = new AutoBot(this);
         timer = new ElapsedTime();
+        vuforia = new VuforiaDetector();
+        detector = new TensorFlowDetector();
 
         robot.init(hardwareMap, telemetry);
         robot.setAutoDrive(AutoDrive.FORWARD);
 
-        vuforia = new VuforiaDetector();
-        detector = new TensorFlowDetector();
+        telemetry.addData("status", "ready to start...");
+        telemetry.update();
     }
 
+    /**
+     * Initializes the imu on the Rev Hub
+     */
+    public void initIMU() {
+        // Calibrates the gyro sensor in the imu
+        telemetry.addData("status", "calibrating the gyro...");
+        telemetry.update();
+        if (!isStopRequested() && !robot.getSensors().isGyroCalibrated()) {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData("status", "ready to start...");
+        telemetry.update();
+    }
+
+    /**
+     * Initializes the vuforia and the tensorflow lite object detector
+     * @param useWebcam
+     */
     public void initDetector(boolean useWebcam) {
+        telemetry.addData("status", "setting up vuforia...");
+        telemetry.update();
+
         if (useWebcam) {
             vuforia.init(hardwareMap, VuforiaKey.VUFORIA_KEY, VuforiaDetector.WEBCAM_NAME);
         } else {
@@ -62,24 +87,25 @@ public class AutoOpMode extends LinearOpMode {
         }
 
         detector.init(hardwareMap, vuforia.getVuforia());
+
+        telemetry.addData("status", "ready to start...");
+        telemetry.update();
     }
 
     /**
      * Set the lift power for certain amount of time
      * @param power Power
-     * @param ms    S;eep
+     * @param ms    Milliseconds to sleep
      */
     public void setLiftPower(double power, long ms) {
         // Set the power for the robot to raise or lower
         robot.getLift().setLiftPower(power);
-        robot.getLift().setLanderPower(power);
 
         // Sleeps for certian amount of time
         sleep(ms);
 
         // Zero the power to raise or lower the robot on the lander
         robot.getLift().setLiftPower(0.0);
-        robot.getLift().setLanderPower(0.0);
     }
 
     /**
@@ -216,13 +242,18 @@ public class AutoOpMode extends LinearOpMode {
      * @return Position of the gold mineral
      */
     public MineralPosition detectGoldFromTwoMinerals(double timeoutS) {
+        // Detected Mineral Position for Gold
         MineralPosition mineralPosition = MineralPosition.NONE;
+
+        // Positions of the minerals
         int goldMineralX = -1;
         int silverMineralX = -1;
 
         timer.reset();
         while (timer.seconds() < timeoutS) {
             recognitions = detector.getDetector().getRecognitions();
+
+            // Will continue to make decision if the detected minerals is exactly TWO
             if (recognitions != null && recognitions.size() == 2) {
                 for (Recognition recognition : recognitions) {
                     if (recognition.getLabel().equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
@@ -232,13 +263,14 @@ public class AutoOpMode extends LinearOpMode {
                     }
                 }
 
+                // Determine the position based on the minerals
                 if (goldMineralX > silverMineralX) {
                     mineralPosition = MineralPosition.RIGHT;
-                    break;
                 } else if (goldMineralX < silverMineralX) {
                     mineralPosition = MineralPosition.LEFT;
-                    break;
                 }
+
+                break;
             }
         }
 

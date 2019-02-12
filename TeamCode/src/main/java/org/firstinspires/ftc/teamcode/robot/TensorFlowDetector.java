@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 public class TensorFlowDetector {
 
     // The name of the asset to use for gold and silver minerals
-    private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
+    public static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
 
     // Labels for the minerals
     public static final String LABEL_GOLD_MINERAL = "Gold Mineral";

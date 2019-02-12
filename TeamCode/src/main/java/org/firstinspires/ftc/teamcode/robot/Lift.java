@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 /**
  * This class implements the robotic function known as the lift.
  * @author Henry
- * @version 1.0
+ * @version 1.1
  */
 public class Lift {
 
@@ -15,7 +15,6 @@ public class Lift {
     private static final double COUNTS_PER_MM = (COUNTS_PER_REV / (GEAR_DIAMETER_MM * Math.PI));
 
     private DcMotor liftMotor;
-    private DcMotor landerMotor;
 
     /**
      * Initializes the hardware
@@ -23,21 +22,18 @@ public class Lift {
      */
     public void init(HardwareMap hwMap) {
         liftMotor = hwMap.get(DcMotor.class, "motor_lift");
-        landerMotor = hwMap.get(DcMotor.class, "motor_lander");
 
-        //liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //landerMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Uncomment the line below if the motor uses an encoder.
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //landerMotor.setTargetPosition(0);
-        //landerMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        liftMotor.setPower(Math.abs(0));
+        liftMotor.setPower(0.0);
     }
 
+    /**
+     * Converts the distance in millimeters into encoder counts
+     * @param distance Distance in millimeters
+     * @return Encoder Counts (Target Position)
+     */
     public static int convertDistanceToTarget(double distance) {
         return (int)(distance * COUNTS_PER_MM);
     }
@@ -50,20 +46,8 @@ public class Lift {
         liftMotor.setPower(power);
     }
 
-    /**
-     * Set the power of the lander motor
-     * @param power Power
-     */
-    public void setLanderPower(double power) {
-        landerMotor.setPower(power);
-    }
-
     public DcMotor getLiftMotor() {
         return liftMotor;
-    }
-
-    public DcMotor getLanderMotor() {
-        return landerMotor;
     }
 
     /**
@@ -75,10 +59,10 @@ public class Lift {
     }
 
     /**
-     * Returns the power of the lander motor
-     * @return Lander Motor Power
+     * Gets the current position of the lift motor's encoder
+     * @return Current Position
      */
-    public double getLanderPower() {
-        return landerMotor.getPower();
+    public int getCurrentPosition() {
+        return liftMotor.getCurrentPosition();
     }
 }

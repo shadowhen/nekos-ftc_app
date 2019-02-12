@@ -9,11 +9,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 /**
  * This class provides as the framework for the robot which can be used for any purposes
  * @author Henry
- * @version 1.0
+ * @version 1.1
  */
 public class DriveBot implements Bot {
-
-    public static final double DUMPER_SERVO_CLOSE_POSITION = 1.0;
 
     protected HardwareMap hwMap;
     protected Telemetry telemetry;
@@ -63,9 +61,6 @@ public class DriveBot implements Bot {
         lift.init(hwMap);
         sweeper.init(hwMap);
         dumper.init(hwMap);
-
-        // Reset the position of the dumper
-        dumper.setPosition(DUMPER_SERVO_CLOSE_POSITION);
     }
 
     /**
@@ -132,7 +127,6 @@ public class DriveBot implements Bot {
      */
     public void setLiftPower(double power) {
         lift.setLiftPower(power);
-        lift.setLanderPower(power);
     }
 
     /**

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 /**
  * This class implements the robotic function known as the lift.
  * @author Henry
- * @version 1.0
+ * @version 1.1
  */
 public class Lift {
 
@@ -26,9 +26,14 @@ public class Lift {
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        liftMotor.setPower(Math.abs(0));
+        liftMotor.setPower(0.0);
     }
 
+    /**
+     * Converts the distance in millimeters into encoder counts
+     * @param distance Distance in millimeters
+     * @return Encoder Counts (Target Position)
+     */
     public static int convertDistanceToTarget(double distance) {
         return (int)(distance * COUNTS_PER_MM);
     }
@@ -51,5 +56,13 @@ public class Lift {
      */
     public double getLiftPower() {
         return liftMotor.getPower();
+    }
+
+    /**
+     * Gets the current position of the lift motor's encoder
+     * @return Current Position
+     */
+    public int getCurrentPosition() {
+        return liftMotor.getCurrentPosition();
     }
 }

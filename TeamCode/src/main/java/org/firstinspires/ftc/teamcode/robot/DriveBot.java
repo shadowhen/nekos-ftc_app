@@ -9,11 +9,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 /**
  * This class provides as the framework for the robot which can be used for any purposes
  * @author Henry
- * @version 1.0
+ * @version 1.1
  */
 public class DriveBot implements Bot {
-
-    public static final double DUMPER_SERVO_CLOSE_POSITION = 1.0;
 
     protected HardwareMap hwMap;
     protected Telemetry telemetry;
@@ -25,9 +23,9 @@ public class DriveBot implements Bot {
     protected DcMotor motorDriveRightRear;
 
     // External functions
-    protected Lift lift = new Lift();
-    protected Sweeper sweeper = new Sweeper();
-    protected Dumper dumper = new Dumper();
+    protected Lift lift;
+    protected Sweeper sweeper;
+    protected Dumper dumper;
 
     /**
      * Initializes the robot
@@ -37,6 +35,10 @@ public class DriveBot implements Bot {
     public void init(HardwareMap ahwMap, Telemetry atelemetry) {
         hwMap = ahwMap;
         telemetry = atelemetry;
+
+        lift = new Lift();
+        sweeper = new Sweeper();
+        dumper = new Dumper();
 
         // Get hardware references from the robot controller's configuration for hardware devices
         motorDriveLeftFront  = hwMap.get(DcMotor.class, "motor_drive_lf");
@@ -59,9 +61,6 @@ public class DriveBot implements Bot {
         lift.init(hwMap);
         sweeper.init(hwMap);
         dumper.init(hwMap);
-
-        // Reset the position of the dumper
-        dumper.setPosition(DUMPER_SERVO_CLOSE_POSITION);
     }
 
     /**

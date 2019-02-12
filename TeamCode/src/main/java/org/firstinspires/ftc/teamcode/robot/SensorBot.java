@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * This class implements the functionality of the sensors on the robot.
  *
  * @author Henry
- * @version 1.0
+ * @version 1.1
  */
 public class SensorBot {
 
@@ -25,6 +25,10 @@ public class SensorBot {
 
     private BNO055IMU imu;
 
+    /**
+     * Initializes the sensors on the robot
+     * @param hwMap Hardware Map
+     */
     public void init(HardwareMap hwMap) {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.mode = BNO055IMU.SensorMode.IMU;
@@ -36,6 +40,18 @@ public class SensorBot {
         imu.initialize(parameters);
     }
 
+    /**
+     * Checks if the gyro sensor on the Rev Hub IMU is being calibrated
+     * @return gyro calibrated
+     */
+    public boolean isGyroCalibrated() {
+        return imu.isGyroCalibrated();
+    }
+
+    /**
+     * Returns the gyro sensor's current angle (or heading)
+     * @return angle
+     */
     public double getAngle() {
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
@@ -71,7 +87,7 @@ public class SensorBot {
      * Returns the steer
      * @param error   Error
      * @param pCoeff  Proportional Coefficient
-     * @return
+     * @return steer
      */
     public double getSteer(double error, double pCoeff) {
         return Range.clip(error * pCoeff, 0.0, 1.0);

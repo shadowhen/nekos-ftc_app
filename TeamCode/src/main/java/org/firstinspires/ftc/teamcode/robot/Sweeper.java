@@ -3,14 +3,18 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 /**
  * This class implements the mineral sweeper which sweeps up the minerals from the ground into
  * the dumper.
  * @author Henry
- * @version 1.0
+ * @version 1.1
  */
 public class Sweeper {
+
+    private static final double MIN_POWER = -0.25;
+    private static final double MAX_POWER = 0.25;
 
     private DcMotor liftMotor;
     private DcMotor sliderMotor;
@@ -19,7 +23,7 @@ public class Sweeper {
     private CRServo sweeperServo;
 
     /**
-     * Initializes the hardware
+     * Initializes the hardware on the sweeper class
      * @param hwMap Hardware Map
      */
     public void init(HardwareMap hwMap) {
@@ -28,30 +32,24 @@ public class Sweeper {
         sliderMotor = hwMap.get(DcMotor.class, "motor_sweeper_slider");
 
         sweeperServo.setPower(0.0);
+        liftMotor.setPower(0.0);
+        sliderMotor.setPower(0.0);
     }
 
     /**
-     * Get the lift motor
-     * @return Lift Motor
+     * Get the zero power behavior of the sweeper's lift motor
+     * @return Zero Power Behavior
      */
-    public DcMotor getLiftMotor() {
-        return liftMotor;
+    public DcMotor.ZeroPowerBehavior getLiftZeroPowerBehavior() {
+        return liftMotor.getZeroPowerBehavior();
     }
 
     /**
-     * Get the slider motor
-     * @return Slider Motor
+     * Set the zero power behavior of the sweeper's lift motor
+     * @param behavior Zero Power Behavior
      */
-    public DcMotor getSliderMotor() {
-        return sliderMotor;
-    }
-
-    /**
-     * Get the sweeper servo
-     * @return Sweeper Servo
-     */
-    public CRServo getSweeperServo() {
-        return sweeperServo;
+    public void setLiftZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
+        liftMotor.setZeroPowerBehavior(behavior);
     }
 
     /**

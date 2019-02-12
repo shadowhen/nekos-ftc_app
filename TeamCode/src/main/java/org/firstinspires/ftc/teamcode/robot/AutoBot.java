@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.opmodes.DriveOp;
  * the robot can drive and do tasks without the intervention of the driver.
  *
  * @author Henry
- * @version 1.0
+ * @version 1.1
  */
 public class AutoBot extends DriveBot {
 
@@ -28,8 +28,8 @@ public class AutoBot extends DriveBot {
     private static final double LIFT_WHEEL_DIAMETER_MM = 10;
     private static final double COUNTS_LIFT_PER_MM = (COUNTS_PER_REV) / (LIFT_WHEEL_DIAMETER_MM * Math.PI);
 
-    private ElapsedTime timer = new ElapsedTime();
-    private SensorBot sensors = new SensorBot();
+    private ElapsedTime timer;
+    private SensorBot sensors;
 
     private LinearOpMode linearOpMode;
 
@@ -45,9 +45,15 @@ public class AutoBot extends DriveBot {
     public void init(HardwareMap ahwMap, Telemetry atelemetry) {
         super.init(ahwMap, atelemetry);
 
+        sensors = new SensorBot();
+        timer = new ElapsedTime();
+
         // Reset the encoders and allow the drive motors to run with encoders
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        telemetry.addData("status", "setting IMU up...");
+        telemetry.update();
 
         // Initializes the sensors by fetching hardware configuration from robot controller
         sensors.init(hwMap);
@@ -84,96 +90,105 @@ public class AutoBot extends DriveBot {
      * @param timeoutS  Timeout in seconds
      */
     public void moveByEncoder(double speed, double leftDist, double rightDist, double timeoutS) {
-        // Set the direction of the drive motors so the robot can drive forward and backward
-        // correctly
-        setAutoDrive(AutoDrive.FORWARD);
 
-        // Set the target position of the drive motors
-        setDriveTargetPosition(leftDist, rightDist);
+        if (linearOpMode.opModeIsActive()) {
+            // Set the direction of the drive motors so the robot can drive forward and backward
+            // correctly
+            setAutoDrive(AutoDrive.FORWARD);
 
-        // Turns on RUN_TO_TARGET mode on the drive motors
-        setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
+            // Set the target position of the drive motors
+            setDriveTargetPosition(leftDist, rightDist);
 
-        // Limits the speed between 0.0 and 1.0 since negative speed does not matter in
-        // target position
-        speed = Range.clip(Math.abs(speed), 0.0, 1.0);
+            // Turns on RUN_TO_TARGET mode on the drive motors
+            setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        // Reset the timer for the timeout
-        timer.reset();
+            // Limits the speed between 0.0 and 1.0 since negative speed does not matter in
+            // target position
+            speed = Range.clip(Math.abs(speed), 0.0, 1.0);
 
-        // The robot drives to the desired target position until the timer goes
-        // pass the limit for a timeout or reaches the destination.
-        while (isDriveMotorsBusy() && (timer.seconds() < timeoutS) && linearOpMode.opModeIsActive()) {
-            setDrivePower(Math.abs(speed), Math.abs(speed));
+            // Reset the timer for the timeout
+            timer.reset();
 
-            telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
-            telemetry.addData("current pos", "%07d %07d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
-            telemetry.addData("target pos", "%07d %07d", motorDriveLeftFront.getTargetPosition(), motorDriveRightFront.getCurrentPosition());
-            telemetry.update();
+            // The robot drives to the desired target position until the timer goes
+            // pass the limit for a timeout or reaches the destination.
+            while (isDriveMotorsBusy() && (timer.seconds() < timeoutS) && linearOpMode.opModeIsActive()) {
+                setDrivePower(Math.abs(speed), Math.abs(speed));
+
+                telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
+                telemetry.addData("current pos", "%07d %07d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
+                telemetry.addData("target pos", "%07d %07d", motorDriveLeftFront.getTargetPosition(), motorDriveRightFront.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop the drive motors
+            setDrivePower(0, 0);
+
+            // Turns off RUN_TO_TARGET mode
+            setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
-
-        // Stop the drive motors
-        setDrivePower(0, 0);
-
-        // Turns off RUN_TO_TARGET mode
-        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
      * Moves the robot sideways using encoders
-     * @param percent  Percent of sideways speed
+     * @param speed   Sideways speed
      * @param distance Distance in millimeters
      * @param timeoutS Timeout in seconds
      */
-    public void moveSidewaysByEncoder(double percent, double distance, double timeoutS) {
-        percent = Range.clip(percent, 0, 1);
-        setAutoDrive(AutoDrive.SIDEWAYS);
-        setDriveTargetPosition(distance, distance);
-        setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
+    public void moveSidewaysByEncoder(double speed, double distance, double timeoutS) {
 
-        timer.reset();
-        while (isDriveMotorsBusy() && (timer.seconds() < timeoutS) && linearOpMode.opModeIsActive()) {
-            motorDriveLeftFront.setPower(Math.abs(DriveOp.SIDEWAYS_LF_SPEED * percent));
-            motorDriveLeftRear.setPower(Math.abs(DriveOp.SIDEWAYS_LR_SPEED * percent));
-            motorDriveRightFront.setPower(Math.abs(DriveOp.SIDEWAYS_RF_SPEED * percent));
-            motorDriveRightRear.setPower(Math.abs(DriveOp.SIDEWAYS_RR_SPEED * percent));
+        if (linearOpMode.opModeIsActive()) {
+            speed = Math.abs(Range.clip(speed, 0, 1));
+            setAutoDrive(AutoDrive.SIDEWAYS);
+            setDriveTargetPosition(distance, distance);
+            setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
-            telemetry.addData("current pos", "%07d %07d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
-            telemetry.addData("target pos", "%07d %07d", motorDriveLeftFront.getTargetPosition(), motorDriveRightFront.getCurrentPosition());
-            telemetry.update();
+            timer.reset();
+            while (isDriveMotorsBusy() && (timer.seconds() < timeoutS) && linearOpMode.opModeIsActive()) {
+                motorDriveLeftFront.setPower(speed);
+                motorDriveLeftRear.setPower(speed);
+                motorDriveRightFront.setPower(speed);
+                motorDriveRightRear.setPower(speed);
+
+                telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
+                telemetry.addData("current pos", "%07d %07d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
+                telemetry.addData("target pos", "%07d %07d", motorDriveLeftFront.getTargetPosition(), motorDriveRightFront.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop the drive motors
+            setDrivePower(0, 0);
+
+            // Turns off RUN_TO_TARGET mode
+            setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
-        // Stop the drive motors
-        setDrivePower(0, 0);
-
-        // Turns off RUN_TO_TARGET mode
-        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
      * Moves the lift by distance
      * @param speed    Lift Speed
-     * @param distance Distance that the lift motor should move
+     * @param distance Distance in millimeters
      * @param timeoutS Timeout in seconds
      */
     public void moveLiftByDistance(double speed, double distance, double timeoutS) {
         int newTargetPosition = (int)(distance * COUNTS_LIFT_PER_MM);
 
-        lift.getLiftMotor().setTargetPosition(newTargetPosition + lift.getLiftMotor().getCurrentPosition());
-        lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if (linearOpMode.opModeIsActive()) {
+            lift.getLiftMotor().setTargetPosition(newTargetPosition + lift.getCurrentPosition());
+            lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        lift.setLiftPower(Math.abs(speed));
-        timer.reset();
-        while (linearOpMode.opModeIsActive() && timer.seconds() < timeoutS && lift.getLiftMotor().isBusy()) {
-            telemetry.addData("status", "moving the lift");
-            telemetry.addData("speed", "%.2f", lift.getLiftPower());
-            telemetry.addData("target", "%07d", lift.getLiftMotor().getTargetPosition());
-            telemetry.addData("current", "%07d", lift.getLiftMotor().getCurrentPosition());
-            telemetry.update();
+            lift.setLiftPower(Math.abs(speed));
+            timer.reset();
+            while (linearOpMode.opModeIsActive() && timer.seconds() < timeoutS && lift.getLiftMotor().isBusy()) {
+                telemetry.addData("status", "moving the lift");
+                telemetry.addData("speed", "%.2f", lift.getLiftPower());
+                telemetry.addData("target", "%07d", lift.getCurrentPosition());
+                telemetry.addData("current", "%07d", lift.getCurrentPosition());
+                telemetry.update();
+            }
+            lift.setLiftPower(0);
+            lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
-        lift.setLiftPower(0);
-        lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
@@ -184,51 +199,53 @@ public class AutoBot extends DriveBot {
      * @param timeoutS Timeout seconds
      */
     public void turnByGyro(double speed, int angle, int offset, double timeoutS) {
-        int targetAngle = (int)sensors.getAngle() + angle;
-        int angleToTarget;
-        int currentHeading;
-        boolean turnRight = (angle > 0);
+        if (linearOpMode.opModeIsActive()) {
+            int targetAngle = (int)sensors.getAngle() + angle;
+            int angleToTarget;
+            int currentHeading;
+            boolean turnRight = (angle > 0);
 
-        // When a gyro sensor's heading goes to 360, the heading loops back to zero. Since
-        // the target angle can go over 360, the target angle would be sustracted by 180
-        // to make up the heading looping back to zero from 180.
-        if (targetAngle > 360) {
-            targetAngle = targetAngle - 360;
+            // When a gyro sensor's heading goes to 360, the heading loops back to zero. Since
+            // the target angle can go over 360, the target angle would be sustracted by 180
+            // to make up the heading looping back to zero from 180.
+            if (targetAngle > 360) {
+                targetAngle = targetAngle - 360;
+            }
+
+            timer.reset();
+            do {
+                // Get the angle distance to the target angle
+                currentHeading = (int)sensors.getAngle();
+                angleToTarget = currentHeading - targetAngle;
+
+                // Right side of the target angle
+                if (angleToTarget + offset > targetAngle) {
+                    if (turnRight) {
+                        setDrivePower(speed, -speed);
+                    } else {
+                        setDrivePower(-speed, speed);
+                    }
+                }
+
+                // Left side of the target angle
+                if (angleToTarget - offset < targetAngle) {
+                    if (turnRight) {
+                        setDrivePower(-speed, speed);
+                    } else {
+                        setDrivePower(speed, -speed);
+                    }
+                }
+
+                telemetry.addData("target", targetAngle);
+                telemetry.addData("current", currentHeading);
+                telemetry.addData("distance", angleToTarget);
+                telemetry.addData("speed", speed);
+                telemetry.update();
+            } while (Math.abs(angleToTarget) < offset && timer.seconds() < timeoutS);
+
+            // Stops the robot from turning
+            setDrivePower(0, 0);
         }
-
-        timer.reset();
-        do {
-            // Get the angle distance to the target angle
-            currentHeading = (int)sensors.getAngle();
-            angleToTarget = currentHeading - targetAngle;
-
-            // Right side of the target angle
-            if (angleToTarget + offset > targetAngle) {
-                if (turnRight) {
-                    setDrivePower(speed, -speed);
-                } else {
-                    setDrivePower(-speed, speed);
-                }
-            }
-
-            // Left side of the target angle
-            if (angleToTarget - offset < targetAngle) {
-                if (turnRight) {
-                    setDrivePower(-speed, speed);
-                } else {
-                    setDrivePower(speed, -speed);
-                }
-            }
-
-            telemetry.addData("target", targetAngle);
-            telemetry.addData("current", currentHeading);
-            telemetry.addData("distance", angleToTarget);
-            telemetry.addData("speed", speed);
-            telemetry.update();
-        } while (Math.abs(angleToTarget) < offset && timer.seconds() < timeoutS);
-
-        // Stops the robot from turning
-        setDrivePower(0, 0);
     }
 
     /**

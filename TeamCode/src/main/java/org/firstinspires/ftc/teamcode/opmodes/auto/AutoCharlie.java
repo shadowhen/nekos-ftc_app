@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.robot.Bot;
+
 /**
  * The class is based on the AutoBeta class with the robot being able to land on the ground from
  * the lander. Unlike AutoBeta, the class implements the landing in the autonomous, making this
@@ -45,8 +47,8 @@ public class AutoCharlie extends AutoOpMode {
         sleep(1000);
 
         // Deposits the team marker in the depot for autonomous points
-        setSweeperLiftPower(-0.5, 500);
-        setSweeperLiftPower(0.5, 1000);
+        setSweeperLiftPower(-Bot.VERTICAL_LIFT_SPEED, 500);
+        setSweeperLiftPower(Bot.VERTICAL_LIFT_SPEED, 1000);
 
         // Turns the robot and moves towards the pit for parking points
         robot.moveByEncoder(TURN_SPEED, -740, 740, 5);

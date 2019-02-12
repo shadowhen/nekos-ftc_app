@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
  * @author Henry
  * @version 1.0
  */
-@Autonomous(name = "Auto Delta", group = "auto")
+@Autonomous(name = "Auto Delta - Webcam", group = "auto")
 public class AutoDelta extends AutoOpMode {
 
     private MineralPosition mineralPosition;
@@ -21,7 +21,7 @@ public class AutoDelta extends AutoOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
-        initDetector(false);
+        initDetector(true);
 
         mineralPosition = MineralPosition.NONE;
 
@@ -58,7 +58,6 @@ public class AutoDelta extends AutoOpMode {
                 }
             }
 
-            robot.getSweeper().getSweeperServo().setPower(0.0);
             telemetry.addData(">", "waiting for start command");
             telemetry.addData("mineral position", mineralPosition.toString());
             telemetry.update();

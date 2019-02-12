@@ -36,7 +36,7 @@ public class AutoOpMode extends LinearOpMode {
     protected VuforiaDetector vuforia;
     protected TensorFlowDetector detector;
 
-    // Handles with recongitions by Tensof Flow Object Detection
+    // Handles with recognitions by Tensorflow Object Detection
     protected List<Recognition> recognitions;
 
     // Autonomous robot
@@ -46,15 +46,40 @@ public class AutoOpMode extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot = new AutoBot(this);
         timer = new ElapsedTime();
+        vuforia = new VuforiaDetector();
+        detector = new TensorFlowDetector();
 
         robot.init(hardwareMap, telemetry);
         robot.setAutoDrive(AutoDrive.FORWARD);
 
-        vuforia = new VuforiaDetector();
-        detector = new TensorFlowDetector();
+        telemetry.addData("status", "ready to start...");
+        telemetry.update();
     }
 
+    /**
+     * Initializes the imu on the Rev Hub
+     */
+    public void initIMU() {
+        // Calibrates the gyro sensor in the imu
+        telemetry.addData("status", "calibrating the gyro...");
+        telemetry.update();
+        if (!isStopRequested() && !robot.getSensors().isGyroCalibrated()) {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData("status", "ready to start...");
+        telemetry.update();
+    }
+
+    /**
+     * Initializes the vuforia and the tensorflow lite object detector
+     * @param useWebcam
+     */
     public void initDetector(boolean useWebcam) {
+        telemetry.addData("status", "setting up vuforia...");
+        telemetry.update();
+
         if (useWebcam) {
             vuforia.init(hardwareMap, VuforiaKey.VUFORIA_KEY, VuforiaDetector.WEBCAM_NAME);
         } else {
@@ -62,12 +87,15 @@ public class AutoOpMode extends LinearOpMode {
         }
 
         detector.init(hardwareMap, vuforia.getVuforia());
+
+        telemetry.addData("status", "ready to start...");
+        telemetry.update();
     }
 
     /**
      * Set the lift power for certain amount of time
      * @param power Power
-     * @param ms    S;eep
+     * @param ms    Milliseconds to sleep
      */
     public void setLiftPower(double power, long ms) {
         // Set the power for the robot to raise or lower

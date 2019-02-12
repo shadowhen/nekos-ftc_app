@@ -48,7 +48,6 @@ public class DriveSpeedTestOp extends OpMode {
     public void init_loop() {
         // Tells the user that the robot is ready to start
         telemetry.addData(">", "waiting for START...");
-        telemetry.addData("position", robot.getDumper().getServoDumper().getPosition());
         telemetry.update();
     }
 

@@ -75,8 +75,8 @@ public class AutoDelta extends AutoOpMode {
                 robot.moveByEncoder(DRIVE_SPEED, -500, -500, 5);
                 robot.moveByEncoder(0.5, 1480, -1480, 5);
 
-                setLiftPower(-0.5, 500);
-                setLiftPower(0.5, 1000);
+                liftByTime(SWEEPER_DEPLOY_SPEED, 500);
+                liftByTime(SWEEPER_RETRACT_SPEED, 1000);
 
                 robot.moveByEncoder(0.5, -740, 740, 5);
                 robot.moveByEncoder(0.75, 1000, 1000, 5);
@@ -86,8 +86,8 @@ public class AutoDelta extends AutoOpMode {
                 robot.moveByEncoder(DRIVE_SPEED,  -500, -500, 5);
                 robot.moveByEncoder(0.5, 1480, -1480, 5);
 
-                setLiftPower(-0.5, 500);
-                setLiftPower(0.5, 1000);
+                liftByTime(SWEEPER_DEPLOY_SPEED, 500);
+                liftByTime(SWEEPER_RETRACT_SPEED, 1000);
 
                 robot.moveByEncoder(0.5, -740, 740, 5);
                 robot.moveByEncoder(0.75, 1000, 1000, 5);
@@ -97,14 +97,14 @@ public class AutoDelta extends AutoOpMode {
                 robot.moveByEncoder(DRIVE_SPEED,  -500, -500, 5);
                 robot.moveByEncoder(0.5, 1480, -1480, 5);
 
-                setLiftPower(-0.5, 500);
-                setLiftPower(0.5, 1000);
+                liftByTime(SWEEPER_DEPLOY_SPEED, 500);
+                liftByTime(SWEEPER_RETRACT_SPEED, 1000);
 
                 robot.moveByEncoder(0.5, -740, 740, 5);
                 robot.moveByEncoder(0.75, 1000, 1000, 5);
         }
 
-        setLiftPower(-0.5, 500);
+        liftByTime(SWEEPER_DEPLOY_SPEED, 500);
 
         if (detector.getDetector() != null) {
             detector.getDetector().deactivate();

@@ -27,6 +27,9 @@ public class AutoOpMode extends LinearOpMode {
     public static final double TURN_SPEED = 0.25;
     public static final double SIDEWAYS_SPEED = 0.4;
 
+    public static final double SWEEPER_DEPLOY_SPEED = -0.5;
+    public static final double SWEEPER_RETRACT_SPEED = 0.5;
+
     public static final long SLEEP_DRIVE = 500;
     public static final TfODSide CAMERA_SIDE = TfODSide.LEFT;
 
@@ -97,7 +100,7 @@ public class AutoOpMode extends LinearOpMode {
      * @param power Power
      * @param ms    Milliseconds to sleep
      */
-    public void setLiftPower(double power, long ms) {
+    public void liftByTime(double power, long ms) {
         // Set the power for the robot to raise or lower
         robot.getLift().setLiftPower(power);
 
@@ -250,28 +253,39 @@ public class AutoOpMode extends LinearOpMode {
         int silverMineralX = -1;
 
         timer.reset();
-        while (timer.seconds() < timeoutS) {
+        while (timer.seconds() < timeoutS && mineralPosition.equals(MineralPosition.NONE)) {
             recognitions = detector.getDetector().getRecognitions();
 
-            // Will continue to make decision if the detected minerals is exactly TWO
-            if (recognitions != null && recognitions.size() == 2) {
-                for (Recognition recognition : recognitions) {
-                    if (recognition.getLabel().equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
-                        goldMineralX = (int) recognition.getLeft();
-                    } else {
-                        silverMineralX = (int) recognition.getLeft();
+            // Will make a decision if the detected minerals is exactly TWO
+            if (recognitions != null) {
+                if (recognitions.size() == 2) {
+                    for (Recognition recognition : recognitions) {
+                        if (recognition.getLabel().equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
+                            goldMineralX = (int) recognition.getLeft();
+                        } else {
+                            silverMineralX = (int) recognition.getLeft();
+                        }
                     }
+
+                    // Determine the position based on the minerals
+                    if (goldMineralX > silverMineralX) {
+                        mineralPosition = MineralPosition.RIGHT;
+                    } else if (goldMineralX < silverMineralX) {
+                        mineralPosition = MineralPosition.LEFT;
+                    }
+
+                    telemetry.addData("mineral gold x", goldMineralX);
+                    telemetry.addData("mineral silver x", silverMineralX);
+
+                    // Reset the x-positions of the minerals
+                    goldMineralX = -1;
+                    silverMineralX = -1;
                 }
 
-                // Determine the position based on the minerals
-                if (goldMineralX > silverMineralX) {
-                    mineralPosition = MineralPosition.RIGHT;
-                } else if (goldMineralX < silverMineralX) {
-                    mineralPosition = MineralPosition.LEFT;
-                }
-
-                break;
+                telemetry.addData("known minerals", recognitions.size());
             }
+
+            telemetry.update();
         }
 
         return mineralPosition;

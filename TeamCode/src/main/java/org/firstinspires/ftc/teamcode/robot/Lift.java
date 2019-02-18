@@ -23,8 +23,8 @@ public class Lift {
     public void init(HardwareMap hwMap) {
         liftMotor = hwMap.get(DcMotor.class, "motor_lift");
 
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         liftMotor.setPower(0.0);
     }

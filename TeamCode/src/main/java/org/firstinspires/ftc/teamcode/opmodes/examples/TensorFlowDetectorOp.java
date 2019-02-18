@@ -23,7 +23,7 @@ public class TensorFlowDetectorOp extends LinearOpMode {
     private TensorFlowDetector tfod;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         List<Recognition> recognitions;
         boolean detectedGold = false;
         float leftMost = 0.0f;

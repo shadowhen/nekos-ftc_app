@@ -2,99 +2,44 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.robot.AutoDrive;
+import org.firstinspires.ftc.teamcode.robot.Bot;
+import org.firstinspires.ftc.teamcode.robot.MineralPosition;
 import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
 
 /**
- * This class expands the AutoOpMode.class to tell the robot to knock off the gold mineral, drop
- * its team marker, and park in one of the spots which gives the team points.
+ * This class presents Autonomous Plan Alpha which the robot drops from the lander on the
+ * depot side, sample the gold mineral, drop the team marker, and park partially on the crater.
  *
  * @author Henry
  * @version 1.0
  */
-@Autonomous(name = "Auto Alpha", group = "auto")
+@Autonomous(name = "Auto Alpha - COMPETITION - CRATER - LEFT SIDE - LANDING - PARK ONLY", group = "auto")
 public class AutoAlpha extends AutoOpMode {
+
+    private MineralPosition mineralPosition;
 
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
 
-        vuforia.init(hardwareMap, VuforiaKey.VUFORIA_KEY, "Webcam 1");
-        detector.init(hardwareMap, vuforia.getVuforia());
-
         // Prevents the robot from detaching the REV hub
         while (!isStarted()) {
-            telemetry.addData(">", "waiting for start command");
+            telemetry.addData("INSTRUCTIONS", "PLACE THE HOOK ON THE LEFT SIDE");
+            telemetry.addData(">", "Press START to start autonomous");
             telemetry.update();
         }
 
-        if (detector.getDetector() != null) {
-            detector.getDetector().activate();
-        }
+        // Lands on the ground by raising the lift
+        liftByTime(Bot.VERTICAL_RAISE_SPEED, 3100);
 
-        robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
+        // Moves to the left sideways
+        robot.moveSidewaysByEncoder(DRIVE_SPEED, 200, 5);
 
-        sleep(SLEEP_DRIVE);
+        // Moves forward so the robot can get into position
+        robot.moveByEncoder(DRIVE_SPEED, 600, 600, 5);
 
-        switch (findGoldMineralFromPosition(5)) {
-            case LEFT:
-                robot.setAutoDrive(AutoDrive.SIDEWAYS);
-                robot.moveByEncoder(SIDEWAYS_SPEED, 400, 400, 5);
+        sleep(1000);
 
-                sleep(SLEEP_DRIVE);
-                robot.setAutoDrive(AutoDrive.FORWARD);
-                robot.moveByEncoder(DRIVE_SPEED, 400, 400, 5);
-
-                sleep(SLEEP_DRIVE);
-                robot.setAutoDrive(AutoDrive.SIDEWAYS);
-                robot.moveByEncoder(SIDEWAYS_SPEED, 400, 400, 5);
-
-                sleep(SLEEP_DRIVE);
-                dropTeamMarker(400, 2000, 400);
-                break;
-            case RIGHT:
-                robot.setAutoDrive(AutoDrive.SIDEWAYS);
-                robot.moveByEncoder(SIDEWAYS_SPEED, 400, 400, 5);
-
-                sleep(SLEEP_DRIVE);
-                robot.setAutoDrive(AutoDrive.FORWARD);
-                robot.moveByEncoder(DRIVE_SPEED, 400, 400, 5);
-
-                sleep(SLEEP_DRIVE);
-                robot.setAutoDrive(AutoDrive.SIDEWAYS);
-                robot.moveByEncoder(SIDEWAYS_SPEED, 400, 400, 5);
-
-                sleep(SLEEP_DRIVE);
-                dropTeamMarker(400, 2000, 400);
-
-                sleep(SLEEP_DRIVE);
-                robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
-                break;
-            default:
-                // If the robot cannot find a gold mineral or finds the gold mineral at the center
-                robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
-                sleep(SLEEP_DRIVE);
-                dropTeamMarker(400, 2000, 400);
-                sleep(SLEEP_DRIVE);
-                robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
-        }
-
-        if (detector.getDetector() != null) {
-            detector.getDetector().shutdown();
-        }
-    }
-
-    private void dropTeamMarker(double distance, long ms, double turnDistance) {
-        robot.setAutoDrive(AutoDrive.FORWARD);
-
-        robot.moveByEncoder(DRIVE_SPEED, distance, distance,5);
-
-        sleep(SLEEP_DRIVE);
-
-        robot.getSweeper().setLiftPower(0.8);
-        sleep(ms);
-        robot.getSweeper().setLiftPower(0);
-
-        robot.moveByEncoder(TURN_SPEED, -turnDistance, turnDistance, 5);
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 }

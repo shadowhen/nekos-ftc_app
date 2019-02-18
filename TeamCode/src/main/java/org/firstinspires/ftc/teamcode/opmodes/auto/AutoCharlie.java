@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.robot.Bot;
@@ -14,8 +13,7 @@ import org.firstinspires.ftc.teamcode.robot.Bot;
  * @author Henry
  * @version 1.0
  */
-@Autonomous(name = "Auto Charlie", group = "auto")
-@Disabled
+@Autonomous(name = "Auto Charlie - COMPETITION - CRATER - LEFT SIDE - LANDING - CLAIM DEPOT - PARK OUR CRATER", group = "auto")
 public class AutoCharlie extends AutoOpMode {
 
     @Override
@@ -29,31 +27,32 @@ public class AutoCharlie extends AutoOpMode {
         robot.getLift().getLiftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         while (!isStarted()) {
+            telemetry.addData("INSTRUCTIONS", "PLACE THE HOOK ON THE LEFT SIDE");
             telemetry.addData(">", "Press START to start encoder drive forward");
             telemetry. update();
         }
 
-        robot.getLift().getLiftMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        liftByTime(Bot.VERTICAL_RAISE_SPEED, 3100);
 
-        // Lower the robot onto the floor from the lander
-        robot.moveLiftByDistance(0.5, 1000, 5);
+        robot.moveSidewaysByEncoder(SIDEWAYS_SPEED, 200, 5);
 
-        // Moves to the left sideways
-        robot.moveSidewaysByEncoder(0.1, -60, 5);
-        sleep(1000);
+        robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
 
-        // Runs through the minerals
-        robot.moveByEncoder(DRIVE_SPEED, 1010, 1010, 5);
-        sleep(1000);
+        robot.moveByEncoder(TURN_SPEED, -450, 450, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 1000, 1000, 5);
 
-        // Deposits the team marker in the depot for autonomous points
-        setSweeperLiftPower(-Bot.VERTICAL_LIFT_SPEED, 500);
-        setSweeperLiftPower(Bot.VERTICAL_LIFT_SPEED, 1000);
+        robot.moveByEncoder(TURN_SPEED, -300, 300, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 1000, 1000, 5);
 
-        // Turns the robot and moves towards the pit for parking points
-        robot.moveByEncoder(TURN_SPEED, -740, 740, 5);
-        sleep(1000);
-        robot.moveByEncoder(DRIVE_SPEED, 1500, 1500, 10);
-        setSweeperLiftPower(-0.5, 500);
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+        sleep(500);
+        setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 600);
+
+        robot.moveByEncoder(DRIVE_SPEED, -1000, -1000, 5);
+
+        robot.turnByEncoder(TURN_SPEED, -1110, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
+
 }

@@ -21,7 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class SensorBot {
 
     private Orientation lastAngles = new Orientation();
-    private double globalAngle = 0.0;
+    private int globalAngle = 0;
 
     private BNO055IMU imu;
 
@@ -91,5 +91,27 @@ public class SensorBot {
      */
     public double getSteer(double error, double pCoeff) {
         return Range.clip(error * pCoeff, 0.0, 1.0);
+    }
+
+    /**
+     * Reset the heading of the imu's gyro sensor
+     */
+    public void resetAngle() {
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        globalAngle = 0;
+    }
+
+    /**
+     * Returns the correction based on the zero degrees
+     * @return correction
+     */
+    public double getCorrection(double gain, double offset) {
+        double angle = getAngle();
+
+        if (angle >= -offset && angle <= offset) {
+            return 0;
+        } else {
+            return -angle * gain;
+        }
     }
 }

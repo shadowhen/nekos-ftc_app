@@ -21,7 +21,7 @@ public class CalibrateEncoderOp extends LinearOpMode {
     private boolean resetEncoderButtonDown;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         robot = new DriveBot();
         robot.init(hardwareMap, telemetry);
 

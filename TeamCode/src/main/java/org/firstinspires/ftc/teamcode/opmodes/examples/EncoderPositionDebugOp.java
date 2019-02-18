@@ -25,7 +25,7 @@ public class EncoderPositionDebugOp extends LinearOpMode {
     private boolean resetButtonDown;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         robot = new DriveBot();
         robot.init(hardwareMap, telemetry);
 

@@ -28,7 +28,7 @@ public class ExternalCameraTestOp extends LinearOpMode {
     private boolean hasInitTfod;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         initVuforia();
 
         while (!isStarted()) {

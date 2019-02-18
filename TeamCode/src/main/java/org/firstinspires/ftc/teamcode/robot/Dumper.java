@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
 
 /**
  * This class implements the robotic function for the dumper which the dumps the mineral(s) into
@@ -13,13 +11,10 @@ import com.qualcomm.robotcore.util.Range;
  */
 public class Dumper {
 
-    public static final double MIN_POWER = -0.25;
-    public static final double MAX_POWER = 0.25;
-
     private DcMotor motorDumper;
 
     /**
-     * Intalizes the hardware on the Dumper class
+     * Initializes the hardware on the Dumper class
      * @param hwMap Hardware Map
      */
     public void init(HardwareMap hwMap) {

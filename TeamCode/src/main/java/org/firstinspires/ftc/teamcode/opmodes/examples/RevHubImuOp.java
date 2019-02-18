@@ -23,7 +23,7 @@ public class RevHubImuOp extends LinearOpMode {
     private double globalAngle;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         robot = new AutoBot();
         robot.init(hardwareMap, telemetry);
         robot.setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -75,6 +75,8 @@ public class RevHubImuOp extends LinearOpMode {
             telemetry.addData("a button", aButton);
             telemetry.addData("b button", bButton);
             telemetry.addData("x button", xButton);
+            telemetry.addData("global angle", globalAngle);
+            telemetry.addData("last known angle", lastAngles.firstAngle);
             telemetry.update();
         }
     }
@@ -132,18 +134,18 @@ public class RevHubImuOp extends LinearOpMode {
         double leftPower = 0, rightPower = 0;
         power = Math.abs(power);
         resetAngle();
-        if (degrees < 0) {
-            leftPower = -power;
-            rightPower = power;
-        } else if (degrees > 0) {
+        if (degrees > 0) {
             leftPower = power;
             rightPower = -power;
+        } else {
+            leftPower = -power;
+            rightPower = power;
         }
 
         robot.setDrivePower(leftPower, rightPower);
 
-        if (degrees < 0) {
-            while (opModeIsActive() && ((getAngle() == 0) || (getAngle() > degrees))) {
+        if (degrees > 0) {
+            while (opModeIsActive() && ((getAngle() == 0) || (getAngle() < degrees))) {
                 telemetry.addData("Status", "turning right");
                 telemetry.update();
             }

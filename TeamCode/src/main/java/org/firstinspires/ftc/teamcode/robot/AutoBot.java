@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.opmodes.DriveOp;
 
 /**
  * This class extends the DriveBot.class to implement autonomous features into the robot, so
@@ -31,6 +30,7 @@ public class AutoBot extends DriveBot {
     private ElapsedTime timer;
     private SensorBot sensors;
 
+    // Used for accessing methods in the linearOpMode
     private LinearOpMode linearOpMode;
 
     public AutoBot() {
@@ -69,6 +69,12 @@ public class AutoBot extends DriveBot {
         return (int)(distance * COUNTS_PER_MM);
     }
 
+    /**
+     * Set a new target position by converting distance into encoder counts and then adding the
+     * counts to the current target position and set it as the new target position.
+     * @param leftDist  Left distance in millimeters
+     * @param rightDist Right distance in millimeters
+     */
     public void setDriveTargetPosition(double leftDist, double rightDist) {
         // Convert the distance values into target values
         int newLeftTarget = convertDistanceToPosition(leftDist);
@@ -90,6 +96,10 @@ public class AutoBot extends DriveBot {
      * @param timeoutS  Timeout in seconds
      */
     public void moveByEncoder(double speed, double leftDist, double rightDist, double timeoutS) {
+        double correction;
+        double leftSpeed;
+        double rightSpeed;
+        double max;
 
         if (linearOpMode.opModeIsActive()) {
             // Set the direction of the drive motors so the robot can drive forward and backward
@@ -106,13 +116,27 @@ public class AutoBot extends DriveBot {
             // target position
             speed = Range.clip(Math.abs(speed), 0.0, 1.0);
 
+            // Reset the gyro sensor's heading to zero for correcting direction
+            sensors.resetAngle();
+
             // Reset the timer for the timeout
             timer.reset();
 
             // The robot drives to the desired target position until the timer goes
             // pass the limit for a timeout or reaches the destination.
             while (isDriveMotorsBusy() && (timer.seconds() < timeoutS) && linearOpMode.opModeIsActive()) {
-                setDrivePower(Math.abs(speed), Math.abs(speed));
+                // TODO: Add way to correct the direction of the robot if the robot goes slightly off
+                /*correction = sensors.getCorrection(.10, 0);
+                leftSpeed = speed - correction;
+                rightSpeed = speed + correction;
+                max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
+                if (max > 1.0) {
+                    leftSpeed /= max;
+                    rightSpeed /= max;
+                }
+                setDrivePower(Math.abs(leftSpeed), Math.abs(rightSpeed));*/
+
+                setDrivePower(speed, speed);
 
                 telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
                 telemetry.addData("current pos", "%07d %07d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
@@ -125,6 +149,9 @@ public class AutoBot extends DriveBot {
 
             // Turns off RUN_TO_TARGET mode
             setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            // Reset the angle so the robot can use the gyro sensor for other purposes
+            sensors.resetAngle();
         }
     }
 
@@ -164,6 +191,10 @@ public class AutoBot extends DriveBot {
 
     }
 
+    public void turnByEncoder(double speed, double turnDist, double timeoutS) {
+        moveByEncoder(speed, turnDist, -turnDist, timeoutS);
+    }
+
     /**
      * Moves the lift by distance
      * @param speed    Lift Speed
@@ -192,59 +223,60 @@ public class AutoBot extends DriveBot {
     }
 
     /**
-     * Turns the robot by angle
+     * Turns the robot by degrees
      * @param speed    Speed
-     * @param angle    Turn angle
-     * @param offset   Offset angle
-     * @param timeoutS Timeout seconds
+     * @param degrees  Turn in degrees
+     * @param timeoutS Timeout in seconds
      */
-    public void turnByGyro(double speed, int angle, int offset, double timeoutS) {
-        if (linearOpMode.opModeIsActive()) {
-            int targetAngle = (int)sensors.getAngle() + angle;
-            int angleToTarget;
-            int currentHeading;
-            boolean turnRight = (angle > 0);
+    public void turnByGyro(double speed, int degrees, double timeoutS) {
+        double leftPower, rightPower;
 
-            // When a gyro sensor's heading goes to 360, the heading loops back to zero. Since
-            // the target angle can go over 360, the target angle would be sustracted by 180
-            // to make up the heading looping back to zero from 180.
-            if (targetAngle > 360) {
-                targetAngle = targetAngle - 360;
+        if (linearOpMode.opModeIsActive() && degrees != 0) {
+            // Reset the degrees first before turning
+            sensors.resetAngle();
+
+            speed = Math.abs(speed);
+            if (degrees > 0) {
+                leftPower = speed;
+                rightPower = -speed;
+            } else {
+                leftPower = -speed;
+                rightPower = speed;
             }
 
+            // Reset the timer
             timer.reset();
-            do {
-                // Get the angle distance to the target angle
-                currentHeading = (int)sensors.getAngle();
-                angleToTarget = currentHeading - targetAngle;
 
-                // Right side of the target angle
-                if (angleToTarget + offset > targetAngle) {
-                    if (turnRight) {
-                        setDrivePower(speed, -speed);
-                    } else {
-                        setDrivePower(-speed, speed);
-                    }
+            // Run the motors
+            setDrivePower(leftPower, rightPower);
+
+            // The robot turns until it has reached its desired degree
+            if (degrees > 0) {
+                while (linearOpMode.opModeIsActive() &&
+                        ((sensors.getAngle() == 0) || (sensors.getAngle() < degrees)) &&
+                        timer.seconds() < timeoutS) {
+                    telemetry.addData("status", "turning left");
+                    telemetry.addData("desired degrees", degrees);
+                    telemetry.addData("time", "%.2f", timeoutS - timer.seconds());
+                    telemetry.update();
                 }
-
-                // Left side of the target angle
-                if (angleToTarget - offset < targetAngle) {
-                    if (turnRight) {
-                        setDrivePower(-speed, speed);
-                    } else {
-                        setDrivePower(speed, -speed);
-                    }
+            } else {
+                while (linearOpMode.opModeIsActive() &&
+                        ((sensors.getAngle() == 0) || (sensors.getAngle() > degrees))
+                        && timer.seconds() < timeoutS) {
+                    telemetry.addData("status", "turning right");
+                    telemetry.addData("desired degrees", degrees);
+                    telemetry.addData("time", "%.2f", timeoutS - timer.seconds());
+                    telemetry.update();
                 }
+            }
 
-                telemetry.addData("target", targetAngle);
-                telemetry.addData("current", currentHeading);
-                telemetry.addData("distance", angleToTarget);
-                telemetry.addData("speed", speed);
-                telemetry.update();
-            } while (Math.abs(angleToTarget) < offset && timer.seconds() < timeoutS);
-
-            // Stops the robot from turning
+            // Stop the robot
             setDrivePower(0, 0);
+
+            // Reset the angle so the robot can use the gyro sensor without any problems such
+            // direction correction.
+            sensors.resetAngle();
         }
     }
 

@@ -27,7 +27,7 @@ public class AutoDemo extends AutoOpMode {
             detector.getDetector().activate();
         }
 
-        while (!isStopRequested() && opModeIsActive()) {
+        while (!isStarted()) {
             telemetry.addData("status", "waiting...");
             telemetry.update();
         }
@@ -39,21 +39,21 @@ public class AutoDemo extends AutoOpMode {
         switch (mineralPosition) {
             case LEFT:
                 robot.moveSidewaysByEncoder(DRIVE_SPEED, -400, 5);
-                robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
+                //robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
                 break;
             case RIGHT:
                 robot.moveSidewaysByEncoder(DRIVE_SPEED, 400, 5);
-                robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
+                //robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
                 break;
             default:
-                robot.moveSidewaysByEncoder(DRIVE_SPEED, 600, 5);
-                robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
+                robot.moveByEncoder(DRIVE_SPEED, -100, -100, 5);
+                //robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
         }
         sleep(500);
 
         // Drop the team marker
-        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+        /*setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
         sleep(500);
-        setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 750);
+        setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 750);*/
     }
 }

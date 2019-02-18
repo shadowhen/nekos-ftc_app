@@ -19,6 +19,8 @@ import org.firstinspires.ftc.teamcode.robot.Dumper;
 @TeleOp(name = "Drive Op 1.3 - Competition", group = "drive")
 public class DriveOp extends OpMode {
 
+    private static final double SWEEPER_LIFT_SPEED = 0.9;
+
     // Control button for the sideways control on gamepad 1
     private boolean sidewaysControlState = false;
     private boolean sidewaysControlStateButtonDown;
@@ -100,7 +102,7 @@ public class DriveOp extends OpMode {
         }
 
         // Set the drive power based on the input of gamepad 1
-        if (gamepad1.left_bumper) {
+        if (gamepad1.right_bumper) {
             // Move the robot sideways left or turn left depending the sideways state
             if (!sidewaysControlState) {
                 robot.getMotorDriveLeftFront().setPower(-Bot.DRIVE_SPEED);
@@ -112,7 +114,7 @@ public class DriveOp extends OpMode {
                 robot.setDrivePowerTurn(Bot.TURN_SPEED, Bot.TURN_SPEED);
             }
 
-        } else if (gamepad1.right_bumper) {
+        } else if (gamepad1.left_bumper) {
             // Move the robot sideways right or turn right using the right bumper
             if (!sidewaysControlState) {
                 robot.getMotorDriveLeftFront().setPower(Bot.DRIVE_SPEED);
@@ -169,10 +171,10 @@ public class DriveOp extends OpMode {
         double liftPower = 0.0;
 
         // Raises or lower the lift using the lander motor
-        if (gamepad2.x) {
+        if (gamepad2.y) {
             liftPower -= Bot.VERTICAL_LIFT_SPEED;
         }
-        if (gamepad2.b) {
+        if (gamepad2.a) {
             liftPower += Bot.VERTICAL_LIFT_SPEED;
         }
         robot.getLift().setLiftPower(liftPower);
@@ -206,10 +208,10 @@ public class DriveOp extends OpMode {
 
         // Deploys or retracts the sweeper using the lift motor
         if (gamepad2.dpad_up) {
-            liftPower += Bot.SWEEPER_LIFT_SPEED;
+            liftPower += SWEEPER_LIFT_SPEED;
         }
         if (gamepad2.dpad_down) {
-            liftPower -= Bot.SWEEPER_LIFT_SPEED;
+            liftPower -= SWEEPER_LIFT_SPEED;
         }
         if (gamepad2.left_stick_y != 0.0f) {
             liftPower = Range.clip(gamepad2.left_stick_y, -Bot.SWEEPER_LIFT_SPEED, Bot.SWEEPER_LIFT_SPEED);
@@ -225,10 +227,10 @@ public class DriveOp extends OpMode {
      */
     private void slide() {
         double sliderPower = 0.0;
-        if (gamepad2.a) {
+        if (gamepad2.x) {
             sliderPower -= Bot.SLIDER_SPEED;
         }
-        if (gamepad2.y) {
+        if (gamepad2.b) {
             sliderPower += Bot.SLIDER_SPEED;
         }
         robot.getSweeper().setSliderPower(sliderPower);

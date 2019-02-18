@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.robot.MineralPosition;
@@ -22,6 +23,7 @@ import java.util.List;
  * @version 1.0
  */
 @Autonomous(name = "Push the Gold Mineral", group = "test")
+@Disabled
 public class AutoPushGoldMineral extends AutoOpMode {
 
     private VuforiaDetector vuforia;

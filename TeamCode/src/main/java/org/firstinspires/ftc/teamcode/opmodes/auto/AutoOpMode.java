@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.robot.AutoBot;
 import org.firstinspires.ftc.teamcode.robot.AutoDrive;
 import org.firstinspires.ftc.teamcode.robot.MineralPosition;
+import org.firstinspires.ftc.teamcode.robot.MineralType;
 import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
 import org.firstinspires.ftc.teamcode.robot.TfODSide;
 import org.firstinspires.ftc.teamcode.robot.VuforiaDetector;
@@ -24,8 +25,11 @@ import java.util.List;
 public class AutoOpMode extends LinearOpMode {
 
     public static final double DRIVE_SPEED = 0.5;
-    public static final double TURN_SPEED = 0.25;
+    public static final double TURN_SPEED = 0.5;
     public static final double SIDEWAYS_SPEED = 0.4;
+
+    public static final double SWEEPER_DEPLOY_SPEED = -0.5;
+    public static final double SWEEPER_RETRACT_SPEED = 0.8;
 
     public static final long SLEEP_DRIVE = 500;
     public static final TfODSide CAMERA_SIDE = TfODSide.LEFT;
@@ -36,7 +40,7 @@ public class AutoOpMode extends LinearOpMode {
     protected VuforiaDetector vuforia;
     protected TensorFlowDetector detector;
 
-    // Handles with recongitions by Tensof Flow Object Detection
+    // Handles with recognitions by Tensorflow Object Detection
     protected List<Recognition> recognitions;
 
     // Autonomous robot
@@ -46,15 +50,32 @@ public class AutoOpMode extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot = new AutoBot(this);
         timer = new ElapsedTime();
+        vuforia = new VuforiaDetector();
+        detector = new TensorFlowDetector();
 
         robot.init(hardwareMap, telemetry);
         robot.setAutoDrive(AutoDrive.FORWARD);
 
-        vuforia = new VuforiaDetector();
-        detector = new TensorFlowDetector();
+        // Calibrates the gyro sensor in the imu
+        telemetry.addData("status", "calibrating the gyro...");
+        telemetry.update();
+        if (!isStopRequested() && !robot.getSensors().isGyroCalibrated()) {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData("status", "ready to start...");
+        telemetry.update();
     }
 
+    /**
+     * Initializes the vuforia and the tensorflow lite object detector
+     * @param useWebcam
+     */
     public void initDetector(boolean useWebcam) {
+        telemetry.addData("status", "setting up vuforia...");
+        telemetry.update();
+
         if (useWebcam) {
             vuforia.init(hardwareMap, VuforiaKey.VUFORIA_KEY, VuforiaDetector.WEBCAM_NAME);
         } else {
@@ -62,24 +83,25 @@ public class AutoOpMode extends LinearOpMode {
         }
 
         detector.init(hardwareMap, vuforia.getVuforia());
+
+        telemetry.addData("status", "ready to start...");
+        telemetry.update();
     }
 
     /**
      * Set the lift power for certain amount of time
      * @param power Power
-     * @param ms    S;eep
+     * @param ms    Milliseconds to sleep
      */
-    public void setLiftPower(double power, long ms) {
+    public void liftByTime(double power, long ms) {
         // Set the power for the robot to raise or lower
         robot.getLift().setLiftPower(power);
-        robot.getLift().setLanderPower(power);
 
         // Sleeps for certian amount of time
         sleep(ms);
 
         // Zero the power to raise or lower the robot on the lander
         robot.getLift().setLiftPower(0.0);
-        robot.getLift().setLanderPower(0.0);
     }
 
     /**
@@ -212,36 +234,84 @@ public class AutoOpMode extends LinearOpMode {
 
     /**
      * Scans for gold from looking at two minerals for certain amount of time.
-     * @param timeoutS
+     * @param timeoutS Timeout in seconds
      * @return Position of the gold mineral
      */
     public MineralPosition detectGoldFromTwoMinerals(double timeoutS) {
+        // Detected Mineral Position for Gold
         MineralPosition mineralPosition = MineralPosition.NONE;
+
+        // Positions of the minerals
         int goldMineralX = -1;
-        int silverMineralX = -1;
+        int silverMineralX1 = -1;
+        int silverMineralX2 = -1;
 
         timer.reset();
-        while (timer.seconds() < timeoutS) {
+        while (timer.seconds() < timeoutS && mineralPosition.equals(MineralPosition.NONE)) {
             recognitions = detector.getDetector().getRecognitions();
-            if (recognitions != null && recognitions.size() == 2) {
-                for (Recognition recognition : recognitions) {
-                    if (recognition.getLabel().equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
-                        goldMineralX = (int) recognition.getLeft();
-                    } else {
-                        silverMineralX = (int) recognition.getLeft();
+
+            // Will make a decision if the detected minerals is exactly TWO
+            if (recognitions != null) {
+                if (recognitions.size() == 2) {
+                    for (Recognition recognition : recognitions) {
+                        if (recognition.getLabel().equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
+                            goldMineralX = (int) recognition.getLeft();
+                        } else if (silverMineralX1 < 0){
+                            silverMineralX1 = (int) recognition.getLeft();
+                        } else {
+                            silverMineralX2 = (int) recognition.getLeft();
+                        }
                     }
+
+                    // Determine the position based on the minerals
+                    if (goldMineralX > silverMineralX1) {
+                        mineralPosition = MineralPosition.RIGHT;
+                    } else if (goldMineralX < silverMineralX1) {
+                        mineralPosition = MineralPosition.LEFT;
+                    } else if (silverMineralX1 >= 0 && silverMineralX2 >= 0){
+                        mineralPosition = MineralPosition.OTHER;
+                    }
+
+                    telemetry.addData("mineral gold x", goldMineralX);
+                    telemetry.addData("mineral silver x", silverMineralX1);
+
+                    // Reset the x-positions of the minerals
+                    goldMineralX = -1;
+                    silverMineralX1 = -1;
+                    silverMineralX2 = -1;
                 }
 
-                if (goldMineralX > silverMineralX) {
-                    mineralPosition = MineralPosition.RIGHT;
-                    break;
-                } else if (goldMineralX < silverMineralX) {
-                    mineralPosition = MineralPosition.LEFT;
-                    break;
-                }
+                telemetry.addData("known minerals", recognitions.size());
             }
+
+            telemetry.update();
         }
 
         return mineralPosition;
+    }
+
+    /**
+     * Scans and returns only ONE mineral type based on the frame.
+     * @return Mineral Type
+     */
+    public MineralType scanMineralType(double timeoutS) {
+        timer.reset();
+        while (timer.seconds() < timeoutS) {
+            recognitions = detector.getDetector().getRecognitions();
+            if (recognitions != null && recognitions.size() == 1) {
+                Recognition mineral = recognitions.get(0);
+                if (mineral.getLabel().equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
+                    return MineralType.GOLD;
+                } else if (mineral.getLabel().equals(TensorFlowDetector.LABEL_SILVER_MINERAL)) {
+                    return MineralType.SILVER;
+                }
+            }
+
+            telemetry.addData("status", "looking for one mineral only");
+            telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
+            telemetry.update();
+        }
+
+        return MineralType.NONE;
     }
 }

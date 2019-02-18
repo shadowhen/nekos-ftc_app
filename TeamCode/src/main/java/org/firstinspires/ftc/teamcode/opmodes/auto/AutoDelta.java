@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.robot.Bot;
 import org.firstinspires.ftc.teamcode.robot.MineralPosition;
+import org.firstinspires.ftc.teamcode.robot.MineralType;
 import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
 
 /**
@@ -13,15 +15,17 @@ import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
  * @author Henry
  * @version 1.0
  */
-@Autonomous(name = "Auto Delta", group = "auto")
+@Autonomous(name = "Auto Delta - COMPETITION - DEPOT - RIGHT SIDE - MEET ALL POINTS", group = "auto")
 public class AutoDelta extends AutoOpMode {
 
     private MineralPosition mineralPosition;
+    private MineralType centerMineral;
+    private MineralType leftMineral;
 
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
-        initDetector(false);
+        initDetector(true);
 
         mineralPosition = MineralPosition.NONE;
 
@@ -31,84 +35,55 @@ public class AutoDelta extends AutoOpMode {
 
         // Prevents the robot from detaching the REV hub
         while (!isStarted()) {
-            int goldMineralX = -1;
-            int silverMineralX1 = -1;
-            int silverMineralX2 = -1;
-            recognitions = detector.getDetector().getUpdatedRecognitions();
-
-            if (recognitions != null && recognitions.size() == 2) {
-                for (Recognition recognition : recognitions) {
-                    if (recognition.getLabel().equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
-                        goldMineralX = (int)recognition.getTop();
-                    } else if (silverMineralX1 == -1) {
-                        silverMineralX1 = (int)recognition.getTop();
-                    } else {
-                        silverMineralX2 = (int)recognition.getTop();
-                    }
-                }
-
-                if (goldMineralX != -1 && goldMineralX > silverMineralX1) {
-                    mineralPosition = MineralPosition.CENTER;
-                } else if (goldMineralX != -1 && goldMineralX < silverMineralX1) {
-                    mineralPosition = MineralPosition.RIGHT;
-                } else if (silverMineralX1 != -1 && silverMineralX2 != -1){
-                    mineralPosition = MineralPosition.LEFT;
-                } else {
-                    mineralPosition = MineralPosition.NONE;
-                }
-            }
-
-            robot.getSweeper().getSweeperServo().setPower(0.0);
+            telemetry.addData("INSTRUCTIONS", "PLACE THE HOOK ON RIGHT SIDE");
             telemetry.addData(">", "waiting for start command");
-            telemetry.addData("mineral position", mineralPosition.toString());
             telemetry.update();
         }
 
-        robot.moveByEncoder(DRIVE_SPEED, -505, -505, 5);
-        robot.moveSidewaysByEncoder(SIDEWAYS_SPEED, 100, 5);
+        // Lands on the ground by raising the lift
+        liftByTime(Bot.VERTICAL_RAISE_SPEED, 3100);
 
-        sleep(500);
+        // Scans for the first mineral
+        centerMineral = scanMineralType(3);
 
-        switch (mineralPosition) {
-            case LEFT:
-                robot.moveSidewaysByEncoder(SIDEWAYS_SPEED, 100, 5);
-                sleep(500);
-                robot.moveByEncoder(DRIVE_SPEED, -500, -500, 5);
-                robot.moveByEncoder(0.5, 1480, -1480, 5);
+        if (centerMineral.equals(MineralType.GOLD)) {
+            goCenter();
+        } else {
+            // Moves to the left sideways
+            robot.moveSidewaysByEncoder(DRIVE_SPEED, -250, 5);
 
-                setLiftPower(-0.5, 500);
-                setLiftPower(0.5, 1000);
+            // Turn to align the robot for scanning
+            robot.turnByEncoder(TURN_SPEED, -100, 5);
 
-                robot.moveByEncoder(0.5, -740, 740, 5);
-                robot.moveByEncoder(0.75, 1000, 1000, 5);
-                break;
-            case RIGHT:
-                robot.moveSidewaysByEncoder(SIDEWAYS_SPEED, -100, 5);
-                robot.moveByEncoder(DRIVE_SPEED,  -500, -500, 5);
-                robot.moveByEncoder(0.5, 1480, -1480, 5);
+            // Scans the left mineral for mineral type
+            leftMineral = scanMineralType(3);
 
-                setLiftPower(-0.5, 500);
-                setLiftPower(0.5, 1000);
-
-                robot.moveByEncoder(0.5, -740, 740, 5);
-                robot.moveByEncoder(0.75, 1000, 1000, 5);
-                break;
-            default:
-                robot.moveSidewaysByEncoder(SIDEWAYS_SPEED, -500, 5);
-                robot.moveByEncoder(DRIVE_SPEED,  -500, -500, 5);
-                robot.moveByEncoder(0.5, 1480, -1480, 5);
-
-                setLiftPower(-0.5, 500);
-                setLiftPower(0.5, 1000);
-
-                robot.moveByEncoder(0.5, -740, 740, 5);
-                robot.moveByEncoder(0.75, 1000, 1000, 5);
+            if (leftMineral.equals(MineralType.GOLD)) {
+                goLeft();
+            } else {
+                goRight();
+            }
         }
-
-        setLiftPower(-0.5, 500);
 
         if (detector.getDetector() != null) {
             detector.getDetector().deactivate();
         }
+    }
+
+    private void goCenter() {
+        robot.moveSidewaysByEncoder(DRIVE_SPEED, -200, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
+    }
+
+    private void goLeft() {
+        robot.turnByEncoder(TURN_SPEED, 100, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 400, 400, 5);
+        robot.moveSidewaysByEncoder(DRIVE_SPEED, -300, 5);
+    }
+
+    private void goRight() {
+        robot.turnByEncoder(TURN_SPEED, 100, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 400, 400, 5);
+        robot.moveSidewaysByEncoder(DRIVE_SPEED, 550, 5);
     }
 }

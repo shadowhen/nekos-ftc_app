@@ -1,39 +1,39 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * This class implements the robotic function for the dumper which the dumps the mineral(s) into
  * the lander.
  * @author Henry
- * @version 1.0
+ * @version 1.1
  */
 public class Dumper {
 
-    public static final double MIN_POSITION = 0.0;
-    public static final double MAX_POSITION = 1.0;
+    private DcMotor motorDumper;
 
-    private Servo servoDumper;
-
+    /**
+     * Initializes the hardware on the Dumper class
+     * @param hwMap Hardware Map
+     */
     public void init(HardwareMap hwMap) {
-        servoDumper = hwMap.get(Servo.class, "servo_dumper");
-        //servoDumper.setPosition(0.5);
+        motorDumper = hwMap.get(DcMotor.class, "motor_dumper");
     }
 
     /**
-     * Set the position of the servo dumper
-     * @param position Servo Position
+     * Sets the power of the motor dumper
+     * @param power Motor Power
      */
-    public void setPosition(double position) {
-        servoDumper.setPosition(position);
+    public void setPower(double power) {
+        motorDumper.setPower(power);
     }
 
     /**
-     * Returns the servo dumper
-     * @return Servo Dumper
+     * Gets the power of the motor dumper
+     * @return Motor Power
      */
-    public Servo getServoDumper() {
-        return servoDumper;
+    public double getPower() {
+        return motorDumper.getPower();
     }
 }

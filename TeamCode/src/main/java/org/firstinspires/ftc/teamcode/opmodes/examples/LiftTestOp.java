@@ -52,8 +52,17 @@ public class LiftTestOp extends OpMode {
             robot.setLiftPower(0.0);
         }
 
+        if (gamepad1.dpad_up && !gamepad1.dpad_down) {
+            robot.getDumper().setPower(0.25);
+        } else if (!gamepad1.dpad_up && gamepad1.dpad_down) {
+            robot.getDumper().setPower(-0.25);
+        } else {
+            robot.getDumper().setPower(0.0);
+        }
+
         telemetry.addData(">", "To reset position - press X");
         telemetry.addData("A - Raises lift", "B - Lowers lift");
+        telemetry.addData("Up - Raises the arm", "Down - Lowers the arm");
         telemetry.addData("lift power", robot.getLift().getLiftPower());
         telemetry.addData("lift position", robot.getLift().getLiftMotor().getCurrentPosition());
         telemetry.update();

@@ -1,41 +1,70 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /**
  * This class implements the functionality of the sensors on the robot.
  *
  * @author Henry
- * @version 1.0
+ * @version 1.1
  */
 public class SensorBot {
 
-    private static double minDistanceMm = 0;
-    private static double maxDistanceMm = 1;
+    private Orientation lastAngles = new Orientation();
+    private int globalAngle = 0;
 
-    private ModernRoboticsI2cGyro gyro;
-    private DistanceSensor distanceSensor;
+    private BNO055IMU imu;
 
+    /**
+     * Initializes the sensors on the robot
+     * @param hwMap Hardware Map
+     */
     public void init(HardwareMap hwMap) {
-        //gyro = (ModernRoboticsI2cGyro) hwMap.get(GyroSensor.class, "gyro");
-        //distanceSensor = hwMap.get(DistanceSensor.class, "distance_sensor");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+
+        imu = hwMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
     }
 
     /**
-     * Returns boolean if the distance sensor between these two distance ranges
-     * @param unit Distance Unit
-     * @param min  Min distance
-     * @param max  Max distance
-     * @return boolean
+     * Checks if the gyro sensor on the Rev Hub IMU is being calibrated
+     * @return gyro calibrated
      */
-    public boolean seeObject(DistanceUnit unit, double min, double max) {
-        double distance = distanceSensor.getDistance(unit);
-        return (distance >= min && distance <= max);
+    public boolean isGyroCalibrated() {
+        return imu.isGyroCalibrated();
+    }
+
+    /**
+     * Returns the gyro sensor's current angle (or heading)
+     * @return angle
+     */
+    public double getAngle() {
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+        if (deltaAngle < -180) {
+            deltaAngle += 360;
+        } else if (deltaAngle > 180) {
+            deltaAngle -= 360;
+        }
+
+        globalAngle += deltaAngle;
+        lastAngles = angles;
+
+        return globalAngle;
     }
 
     /**
@@ -44,7 +73,7 @@ public class SensorBot {
      * @return Angle error
      */
     public double getError(double angle) {
-        double error = angle - gyro.getIntegratedZValue();
+        double error = angle - getAngle();
         while (error > 180) {
             error -= 360;
         }
@@ -58,17 +87,31 @@ public class SensorBot {
      * Returns the steer
      * @param error   Error
      * @param pCoeff  Proportional Coefficient
-     * @return
+     * @return steer
      */
     public double getSteer(double error, double pCoeff) {
         return Range.clip(error * pCoeff, 0.0, 1.0);
     }
 
-    public ModernRoboticsI2cGyro getGyro() {
-        return gyro;
+    /**
+     * Reset the heading of the imu's gyro sensor
+     */
+    public void resetAngle() {
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        globalAngle = 0;
     }
 
-    public DistanceSensor getDistanceSensor() {
-        return distanceSensor;
+    /**
+     * Returns the correction based on the zero degrees
+     * @return correction
+     */
+    public double getCorrection(double gain, double offset) {
+        double angle = getAngle();
+
+        if (angle >= -offset && angle <= offset) {
+            return 0;
+        } else {
+            return -angle * gain;
+        }
     }
 }

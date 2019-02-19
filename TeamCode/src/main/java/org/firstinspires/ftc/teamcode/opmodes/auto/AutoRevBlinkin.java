@@ -2,6 +2,11 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
+/**
+ * This class utilizes the Rev Blinkin Led Driver for testing purposes.
+ * @author Henry
+ * @version 1.0
+ */
 public class AutoRevBlinkin extends AutoOpMode {
 
     private RevBlinkinLedDriver revBlinkinLedDriver;

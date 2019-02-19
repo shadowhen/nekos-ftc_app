@@ -12,7 +12,6 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class implements the OpenCVPipeline using examples provided by the OpenCV repository, and
@@ -93,7 +92,7 @@ public class PrototypeDetector extends OpenCVPipeline {
         Imgproc.findContours(imageContour, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
 
         if (contours.size() > 0) {
-            drawRectangleContour(mRgbaC, findBiggestContour(contours));
+            CvUtil.drawRectangleContour(mRgbaC, CvUtil.findBiggestContour(contours), BOUNDING_RECT_COLOR);
             detectedGold = true;
         } else {
             detectedGold = false;
@@ -103,37 +102,6 @@ public class PrototypeDetector extends OpenCVPipeline {
 
         // Returns the final image
         return mFinal;
-    }
-
-    /**
-     * Find the biggest contour from given list of contours.
-     * @param contours List of contours
-     * @return Biggest contour
-     */
-    private static MatOfPoint findBiggestContour(List<MatOfPoint> contours) {
-        double maxArea = 0;
-        MatOfPoint biggestContour = new MatOfPoint();
-
-        for (MatOfPoint contour : contours) {
-            double contourArea = Imgproc.contourArea(contour);
-
-            if (maxArea < contourArea) {
-                maxArea = contourArea;
-                biggestContour = contour;
-            }
-        }
-
-        return biggestContour;
-    }
-
-    /**
-     * Draws the rectangle over a selected contour on a given image.
-     * @param image Image to be drawn
-     * @param contour Contour where the rectangle is drawn
-     */
-    private static void drawRectangleContour(Mat image, MatOfPoint contour) {
-        Rect rect = Imgproc.boundingRect(contour);
-        Imgproc.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), BOUNDING_RECT_COLOR, 5);
     }
 
     /**

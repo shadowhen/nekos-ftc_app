@@ -50,10 +50,5 @@ public class AutoDemo extends AutoOpMode {
                 //robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
         }
         sleep(500);
-
-        // Drop the team marker
-        /*setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
-        sleep(500);
-        setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 750);*/
     }
 }

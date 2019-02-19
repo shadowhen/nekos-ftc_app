@@ -7,16 +7,14 @@ import org.firstinspires.ftc.teamcode.robot.MineralPosition;
 import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
 
 /**
- * This class presents Autonomous Plan Alpha which the robot drops from the lander on the
- * depot side, sample the gold mineral, drop the team marker, and park partially on the crater.
+ * This class implements the autonomous plan Alpha which the robot lands from the crater side
+ * and drives to the crater to park only.
  *
  * @author Henry
- * @version 1.0
+ * @version 1.1
  */
 @Autonomous(name = "Auto Alpha - COMPETITION - CRATER - LEFT SIDE - LANDING - PARK ONLY", group = "auto")
 public class AutoAlpha extends AutoOpMode {
-
-    private MineralPosition mineralPosition;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -32,14 +30,12 @@ public class AutoAlpha extends AutoOpMode {
         // Lands on the ground by raising the lift
         liftByTime(Bot.VERTICAL_RAISE_SPEED, 3100);
 
-        // Moves to the left sideways
+        // Drives to the crater for parking
         robot.moveSidewaysByEncoder(DRIVE_SPEED, 200, 5);
-
-        // Moves forward so the robot can get into position
         robot.moveByEncoder(DRIVE_SPEED, 600, 600, 5);
-
         sleep(1000);
 
+        // Parks on the crater by deploying the sweeper
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 }

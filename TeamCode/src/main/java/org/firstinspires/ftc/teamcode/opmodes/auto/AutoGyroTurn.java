@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 /**
- * This class implements the Rev Hub's Imu for gyro turns.
+ * This class implements the Rev Hub's Imu for gyro turns in autonomous.
  * @author Henry
  * @version 1.0
  */
@@ -21,7 +21,7 @@ public class AutoGyroTurn extends AutoOpMode {
 
         robot.turnByGyro(TURN_SPEED, 90, 5);
 
-        telemetry.addData("ststus", "sleeping 1 second");
+        telemetry.addData("status", "sleeping 1 second");
         telemetry.update();
         sleep(1000);
 

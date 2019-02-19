@@ -5,7 +5,7 @@ we upload our source code for our programers to understand and other teams to us
 as examples. In the spirit of gracious professionalism, we will share our code for 
 other teams to understand and how we code our robot in certain way.
 
-To download the original FTC App Master: https://github.com/ftctechnh/ftc_app
+To download the original FTC App Master from FIRST: https://github.com/ftctechnh/ftc_app
 
 ## Requirements
 *  Android Studio

@@ -14,9 +14,10 @@ To download the original FTC App Master: https://github.com/ftctechnh/ftc_app
 1. Download or clone this repository
 2. Import this project into Android Studio
 
-### OpenCV
-If you want to see our OpenCV custom detection, you should checkout the 
-[dogecv](https://github.com/shadowhen/ftc_app/tree/dogecv) branch.
+## Features
+* Utilizes OpenCV and DogeCV
+* Can detect minerals on the field using OpenCV and Tensorflow
+* Uses encoders for autonomous turning and driving
 
 ## Contributing
 Please read [CONTRIBUTING.md](/.github/CONTRIBUTING.md) for

@@ -11,6 +11,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.robot.AutoBot;
 
+/**
+ * This class utilizes the Rev Hub IMU for testing purposes.
+ * @author Henry
+ * @version 1.0
+ */
 @TeleOp(name = "REV Hub IMU", group = "test")
 public class RevHubImuOp extends LinearOpMode {
 

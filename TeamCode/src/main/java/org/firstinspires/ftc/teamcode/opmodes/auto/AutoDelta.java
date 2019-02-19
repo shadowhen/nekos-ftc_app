@@ -18,7 +18,6 @@ import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
 @Autonomous(name = "Auto Delta - COMPETITION - DEPOT - RIGHT SIDE - MEET ALL POINTS", group = "auto")
 public class AutoDelta extends AutoOpMode {
 
-    private MineralPosition mineralPosition;
     private MineralType centerMineral;
     private MineralType leftMineral;
 
@@ -27,7 +26,8 @@ public class AutoDelta extends AutoOpMode {
         super.runOpMode();
         initDetector(true);
 
-        mineralPosition = MineralPosition.NONE;
+        centerMineral = MineralType.NONE;
+        leftMineral = MineralType.NONE;
 
         if (detector.getDetector() != null) {
             detector.getDetector().activate();
@@ -35,16 +35,28 @@ public class AutoDelta extends AutoOpMode {
 
         // Prevents the robot from detaching the REV hub
         while (!isStarted()) {
+            recognitions = detector.getDetector().getUpdatedRecognitions();
+            if (recognitions != null && recognitions.size() == 1) {
+                if (recognitions.get(0).getLabel().equals(TensorFlowDetector.LABEL_GOLD_MINERAL)) {
+                    centerMineral = MineralType.GOLD;
+                } else {
+                    centerMineral = MineralType.SILVER;
+                }
+            }
+
             telemetry.addData("INSTRUCTIONS", "PLACE THE HOOK ON RIGHT SIDE");
             telemetry.addData(">", "waiting for start command");
+            telemetry.addData("center mineral", centerMineral.toString());
             telemetry.update();
         }
+
+        //centerMineral = scanMineralType(3);
 
         // Lands on the ground by raising the lift
         liftByTime(Bot.VERTICAL_RAISE_SPEED, 3100);
 
         // Scans for the first mineral
-        centerMineral = scanMineralType(3);
+        //centerMineral = scanMineralType(3);
 
         if (centerMineral.equals(MineralType.GOLD)) {
             goCenter();
@@ -71,19 +83,67 @@ public class AutoDelta extends AutoOpMode {
     }
 
     private void goCenter() {
+        // Moves to the left sideways
         robot.moveSidewaysByEncoder(DRIVE_SPEED, -200, 5);
-        robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
+
+        // Runs through the minerals
+        robot.moveByEncoder(DRIVE_SPEED, 1180, 1180, 5);
+
+        // Deposits the team marker in the depot for autonomous points
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+        sleep(1000);
+        setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 600);
+
+        // Turns the robot and moves towards the pit for parking points
+        robot.moveByEncoder(TURN_SPEED, -740, 740, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 1000, 1000, 10);
+        robot.moveByEncoder(TURN_SPEED, -100, 100, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 1000-150, 1000-150, 10);
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 
     private void goLeft() {
         robot.turnByEncoder(TURN_SPEED, 100, 5);
         robot.moveByEncoder(DRIVE_SPEED, 400, 400, 5);
         robot.moveSidewaysByEncoder(DRIVE_SPEED, -300, 5);
+
+        robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
+        robot.turnByEncoder(TURN_SPEED, 250, 5);
+
+        // From Charlie
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+        sleep(500);
+        setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 600);
+
+        robot.moveByEncoder(DRIVE_SPEED, -1000, -1000, 5);
+
+        robot.turnByEncoder(TURN_SPEED, -1110, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 
     private void goRight() {
-        robot.turnByEncoder(TURN_SPEED, 100, 5);
-        robot.moveByEncoder(DRIVE_SPEED, 400, 400, 5);
-        robot.moveSidewaysByEncoder(DRIVE_SPEED, 550, 5);
+        double speed = 0.8;
+
+        robot.turnByEncoder(speed, 100, 5);
+        robot.moveByEncoder(speed, 400, 400, 5);
+        robot.moveSidewaysByEncoder(0.8, 550, 5);
+
+        robot.moveByEncoder(speed, 500+80+100, 500+80+100, 5);
+        robot.turnByEncoder(speed, -300, 5);
+        robot.moveByEncoder(speed, 400, 400, 5);
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+        sleep(500);
+        setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 600);
+
+        robot.moveByEncoder(speed, 200, 200, 5);
+
+        robot.turnByEncoder(speed, -300, 5);
+
+        robot.moveByEncoder(speed, 200, 200, 5);
+
+        robot.turnByEncoder(speed, -250, 5);
+        robot.moveByEncoder(1, 1800, 1800, 5);
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 }

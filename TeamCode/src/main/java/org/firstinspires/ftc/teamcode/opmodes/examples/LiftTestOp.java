@@ -6,6 +6,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.robot.DriveBot;
 
+/**
+ * This class implements the controls for raising or lowering the lift and raising
+ * or lowering the dumper arm to score minerals in the lander.
+ * @author Henry
+ * @version 1.0
+ */
 @TeleOp(name = "LIft Test", group = "test")
 public class LiftTestOp extends OpMode {
 

@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.DogeCV;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.robot.AutoBot;
 import org.firstinspires.ftc.teamcode.robot.AutoDrive;
+import org.firstinspires.ftc.teamcode.robot.MineralDetector;
 import org.firstinspires.ftc.teamcode.robot.MineralPosition;
 import org.firstinspires.ftc.teamcode.robot.MineralType;
 import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
@@ -20,7 +24,7 @@ import java.util.List;
  * of the nature of this class, other auto opmodes extends this class for specific autonomous tasks.
  *
  * @author Henry
- * @version 1.0
+ * @version 1.1
  */
 public class AutoOpMode extends LinearOpMode {
 
@@ -42,6 +46,9 @@ public class AutoOpMode extends LinearOpMode {
 
     // Handles with recognitions by Tensorflow Object Detection
     protected List<Recognition> recognitions;
+
+    // OpenCv
+    protected MineralDetector openCvDetector;
 
     // Autonomous robot
     protected AutoBot robot;
@@ -86,6 +93,19 @@ public class AutoOpMode extends LinearOpMode {
 
         telemetry.addData("status", "ready to start...");
         telemetry.update();
+    }
+
+    /**
+     * Initializes the OpenCV on the robot
+     * @param useWebcam Use webcam for OpenCV
+     */
+    public void initOpenCv(boolean useWebcam) {
+        if (useWebcam) {
+            WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+            openCvDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), DogeCV.CameraMode.WEBCAM, false, webcamName);
+        } else {
+            openCvDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), DogeCV.CameraMode.FRONT, false);
+        }
     }
 
     /**

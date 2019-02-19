@@ -4,9 +4,13 @@ import com.disnodeteam.dogecv.OpenCVPipeline;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+
+import java.util.ArrayList;
 
 /**
  * This class extends the OpenCVPipeline for detecting gold and silver minerals.
@@ -26,11 +30,26 @@ public class MineralDetector extends OpenCVPipeline {
     private static final Scalar LOW_SILVER = new Scalar(10, 5, 200);
     private static final Scalar HIGH_SILVER = new Scalar(40, 40, 255);
 
+    private static final Scalar GOLD_RECT_COLOR = new Scalar(0, 255, 0);
+    private static final Scalar SILVER_RECT_COLOR = new Scalar(0, 0, 255);
+
+    private Rect goldRect = new Rect();
+    private Rect silverRect = new Rect();
+
     @Override
     public Mat processFrame(Mat rgba, Mat gray) {
         Mat workingMat = new Mat();
+
         Mat goldMat = new Mat();
         Mat silverMat = new Mat();
+
+        ArrayList<MatOfPoint> goldContours = new ArrayList<>();
+        ArrayList<MatOfPoint> silverContours = new ArrayList<>();
+        Mat goldHierarchy = new Mat();
+        Mat silverHierarchy = new Mat();
+
+        MatOfPoint biggestContour;
+
         rgba.copyTo(workingMat);
 
         // Resize the image
@@ -43,26 +62,91 @@ public class MineralDetector extends OpenCVPipeline {
         // Convert the color format to hsv
         Imgproc.cvtColor(workingMat, workingMat, Imgproc.COLOR_RGB2HSV);
 
-        //TODO: Finish the gold
         // GOLD
         workingMat.copyTo(goldMat);
+        filterGold(goldMat, goldMat);
+        cleanMask(goldMat, goldMat, Imgproc.CV_SHAPE_ELLIPSE, new Size(5, 5));
 
-        //TODO: Finish the silver
         // SILVER
         workingMat.copyTo(silverMat);
+        filterSilver(silverMat, silverMat);
+        cleanMask(silverMat, silverMat, Imgproc.CV_SHAPE_ELLIPSE, new Size(5, 5));
 
-        //TODO: Work on the contours for the final image
+        // Find the contours for gold and silver minerals
+        Imgproc.findContours(goldMat, goldContours, goldHierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(silverMat, silverContours, silverHierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
 
-        return null;
+        // Find the closest gold mineral
+        if (goldContours.size() > 0) {
+            biggestContour = CvUtil.findBiggestContour(goldContours);
+            goldRect = Imgproc.boundingRect(biggestContour);
+            CvUtil.drawRectangleContour(workingMat, goldRect, GOLD_RECT_COLOR);
+        }
+
+        // Find the closest silver mineral
+        if (silverContours.size() > 0) {
+            biggestContour = CvUtil.findBiggestContour(goldContours);
+            silverRect = Imgproc.boundingRect(biggestContour);
+            CvUtil.drawRectangleContour(workingMat, silverRect, SILVER_RECT_COLOR);
+        }
+
+        return workingMat;
     }
 
-    private void filterGold(Mat src, Mat dst) {
+    /**
+     * Filters image for a gold mineral
+     * @param src Source Mat
+     * @param dst Destination Mat
+     */
+    private static void filterGold(Mat src, Mat dst) {
         Mat maskOne = new Mat();
         Mat maskTwo = new Mat();
 
         Core.inRange(src, LOW_GOLD, HIGH_GOLD, maskOne);
         Core.inRange(src, LOW_BRIGHT, HIGH_BRIGHT, maskTwo);
 
-        //TODO: Finish the filterGold method
+        Core.add(maskOne, maskTwo, dst);
+    }
+
+    /**
+     * Filters image for a silver mineral
+     * @param src Source Mat
+     * @param dst Destination Mat
+     */
+    private static void filterSilver(Mat src, Mat dst) {
+        Mat maskOne = new Mat();
+        Mat maskTwo = new Mat();
+        Core.inRange(src, LOW_SILVER, HIGH_SILVER, maskOne);
+        Core.inRange(src, LOW_BRIGHT, HIGH_BRIGHT, maskTwo);
+        Core.add(maskOne, maskTwo, dst);
+    }
+
+    /**
+     * Cleans the mask from a Mat
+     * @param src Source Mat
+     * @param dst Destination Mat
+     * @param op  Operation
+     * @param size
+     */
+    private static void cleanMask(Mat src, Mat dst, int op, Size size) {
+        Mat kernel = Imgproc.getStructuringElement(op, size);
+        Imgproc.morphologyEx(src, src, Imgproc.MORPH_CLOSE, kernel);
+        Imgproc.morphologyEx(src, dst, Imgproc.MORPH_OPEN, kernel);
+    }
+
+    /**
+     * Returns the gold rect
+     * @return gold rect
+     */
+    public Rect getGoldRect() {
+        return goldRect;
+    }
+
+    /**
+     * Returns the silver rect
+     * @return silver rect
+     */
+    public Rect getSilverRect() {
+        return silverRect;
     }
 }

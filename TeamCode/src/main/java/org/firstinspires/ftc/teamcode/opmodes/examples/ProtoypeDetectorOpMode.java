@@ -1,9 +1,11 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.examples;
 
 import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.DogeCV;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.robot.PrototypeDetector;
 
 /**
@@ -21,19 +23,16 @@ public class ProtoypeDetectorOpMode extends OpMode {
 
     @Override
     public void init() {
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
         // Creates a new detector
         detector = new PrototypeDetector();
 
         // Initializes the detector so the camera can use the detector
-        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
+        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), DogeCV.CameraMode.WEBCAM, false, webcamName);
 
         // Enable the detector which the detector uses the camera
         detector.enable();
-    }
-
-    @Override
-    public void start() {
-
     }
 
     @Override

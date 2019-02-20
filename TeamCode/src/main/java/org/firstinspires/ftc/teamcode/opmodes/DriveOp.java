@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.robot.Bot;
@@ -17,7 +18,9 @@ import org.firstinspires.ftc.teamcode.robot.DriveBot;
 @TeleOp(name = "Drive Op 1.3 - Competition", group = "drive")
 public class DriveOp extends OpMode {
 
-    private static final double SWEEPER_LIFT_SPEED = 0.9;
+    // Sweeper Time
+    private static final double DEPLOY_TIME = 0.5;
+    private static final double RETRACT_TIME = 0.6;
 
     // Control button for the sideways control on gamepad 1
     private boolean sidewaysControlState = false;
@@ -26,13 +29,18 @@ public class DriveOp extends OpMode {
     // Needed for moving lift using encoder counts
     private DriveBot robot;
 
+    private ElapsedTime sweeperDeployTimer = new ElapsedTime();
+    private double sweeperTime = 0.0;
+    private boolean sweeperBusy = false;
+
     @Override
     public void init() {
         // Initializes the robot for driver control
         robot = new DriveBot();
         robot.init(hardwareMap, telemetry);
 
-        // Drive motors will use encoders for setting the speed value
+        // Rather set the drive motors with direct power, the drive motors would set according
+        // to a speed value
         robot.setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
@@ -50,7 +58,6 @@ public class DriveOp extends OpMode {
 
     @Override
     public void loop() {
-        // These methods represent certain functions on the robot
         drive();
         lift();
         dump();
@@ -59,6 +66,7 @@ public class DriveOp extends OpMode {
 
         // Sends the info to the driver station for debugging and important acoustics
         telemetry.addData("Sideways Motion Controls", sidewaysControlState ? "D-Pad" : "Bumpers");
+        telemetry.addData("sweeper deploy/retract time", "%.2f", sweeperTime);
 
         // DRIVE MOTORS
         telemetry.addLine("-------------------");
@@ -198,23 +206,38 @@ public class DriveOp extends OpMode {
      * Controls the sweeper mechanism on the robot
      */
     private void sweep() {
-        double liftPower = 0.0;
-
         float leftTrigger = gamepad1.left_trigger;
         float rightTrigger = gamepad1.right_trigger;
         float totalTrigger = rightTrigger - leftTrigger;
 
         // Deploys or retracts the sweeper using the lift motor
-        if (gamepad2.dpad_up) {
-            liftPower += SWEEPER_LIFT_SPEED;
+        //
+        // If the driver presses one of the buttons, the sweeper would deploy or retracts
+        // with little effort on the driver's side. The deployment or retractment takes
+        // time, so the sweeper lift motor would be "busy" for the time being.
+        //
+        // After the time is up, the sweeper lift motor would set to power of zero which
+        // stops the motor
+        if (sweeperBusy && (sweeperTime > sweeperDeployTimer.seconds())) {
+            robot.getSweeper().setLiftPower(0.0);
+            sweeperBusy = false;
+            sweeperTime = 0.0;
+        } else {
+            if (gamepad2.right_bumper && (gamepad2.a || gamepad2.b)) {
+                sweeperDeployTimer.reset();
+                if (gamepad2.a && !gamepad2.b) {
+                    sweeperTime = DEPLOY_TIME;
+                    robot.getSweeper().setLiftPower(Bot.SWEEPER_LIFT_SPEED);
+                    sweeperBusy = true;
+                } else if (!gamepad2.a && gamepad2.b) {
+                    sweeperTime = RETRACT_TIME;
+                    robot.getSweeper().setLiftPower(-Bot.SWEEPER_LIFT_SPEED);
+                    sweeperBusy = true;
+                }
+            } else {
+                robot.getSweeper().setLiftPower(Range.clip(gamepad2.left_stick_y, -Bot.SWEEPER_LIFT_SPEED, Bot.SWEEPER_LIFT_SPEED));
+            }
         }
-        if (gamepad2.dpad_down) {
-            liftPower -= SWEEPER_LIFT_SPEED;
-        }
-        if (gamepad2.left_stick_y != 0.0f) {
-            liftPower = Range.clip(gamepad2.left_stick_y, -Bot.SWEEPER_LIFT_SPEED, Bot.SWEEPER_LIFT_SPEED);
-        }
-        robot.getSweeper().setLiftPower(liftPower);
 
         // Sweeps the minerals from the ground
         robot.getSweeper().setSweeperPower(Range.clip(totalTrigger, -Bot.SWEEPER_SPEED, Bot.SWEEPER_SPEED));
@@ -225,10 +248,10 @@ public class DriveOp extends OpMode {
      */
     private void slide() {
         double sliderPower = 0.0;
-        if (gamepad2.x) {
+        if (gamepad2.dpad_down) {
             sliderPower -= Bot.SLIDER_SPEED;
         }
-        if (gamepad2.b) {
+        if (gamepad2.dpad_up) {
             sliderPower += Bot.SLIDER_SPEED;
         }
         robot.getSweeper().setSliderPower(sliderPower);

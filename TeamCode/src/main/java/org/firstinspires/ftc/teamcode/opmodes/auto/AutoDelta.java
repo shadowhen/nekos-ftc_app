@@ -96,29 +96,34 @@ public class AutoDelta extends AutoOpMode {
 
         // Turns the robot and moves towards the pit for parking points
         robot.moveByEncoder(TURN_SPEED, -740, 740, 5);
-        robot.moveByEncoder(DRIVE_SPEED, 1000, 1000, 10);
-        robot.moveByEncoder(TURN_SPEED, -100, 100, 5);
-        robot.moveByEncoder(DRIVE_SPEED, 1000-150, 1000-150, 10);
+        robot.moveSidewaysByEncoder(DRIVE_SPEED, 200, 5);
+        robot.turnByEncoder(TURN_SPEED, -100, 5);
+        robot.moveSidewaysByEncoder(DRIVE_SPEED, 190, 5);
+        robot.moveByEncoder(1, 1000+(1000-150), 1000+(1000-150), 10);
+        //robot.moveByEncoder(TURN_SPEED, -100, 100, 5);
+        //robot.moveByEncoder(1, 1000-150, 1000-150, 10);
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 
     private void goLeft() {
-        robot.turnByEncoder(TURN_SPEED, 100, 5);
-        robot.moveByEncoder(DRIVE_SPEED, 400, 400, 5);
-        robot.moveSidewaysByEncoder(DRIVE_SPEED, -300, 5);
+        double speed = 1.0;
 
-        robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
-        robot.turnByEncoder(TURN_SPEED, 250, 5);
+        robot.turnByEncoder(TURN_SPEED, 100+10, 5);
+        robot.moveByEncoder(0.8, 400, 400, 5);
+        robot.moveSidewaysByEncoder(DRIVE_SPEED, -300-30, 5);
+
+        robot.moveByEncoder(speed, 500+100, 500+100, 5);
+        robot.turnByEncoder(TURN_SPEED, 200, 5);
 
         // From Charlie
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
         sleep(500);
         setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 600);
 
-        robot.moveByEncoder(DRIVE_SPEED, -1000, -1000, 5);
+        robot.moveByEncoder(speed, -1000, -1000, 5);
 
         robot.turnByEncoder(TURN_SPEED, -1110, 5);
-        robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
+        robot.moveByEncoder(speed, 300, 300, 5);
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 
@@ -132,6 +137,7 @@ public class AutoDelta extends AutoOpMode {
         robot.moveByEncoder(speed, 500+80+100, 500+80+100, 5);
         robot.turnByEncoder(speed, -300, 5);
         robot.moveByEncoder(speed, 400, 400, 5);
+
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
         sleep(500);
         setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 600);

@@ -16,7 +16,7 @@ public interface Bot {
     double DRIVE_SPEED = 0.8;
     double TURN_SPEED = 0.5;
     double VERTICAL_LIFT_SPEED = 0.5;
-    double SLIDER_SPEED = 0.15;
+    double SLIDER_SPEED = 0.5;
     double SWEEPER_SPEED = 0.5;
     double SWEEPER_LIFT_SPEED = 0.75;
     double DUMPER_MOTOR_SPEED = 0.5;

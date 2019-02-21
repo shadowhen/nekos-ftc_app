@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.robot.MineralDetector;
-import org.firstinspires.ftc.teamcode.robot.PrototypeDetector;
 
 /**
  * This class implements the prototype detector which uses OpenCv for its computer vision library,
@@ -29,8 +28,8 @@ public class MineralDetectorOp extends OpMode {
         // Creates a new detector
         detector = new MineralDetector();
 
-        // Initializes the detector so the camera can use the detector
-        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), DogeCV.CameraMode.WEBCAM, false, webcamName);
+        // Ignitializes the detector so the camera can use the detector
+        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), DogeCV.CameraMode.BACK, false, webcamName);
 
         // Enable the detector which the detector uses the camera
         detector.enable();

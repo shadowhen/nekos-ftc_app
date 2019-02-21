@@ -31,7 +31,7 @@ public class ProtoypeDetectorOpMode extends OpMode {
         detector = new PrototypeDetector();
 
         // Initializes the detector so the camera can use the detector
-        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), DogeCV.CameraMode.WEBCAM, false, webcamName);
+        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), DogeCV.CameraMode.BACK, false, webcamName);
 
         // Enable the detector which the detector uses the camera
         detector.enable();

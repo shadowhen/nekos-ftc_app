@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.examples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -17,6 +18,7 @@ import java.util.List;
  * @version 0.1
  */
 @TeleOp(name = "Tensor Flow Detector - DEV")
+@Disabled
 public class TensorFlowDetectorOp extends LinearOpMode {
 
     private VuforiaDetector vuforiaDetector;

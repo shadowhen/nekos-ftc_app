@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.examples;
 
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.teamcode.robot.PrototypeDetector;
  * @version 0.1
  */
 @TeleOp(name = "Prototype Detector - 0.1", group = "prototype")
+@Disabled
 public class ProtoypeDetectorOpMode extends OpMode {
 
     private PrototypeDetector detector;

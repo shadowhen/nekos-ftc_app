@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
  * @version 1.0
  */
 @Autonomous(name = "Auto Gyro Turn", group = "test")
-@Disabledgit
+@Disabled
 public class AutoGyroTurn extends AutoOpMode {
 
     @Override

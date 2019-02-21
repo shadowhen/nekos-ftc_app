@@ -248,10 +248,10 @@ public class DriveOp extends OpMode {
      */
     private void slide() {
         double sliderPower = 0.0;
-        if (gamepad2.dpad_down) {
+        if (gamepad2.dpad_up) {
             sliderPower -= Bot.SLIDER_SPEED;
         }
-        if (gamepad2.dpad_up) {
+        if (gamepad2.dpad_down) {
             sliderPower += Bot.SLIDER_SPEED;
         }
         robot.getSweeper().setSliderPower(sliderPower);

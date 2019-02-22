@@ -116,6 +116,7 @@ public class AutoDelta extends AutoOpMode {
         // Runs towards the gold mineral to earn sampling points
         robot.moveByEncoder(DRIVE_SPEED, 500+100, 500+100, 5);
         robot.turnByEncoder(TURN_SPEED, 200, 5);
+        robot.moveSidewaysByEncoder(0.8, -100, 5);
 
         // Drop the team marker by deploying the sweeper
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
@@ -126,9 +127,10 @@ public class AutoDelta extends AutoOpMode {
 
         // Goes backward and then turns ~180 degrees
         robot.moveByEncoder(speed, -1000, -1000, 5);
-        robot.turnByEncoder(TURN_SPEED, -1110, 5);
+        robot.turnByEncoder(TURN_SPEED, -1110+100, 5);
 
         // Runs to the crater and deploys the sweeper to park partially
+        //robot.moveSidewaysByEncoder(0.8, 200, 5);
         robot.moveByEncoder(speed, 300, 300, 5);
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }

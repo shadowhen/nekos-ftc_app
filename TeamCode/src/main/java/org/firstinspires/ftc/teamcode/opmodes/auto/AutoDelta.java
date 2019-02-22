@@ -108,21 +108,27 @@ public class AutoDelta extends AutoOpMode {
     private void goLeft() {
         double speed = 1.0;
 
+        // Lines up to the hit the gold mineral on the left
         robot.turnByEncoder(TURN_SPEED, 100+10, 5);
-        robot.moveByEncoder(0.8, 400, 400, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 400, 400, 5);
         robot.moveSidewaysByEncoder(DRIVE_SPEED, -300-30, 5);
 
-        robot.moveByEncoder(speed, 500+100, 500+100, 5);
+        // Runs towards the gold mineral to earn sampling points
+        robot.moveByEncoder(DRIVE_SPEED, 500+100, 500+100, 5);
         robot.turnByEncoder(TURN_SPEED, 200, 5);
 
-        // From Charlie
+        // Drop the team marker by deploying the sweeper
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
         sleep(500);
+
+        // Retracts the sweeper, so the robot can deploy the sweeper later for parking
         setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 600);
 
+        // Goes backward and then turns ~180 degrees
         robot.moveByEncoder(speed, -1000, -1000, 5);
-
         robot.turnByEncoder(TURN_SPEED, -1110, 5);
+
+        // Runs to the crater and deploys the sweeper to park partially
         robot.moveByEncoder(speed, 300, 300, 5);
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
@@ -130,25 +136,31 @@ public class AutoDelta extends AutoOpMode {
     private void goRight() {
         double speed = 0.8;
 
-        robot.turnByEncoder(speed, 100, 5);
-        robot.moveByEncoder(speed, 400, 400, 5);
+        // Lines up with the gold mineral on the right
+        robot.turnByEncoder(TURN_SPEED, 100, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 400, 400, 5);
         robot.moveSidewaysByEncoder(0.8, 550, 5);
 
-        robot.moveByEncoder(speed, 500+80+100, 500+80+100, 5);
-        robot.turnByEncoder(speed, -300, 5);
-        robot.moveByEncoder(speed, 400, 400, 5);
+        // Runs towards the gold mineral to earn sampling points
+        robot.moveByEncoder(DRIVE_SPEED, 500+80+100, 500+80+100, 5);
 
+        // Moves into position where the robot can drop the team marker
+        robot.turnByEncoder(TURN_SPEED, -300, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
+
+        // Drops the team marker
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
         sleep(500);
         setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 600);
 
+        // Get into position where the robot can make run for the crater to park
         robot.moveByEncoder(speed, 200, 200, 5);
-
         robot.turnByEncoder(speed, -300, 5);
+        robot.moveByEncoder(speed, 200+100, 200+100, 5);
+        robot.turnByEncoder(speed, -230, 5);
+        robot.moveSidewaysByEncoder(0.8, 100, 5);
 
-        robot.moveByEncoder(speed, 200, 200, 5);
-
-        robot.turnByEncoder(speed, -250, 5);
+        // Runs to the crater and then parks by deploying the sweeper
         robot.moveByEncoder(1, 1800, 1800, 5);
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }

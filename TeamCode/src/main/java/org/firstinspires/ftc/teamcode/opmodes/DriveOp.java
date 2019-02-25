@@ -178,10 +178,10 @@ public class DriveOp extends OpMode {
 
         // Raises or lower the lift using the lander motor
         if (gamepad2.y) {
-            liftPower -= Bot.VERTICAL_LIFT_SPEED;
+            liftPower -= 0.9;
         }
         if (gamepad2.a) {
-            liftPower += Bot.VERTICAL_LIFT_SPEED;
+            liftPower += 0.9;
         }
         robot.getLift().setLiftPower(liftPower);
     }

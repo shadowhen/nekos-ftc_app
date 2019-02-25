@@ -38,6 +38,7 @@ public class MineralDetector extends OpenCVPipeline {
 
     @Override
     public Mat processFrame(Mat rgba, Mat gray) {
+        Mat finalMat = new Mat();
         Mat workingMat = new Mat();
 
         Mat goldMat = new Mat();
@@ -54,6 +55,8 @@ public class MineralDetector extends OpenCVPipeline {
 
         // Resize the image
         Imgproc.resize(workingMat, workingMat, IMAGE_DIMENSIONS);
+
+        workingMat.copyTo(finalMat);
 
         // Smooth the image using Gaussian Blur
         Imgproc.GaussianBlur(workingMat, workingMat, new Size
@@ -80,17 +83,27 @@ public class MineralDetector extends OpenCVPipeline {
         if (goldContours.size() > 0) {
             biggestContour = CvUtil.findBiggestContour(goldContours);
             goldRect = Imgproc.boundingRect(biggestContour);
-            CvUtil.drawRectangleContour(workingMat, goldRect, GOLD_RECT_COLOR);
+            CvUtil.drawRectangleContour(finalMat, goldRect, GOLD_RECT_COLOR);
+        } else {
+            goldRect.x = 0;
+            goldRect.y = 0;
+            goldRect.height = 0;
+            goldRect.width = 0;
         }
 
         // Find the closest silver mineral
         if (silverContours.size() > 0) {
-            biggestContour = CvUtil.findBiggestContour(goldContours);
+            biggestContour = CvUtil.findBiggestContour(silverContours);
             silverRect = Imgproc.boundingRect(biggestContour);
-            CvUtil.drawRectangleContour(workingMat, silverRect, SILVER_RECT_COLOR);
+            CvUtil.drawRectangleContour(finalMat, silverRect, SILVER_RECT_COLOR);
+        } else {
+            silverRect.x = 0;
+            silverRect.y = 0;
+            silverRect.height = 0;
+            silverRect.width = 0;
         }
 
-        return workingMat;
+        return finalMat;
     }
 
     /**
@@ -123,10 +136,10 @@ public class MineralDetector extends OpenCVPipeline {
 
     /**
      * Cleans the mask from a Mat
-     * @param src Source Mat
-     * @param dst Destination Mat
-     * @param op  Operation
-     * @param size
+     * @param src  Source Mat
+     * @param dst  Destination Mat
+     * @param op   Kernel Operation
+     * @param size Kernel Size
      */
     private static void cleanMask(Mat src, Mat dst, int op, Size size) {
         Mat kernel = Imgproc.getStructuringElement(op, size);

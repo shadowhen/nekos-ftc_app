@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
  * This class utilizes OpenCV in autonomous demonstration to go left or right depending
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * @version 1.0
  */
 @Autonomous(name = "Auto Demo - OpenCV", group = "demo")
+@Disabled
 public class AutoDemoOpenCv extends AutoOpMode {
 
     @Override

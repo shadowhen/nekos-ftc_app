@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.robot.MineralPosition;
 
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.robot.MineralPosition;
  * @version 1.0
  */
 @Autonomous(name = "Autonomous Demonstration",  group = "demo")
+@Disabled
 public class AutoDemo extends AutoOpMode {
 
     private MineralPosition mineralPosition;

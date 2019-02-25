@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
  * This class implements the Rev Hub's Imu for gyro turns in autonomous.
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * @version 1.0
  */
 @Autonomous(name = "Auto Gyro Turn", group = "test")
+@Disabled
 public class AutoGyroTurn extends AutoOpMode {
 
     @Override

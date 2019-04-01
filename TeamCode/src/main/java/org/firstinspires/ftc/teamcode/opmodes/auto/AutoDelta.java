@@ -2,16 +2,14 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.robot.Bot;
-import org.firstinspires.ftc.teamcode.robot.MineralPosition;
 import org.firstinspires.ftc.teamcode.robot.MineralType;
 import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
 
 /**
- * This class allows the robot to scan for the gold mineral for the sampling points, and the robot
- * carries out the same tasks as Auto Beta after knocking off the gold mineral.
- *
+ * This class implements the autonomous plan which the robot drops from the lander, samples the gold
+ * mineral, places the team marker in the alliance depot, and goes to park on the crater on the
+ * opposing alliance side.
  * @author Henry
  * @version 1.0
  */
@@ -50,13 +48,8 @@ public class AutoDelta extends AutoOpMode {
             telemetry.update();
         }
 
-        //centerMineral = scanMineralType(3);
-
         // Lands on the ground by raising the lift
         liftByTime(Bot.VERTICAL_RAISE_SPEED, 3100);
-
-        // Scans for the first mineral
-        //centerMineral = scanMineralType(3);
 
         if (centerMineral.equals(MineralType.GOLD)) {
             goCenter();
@@ -130,7 +123,6 @@ public class AutoDelta extends AutoOpMode {
         robot.turnByEncoder(TURN_SPEED, -1110+100, 5);
 
         // Runs to the crater and deploys the sweeper to park partially
-        //robot.moveSidewaysByEncoder(0.8, 200, 5);
         robot.moveByEncoder(speed, 300, 300, 5);
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }

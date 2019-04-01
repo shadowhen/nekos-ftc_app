@@ -86,6 +86,10 @@ public class DriveBot implements Bot {
         motorDriveRightRear.setPower(rightPower);
     }
 
+    public void setDrivePowerSideways(double power) {
+        setDrivePowerSideways(power, power);
+    }
+
     /**
      * Set the drive power of the left and right motors which the robot drives sideways.
      * @param leftPower  Left Power
@@ -96,6 +100,10 @@ public class DriveBot implements Bot {
         motorDriveLeftRear.setPower(-leftPower);
         motorDriveRightFront.setPower(-rightPower);
         motorDriveRightRear.setPower(rightPower);
+    }
+
+    public void setDrivePowerTurn(double power) {
+        setDrivePowerTurn(power, power);
     }
 
     /**

@@ -36,6 +36,7 @@ public class AutoOpMode extends LinearOpMode {
     public static final double SWEEPER_RETRACT_SPEED = 0.8;
 
     public static final long SLEEP_DRIVE = 500;
+    public static final long SLEEP_LANDING = 3100;
     public static final TfODSide CAMERA_SIDE = TfODSide.LEFT;
 
     protected ElapsedTime timer;

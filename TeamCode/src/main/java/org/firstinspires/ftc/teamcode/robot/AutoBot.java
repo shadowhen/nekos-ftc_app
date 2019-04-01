@@ -87,6 +87,10 @@ public class AutoBot extends DriveBot {
         motorDriveRightRear.setTargetPosition(motorDriveRightRear.getCurrentPosition() + newRightTarget);
     }
 
+    public void moveByEncoder(double speed, double distance, double timeoutS) {
+        moveByEncoder(speed, distance, distance, timeoutS);
+    }
+
     /**
      * The robot travels at a specified distance using its drive motors' encoders.
      *

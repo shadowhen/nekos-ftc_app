@@ -206,9 +206,7 @@ public class DriveOp extends OpMode {
      * Controls the sweeper mechanism on the robot
      */
     private void sweep() {
-        float leftTrigger = gamepad1.left_trigger;
-        float rightTrigger = gamepad1.right_trigger;
-        float totalTrigger = rightTrigger - leftTrigger;
+        float totalTrigger = gamepad1.right_trigger - gamepad1.left_trigger;
 
         // Deploys or retracts the sweeper using the lift motor
         //
@@ -218,6 +216,8 @@ public class DriveOp extends OpMode {
         //
         // After the time is up, the sweeper lift motor would set to power of zero which
         // stops the motor
+
+        /*
         if (sweeperBusy && (sweeperTime > sweeperDeployTimer.seconds())) {
             robot.getSweeper().setLiftPower(0.0);
             sweeperBusy = false;
@@ -238,6 +238,9 @@ public class DriveOp extends OpMode {
                 robot.getSweeper().setLiftPower(Range.clip(gamepad2.left_stick_y, -Bot.SWEEPER_LIFT_SPEED, Bot.SWEEPER_LIFT_SPEED));
             }
         }
+        */
+
+        robot.getSweeper().setLiftPower(Range.clip(gamepad2.left_stick_y, -Bot.SWEEPER_LIFT_SPEED, Bot.SWEEPER_LIFT_SPEED));
 
         // Sweeps the minerals from the ground
         robot.getSweeper().setSweeperPower(Range.clip(totalTrigger, -Bot.SWEEPER_SPEED, Bot.SWEEPER_SPEED));

@@ -47,7 +47,7 @@ public class AutoGoldRush extends AutoOpMode {
         }
 
         // Lands on the ground by raising the lift
-        liftByTime(Bot.VERTICAL_RAISE_SPEED, 3100);
+        liftByTime(Bot.VERTICAL_RAISE_SPEED, SLEEP_LANDING);
 
         // Moves sideways left into starting position
         robot.moveSidewaysByEncoder(DRIVE_SPEED, -250, 5);

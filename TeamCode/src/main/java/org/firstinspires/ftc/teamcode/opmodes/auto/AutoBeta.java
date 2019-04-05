@@ -30,7 +30,7 @@ public class AutoBeta extends AutoOpMode {
         }
 
         // Lands on the ground by raising the lift
-        liftByTime(Bot.VERTICAL_RAISE_SPEED, 3100);
+        liftByTime(Bot.VERTICAL_RAISE_SPEED, SLEEP_DRIVE);
 
         // Moves to the left sideways
         robot.moveSidewaysByEncoder(DRIVE_SPEED, -200, 5);

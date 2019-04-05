@@ -49,7 +49,7 @@ public class AutoDelta extends AutoOpMode {
         }
 
         // Lands on the ground by raising the lift
-        liftByTime(Bot.VERTICAL_RAISE_SPEED, 3100);
+        liftByTime(Bot.VERTICAL_RAISE_SPEED, SLEEP_LANDING);
 
         if (centerMineral.equals(MineralType.GOLD)) {
             goCenter();

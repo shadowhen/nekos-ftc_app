@@ -102,10 +102,10 @@ public class DriveDemoOp extends OpMode {
             controlNumber = CONTROL_LIFT;
 
             if (gamepad1.left_trigger > 0) {
-                liftPower -= 0.9;
+                liftPower -= Bot.VERTICAL_LIFT_SPEED;
             }
             if (gamepad1.right_trigger > 0) {
-                liftPower += 0.9;
+                liftPower += Bot.VERTICAL_LIFT_SPEED;
             }
         } else if (gamepad1.b) {
             // SWEEPER CONTROL

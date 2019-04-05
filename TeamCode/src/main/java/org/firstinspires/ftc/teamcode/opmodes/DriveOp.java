@@ -66,7 +66,7 @@ public class DriveOp extends OpMode {
 
         // Sends the info to the driver station for debugging and important acoustics
         telemetry.addData("Sideways Motion Controls", sidewaysControlState ? "D-Pad" : "Bumpers");
-        telemetry.addData("sweeper deploy/retract time", "%.2f", sweeperTime);
+        //telemetry.addData("sweeper deploy/retract time", "%.2f", sweeperTime);
 
         // DRIVE MOTORS
         telemetry.addLine("-------------------");
@@ -88,7 +88,7 @@ public class DriveOp extends OpMode {
         // DUMPER
         telemetry.addLine("-------------------");
         //telemetry.addData("Dumper Position", "%.2f",robot.getDumper().getPosition());
-        telemetry.addData("Dumper Power", "%.2f", robot.getDumper().getPower());
+        telemetry.addData("Arm Power", "%.2f", robot.getDumper().getPower());
     }
 
     /**
@@ -178,10 +178,10 @@ public class DriveOp extends OpMode {
 
         // Raises or lower the lift using the lander motor
         if (gamepad2.y) {
-            liftPower -= 0.9;
+            liftPower -= Bot.VERTICAL_LIFT_SPEED;
         }
         if (gamepad2.a) {
-            liftPower += 0.9;
+            liftPower += Bot.VERTICAL_LIFT_SPEED;
         }
         robot.getLift().setLiftPower(liftPower);
     }

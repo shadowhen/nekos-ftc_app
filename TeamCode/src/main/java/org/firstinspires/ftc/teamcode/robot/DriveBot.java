@@ -41,10 +41,10 @@ public class DriveBot implements Bot {
         dumper = new Dumper();
 
         // Get hardware references from the robot controller's configuration for hardware devices
-        motorDriveLeftFront  = hwMap.get(DcMotor.class, "motor_drive_lf");
-        motorDriveLeftRear   = hwMap.get(DcMotor.class, "motor_drive_lr");
-        motorDriveRightFront = hwMap.get(DcMotor.class, "motor_drive_rf");
-        motorDriveRightRear  = hwMap.get(DcMotor.class, "motor_drive_rr");
+        motorDriveLeftFront  = hwMap.get(DcMotor.class, HardwareName.MOTOR_DRIVE_LEFT_FRONT);
+        motorDriveLeftRear   = hwMap.get(DcMotor.class, HardwareName.MOTOR_DRIVE_LEFT_REAR);
+        motorDriveRightFront = hwMap.get(DcMotor.class, HardwareName.MOTOR_DRIVE_RIGHT_FRONT);
+        motorDriveRightRear  = hwMap.get(DcMotor.class, HardwareName.MOTOR_DRIVE_RIGHT_REAR);
 
         // Reverses the right drive motors' direction
         motorDriveRightFront.setDirection(DcMotorSimple.Direction.REVERSE);

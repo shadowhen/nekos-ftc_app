@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.robot.Bot;
+
 /**
  * The class provides an autonomous sweeper lift test for depositing the team marker in the depot.
  * @author Henry
@@ -27,9 +29,6 @@ public class AutoSweeperLiftTest extends AutoOpMode {
             telemetry.update();
         }
 
-        // Deposits the team marker in the depot for autonomous points
-        setSweeperLiftPower(0.5, 500);
-        sleep(2000);
-        setSweeperLiftPower(-0.5, 500);
+        setSweeperLiftPower(Bot.VERTICAL_RAISE_SPEED, SLEEP_LANDING);
     }
 }

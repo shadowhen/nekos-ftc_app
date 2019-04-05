@@ -28,7 +28,7 @@ public class AutoAlpha extends AutoOpMode {
         }
 
         // Lands on the ground by raising the lift
-        liftByTime(Bot.VERTICAL_RAISE_SPEED, 3100);
+        liftByTime(Bot.VERTICAL_RAISE_SPEED, SLEEP_LANDING);
 
         // Drives to the crater for parking
         robot.moveSidewaysByEncoder(DRIVE_SPEED, 200, 5);

@@ -32,7 +32,7 @@ public class AutoCharlie extends AutoOpMode {
         }
 
         // Lands on the field by raising the lift
-        liftByTime(Bot.VERTICAL_RAISE_SPEED, 3100);
+        liftByTime(Bot.VERTICAL_RAISE_SPEED, SLEEP_DRIVE);
 
         // Moves sideways to unlatch from the lander latch
         robot.moveSidewaysByEncoder(SIDEWAYS_SPEED, 200, 5);

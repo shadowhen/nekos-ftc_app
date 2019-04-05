@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
+import org.firstinspires.ftc.teamcode.robot.Bot;
 import org.firstinspires.ftc.teamcode.robot.MineralType;
 
 /**
@@ -29,6 +30,8 @@ public class AutoDefendCrater extends AutoOpMode {
             telemetry.update();
             telemetry.addData(">", "waiting for start command");
         }
+
+        setSweeperLiftPower(Bot.VERTICAL_RAISE_SPEED, SLEEP_LANDING);
 
         // Moves sideways right since the robot is on the right side (left side on the lander)
         robot.moveSidewaysByEncoder(DRIVE_SPEED, 250, 5);

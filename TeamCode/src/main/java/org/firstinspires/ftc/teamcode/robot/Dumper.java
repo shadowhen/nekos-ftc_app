@@ -18,7 +18,7 @@ public class Dumper {
      * @param hwMap Hardware Map
      */
     public void init(HardwareMap hwMap) {
-        motorDumper = hwMap.get(DcMotor.class, "motor_dumper");
+        motorDumper = hwMap.get(DcMotor.class, HardwareName.MOTOR_ARM);
     }
 
     /**

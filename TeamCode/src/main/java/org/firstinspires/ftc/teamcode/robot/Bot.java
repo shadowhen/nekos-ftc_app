@@ -15,14 +15,14 @@ public interface Bot {
     // Constant speed values for autonomous and driver control
     double DRIVE_SPEED = 1.0;
     double TURN_SPEED = 1.0;
-    double VERTICAL_LIFT_SPEED = 0.9;
+    double VERTICAL_LIFT_SPEED = 1.0;
     double SLIDER_SPEED = 0.5;
     double SWEEPER_SPEED = 0.5;
     double SWEEPER_LIFT_SPEED = 0.9;
     double DUMPER_MOTOR_SPEED = 0.5;
 
     // Constant vertical lift speed values for autonomous
-    double VERTICAL_RAISE_SPEED = -1;
+    double VERTICAL_RAISE_SPEED = -VERTICAL_LIFT_SPEED;
     double VERTICAL_LOWER_SPEED = VERTICAL_LIFT_SPEED;
 
     /**

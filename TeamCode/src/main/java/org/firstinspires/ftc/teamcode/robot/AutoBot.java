@@ -87,6 +87,13 @@ public class AutoBot extends DriveBot {
         motorDriveRightRear.setTargetPosition(motorDriveRightRear.getCurrentPosition() + newRightTarget);
     }
 
+    /**
+     * The robot moves forward or backward according to the given distance within certain timeout
+     * using the speed for its drive motors.
+     * @param speed    Speed by percentage
+     * @param distance Distance to travel forward/backward
+     * @param timeoutS Timeout in seconds
+     */
     public void moveByEncoder(double speed, double distance, double timeoutS) {
         moveByEncoder(speed, distance, distance, timeoutS);
     }

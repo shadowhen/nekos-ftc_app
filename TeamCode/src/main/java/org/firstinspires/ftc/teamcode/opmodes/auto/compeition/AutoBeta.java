@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.robot.Bot;
  * @author Henry
  * @version 1.3
  */
-@Autonomous(name = "Auto Beta - COMPETITION - DEPOT - RIGHT SIDE - LANDING - NO MINERALS", group = "auto")
+@Autonomous(name = "Beta - COMPETITION - DEPOT - RIGHT SIDE - LANDING - NO MINERALS", group = "auto")
 public class AutoBeta extends AutoOpMode {
 
     @Override

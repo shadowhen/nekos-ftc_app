@@ -1,10 +1,9 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.compeition;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.opmodes.auto.AutoOpMode;
 import org.firstinspires.ftc.teamcode.robot.Bot;
-import org.firstinspires.ftc.teamcode.robot.MineralPosition;
-import org.firstinspires.ftc.teamcode.robot.VuforiaKey;
 
 /**
  * This class implements the autonomous plan Alpha which the robot lands from the crater side

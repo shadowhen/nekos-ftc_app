@@ -1,8 +1,9 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.compeition;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
+import org.firstinspires.ftc.teamcode.opmodes.auto.AutoOpMode;
 import org.firstinspires.ftc.teamcode.robot.Bot;
 import org.firstinspires.ftc.teamcode.robot.MineralType;
 import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
@@ -15,7 +16,7 @@ import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
  */
 @Autonomous(name = "Auto Gold Rush - CRATER - RIGHT SIDE - SAMPLE", group = "auto")
 @Disabled
-public class AutoGoldRush extends AutoOpMode {
+public class AutoEcho extends AutoOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -52,7 +53,6 @@ public class AutoGoldRush extends AutoOpMode {
         // Moves sideways left into starting position
         robot.moveSidewaysByEncoder(DRIVE_SPEED, -250, 5);
 
-        /*
         if (centerMineral.equals(MineralType.GOLD)) {
             goCenter();
         } else {
@@ -68,7 +68,6 @@ public class AutoGoldRush extends AutoOpMode {
                 goRight();
             }
         }
-        */
     }
 
     private void goLeft() {

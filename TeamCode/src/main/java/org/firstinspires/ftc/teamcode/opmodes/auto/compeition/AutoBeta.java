@@ -1,8 +1,9 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.compeition;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.opmodes.auto.AutoOpMode;
 import org.firstinspires.ftc.teamcode.robot.Bot;
 
 /**
@@ -26,7 +27,7 @@ public class AutoBeta extends AutoOpMode {
         while (!isStarted()) {
             telemetry.addData("INSTRUCTIONS", "PLACE THE HOOK ON THE RIGHT SIDE");
             telemetry.addData(">", "Press START to start autonomous");
-            telemetry. update();
+            telemetry.update();
         }
 
         // Lands on the ground by raising the lift

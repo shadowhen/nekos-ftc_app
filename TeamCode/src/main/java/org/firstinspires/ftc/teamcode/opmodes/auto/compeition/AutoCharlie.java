@@ -1,8 +1,9 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.compeition;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.opmodes.auto.AutoOpMode;
 import org.firstinspires.ftc.teamcode.robot.Bot;
 
 /**

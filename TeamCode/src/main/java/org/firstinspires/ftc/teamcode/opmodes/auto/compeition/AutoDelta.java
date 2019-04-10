@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.compeition;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.opmodes.auto.AutoOpMode;
 import org.firstinspires.ftc.teamcode.robot.Bot;
 import org.firstinspires.ftc.teamcode.robot.MineralType;
 import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;

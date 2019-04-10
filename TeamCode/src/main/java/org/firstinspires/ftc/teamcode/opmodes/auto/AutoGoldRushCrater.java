@@ -52,6 +52,7 @@ public class AutoGoldRush extends AutoOpMode {
         // Moves sideways left into starting position
         robot.moveSidewaysByEncoder(DRIVE_SPEED, -250, 5);
 
+        /*
         if (centerMineral.equals(MineralType.GOLD)) {
             goCenter();
         } else {
@@ -67,6 +68,7 @@ public class AutoGoldRush extends AutoOpMode {
                 goRight();
             }
         }
+        */
     }
 
     private void goLeft() {

@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.robot.Bot;
  * @author Henry
  * @version 1.1
  */
-@Autonomous(name = "Auto Charlie - COMPETITION - CRATER - LEFT SIDE - LANDING - CLAIM DEPOT - PARK OUR CRATER", group = "auto")
+@Autonomous(name = "Charlie - COMPETITION - CRATER - LEFT SIDE - LANDING - CLAIM DEPOT - PARK OUR CRATER", group = "auto")
 public class AutoCharlie extends AutoOpMode {
 
     @Override

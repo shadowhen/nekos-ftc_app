@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.robot.Bot;
  * @author Henry
  * @version 1.1
  */
-@Autonomous(name = "Auto Alpha - COMPETITION - CRATER - LEFT SIDE - LANDING - PARK ONLY", group = "auto")
+@Autonomous(name = "Alpha - COMPETITION - CRATER - LEFT SIDE - LANDING - PARK ONLY", group = "auto")
 public class AutoAlpha extends AutoOpMode {
 
     @Override

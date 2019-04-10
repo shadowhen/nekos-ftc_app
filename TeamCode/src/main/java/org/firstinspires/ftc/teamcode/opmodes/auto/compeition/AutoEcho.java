@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
  * @author Henry
  * @version 1.0
  */
-@Autonomous(name = "Auto Gold Rush - CRATER - RIGHT SIDE - SAMPLE", group = "auto")
+@Autonomous(name = "Echo - CRATER - RIGHT SIDE - SAMPLE", group = "auto")
 @Disabled
 public class AutoEcho extends AutoOpMode {
 

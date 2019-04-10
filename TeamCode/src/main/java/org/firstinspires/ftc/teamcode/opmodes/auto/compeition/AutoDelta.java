@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
  * @author Henry
  * @version 1.0
  */
-@Autonomous(name = "Auto Delta - COMPETITION - DEPOT - RIGHT SIDE - MEET ALL POINTS", group = "auto")
+@Autonomous(name = "Delta - COMPETITION - DEPOT - RIGHT SIDE - MEET ALL POINTS", group = "auto")
 public class AutoDelta extends AutoOpMode {
 
     private MineralType centerMineral;

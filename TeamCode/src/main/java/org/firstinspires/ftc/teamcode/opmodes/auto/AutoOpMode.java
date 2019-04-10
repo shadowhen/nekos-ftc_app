@@ -34,6 +34,8 @@ public class AutoOpMode extends LinearOpMode {
 
     public static final double SWEEPER_DEPLOY_SPEED = -0.5;
     public static final double SWEEPER_RETRACT_SPEED = 0.8;
+    public static final long SWEEPER_DEPLOY_SLEEP = 500;
+    public static final long SWEEPER_RETRACT_SLEEP = 600;
 
     public static final long SLEEP_DRIVE = 500;
     public static final long SLEEP_LANDING = 3100;
@@ -78,7 +80,7 @@ public class AutoOpMode extends LinearOpMode {
 
     /**
      * Initializes the vuforia and the tensorflow lite object detector
-     * @param useWebcam
+     * @param useWebcam Use webcam for Tensorflow
      */
     public void initDetector(boolean useWebcam) {
         telemetry.addData("status", "setting up vuforia...");
@@ -142,6 +144,7 @@ public class AutoOpMode extends LinearOpMode {
         robot.getSweeper().setLiftPower(0.0);
     }
 
+    @Deprecated
     public MineralPosition findGoldMineralFromPosition(double timeoutS) {
         return findGoldMineralFromPosition(timeoutS, CAMERA_SIDE);
     }
@@ -158,6 +161,7 @@ public class AutoOpMode extends LinearOpMode {
      * @param timeoutS Timeout in seconds
      * @return Gold Mineral Position
      */
+    @Deprecated
     public MineralPosition findGoldMineralFromPosition(double timeoutS, TfODSide side) {
         // Used to determine the position of the gold mineral
         int goldMineralX;
@@ -258,6 +262,7 @@ public class AutoOpMode extends LinearOpMode {
      * @param timeoutS Timeout in seconds
      * @return Position of the gold mineral
      */
+    @Deprecated
     public MineralPosition detectGoldFromTwoMinerals(double timeoutS) {
         // Detected Mineral Position for Gold
         MineralPosition mineralPosition = MineralPosition.NONE;

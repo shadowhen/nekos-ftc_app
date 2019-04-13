@@ -13,9 +13,6 @@ import com.qualcomm.robotcore.util.Range;
  */
 public class Sweeper {
 
-    private static final double MIN_POWER = -0.25;
-    private static final double MAX_POWER = 0.25;
-
     private DcMotor liftMotor;
     private DcMotor sliderMotor;
 

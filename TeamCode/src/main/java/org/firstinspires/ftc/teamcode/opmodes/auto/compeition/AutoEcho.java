@@ -14,9 +14,11 @@ import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
  * @author Henry
  * @version 1.0
  */
-@Autonomous(name = "Echo - CRATER - RIGHT SIDE - SAMPLE", group = "auto")
-@Disabled
+@Autonomous(name = "Echo - CRATER - RIGHT SIDE - SAMPLE ONLY", group = "auto")
+//Disabled
 public class AutoEcho extends AutoOpMode {
+
+    private static final double PARKING_SPEED = -1.0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -50,6 +52,8 @@ public class AutoEcho extends AutoOpMode {
         // Lands on the ground by raising the lift
         liftByTime(Bot.VERTICAL_RAISE_SPEED, SLEEP_LANDING);
 
+        centerMineral = scanMineralType(5);
+
         // Moves sideways left into starting position
         robot.moveSidewaysByEncoder(DRIVE_SPEED, -250, 5);
 
@@ -62,7 +66,7 @@ public class AutoEcho extends AutoOpMode {
             // Scans the mineral on the left
             leftMineral = scanMineralType(5);
 
-            if (leftMineral.equals(MineralType.SILVER)) {
+            if (leftMineral.equals(MineralType.GOLD)) {
                 goLeft();
             } else {
                 goRight();
@@ -77,18 +81,18 @@ public class AutoEcho extends AutoOpMode {
         robot.moveSidewaysByEncoder(DRIVE_SPEED, -300-30, 5);
 
         // Runs into the mineral for sampling points
-        robot.moveByEncoder(DRIVE_SPEED, 500+100, 500+100, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 600, 5);
 
         // Park in the crater
-        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+        setSweeperLiftPower(PARKING_SPEED, 500);
     }
 
     private void goCenter() {
         // Runs through the minerals
-        robot.moveByEncoder(DRIVE_SPEED, 1180, 1180, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 1180-400, 5);
 
         // Park in the crater
-        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+        setSweeperLiftPower(PARKING_SPEED, 500);
     }
 
     private void goRight() {
@@ -98,9 +102,9 @@ public class AutoEcho extends AutoOpMode {
         robot.moveSidewaysByEncoder(0.8, 550, 5);
 
         // Runs towards the gold mineral to earn sampling points
-        robot.moveByEncoder(DRIVE_SPEED, 500+80+100, 500+80+100, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 500, 500, 5);
 
         // Park in the crater
-        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+        setSweeperLiftPower(PARKING_SPEED, 500);
     }
 }

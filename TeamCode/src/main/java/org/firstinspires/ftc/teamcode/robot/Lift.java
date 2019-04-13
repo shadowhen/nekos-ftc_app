@@ -27,15 +27,6 @@ public class Lift {
     }
 
     /**
-     * Converts the distance in millimeters into encoder counts
-     * @param distance Distance in millimeters
-     * @return Encoder Counts (Target Position)
-     */
-    public static int convertDistanceToTarget(double distance) {
-        return (int)(distance * COUNTS_PER_MM);
-    }
-
-    /**
      * Set the power of the lift motor
      * @param power Power
      */

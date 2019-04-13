@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.robot.Bot;
  * @author Henry
  * @version 1.3
  */
-@Autonomous(name = "Beta - COMPETITION - DEPOT - RIGHT SIDE - LANDING - NO MINERALS", group = "auto")
+@Autonomous(name = "Beta - COMPETITION - Depot - Right Side - No Sampling", group = "auto")
 public class AutoBeta extends AutoOpMode {
 
     @Override
@@ -31,7 +31,7 @@ public class AutoBeta extends AutoOpMode {
         }
 
         // Lands on the ground by raising the lift
-        liftByTime(Bot.VERTICAL_RAISE_SPEED, SLEEP_DRIVE);
+        liftByTime(Bot.VERTICAL_RAISE_SPEED, SLEEP_LANDING);
 
         // Moves to the left sideways
         robot.moveSidewaysByEncoder(DRIVE_SPEED, -200, 5);

@@ -23,15 +23,13 @@ public class AutoBot extends DriveBot {
     private static final double WHEEL_DIAMETER_MM = 100;
     private static final double COUNTS_PER_MM = (COUNTS_PER_REV) / (WHEEL_DIAMETER_MM * Math.PI);
 
-    // Values for lift motor with an encoder
-    private static final double LIFT_WHEEL_DIAMETER_MM = 10;
-    private static final double COUNTS_LIFT_PER_MM = (COUNTS_PER_REV) / (LIFT_WHEEL_DIAMETER_MM * Math.PI);
-
     private ElapsedTime timer;
     private SensorBot sensors;
 
     // Used for accessing methods in the linearOpMode
     private LinearOpMode linearOpMode;
+
+    private double[] driveSpeed = new double[4];
 
     public AutoBot() {
         this(null);
@@ -107,11 +105,6 @@ public class AutoBot extends DriveBot {
      * @param timeoutS  Timeout in seconds
      */
     public void moveByEncoder(double speed, double leftDist, double rightDist, double timeoutS) {
-        double correction;
-        double leftSpeed;
-        double rightSpeed;
-        double max;
-
         if (linearOpMode.opModeIsActive()) {
             // Set the direction of the drive motors so the robot can drive forward and backward
             // correctly
@@ -136,17 +129,6 @@ public class AutoBot extends DriveBot {
             // The robot drives to the desired target position until the timer goes
             // pass the limit for a timeout or reaches the destination.
             while (isDriveMotorsBusy() && (timer.seconds() < timeoutS) && linearOpMode.opModeIsActive()) {
-                // TODO: Add way to correct the direction of the robot if the robot goes slightly off
-                /*correction = sensors.getCorrection(.10, 0);
-                leftSpeed = speed - correction;
-                rightSpeed = speed + correction;
-                max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
-                if (max > 1.0) {
-                    leftSpeed /= max;
-                    rightSpeed /= max;
-                }
-                setDrivePower(Math.abs(leftSpeed), Math.abs(rightSpeed));*/
-
                 setDrivePower(speed, speed);
 
                 telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
@@ -202,93 +184,14 @@ public class AutoBot extends DriveBot {
 
     }
 
+    /**
+     * Turn the robot using encoders.
+     * @param speed    Turn Speed
+     * @param turnDist Turn Distance for encoders
+     * @param timeoutS Timeout in seconds
+     */
     public void turnByEncoder(double speed, double turnDist, double timeoutS) {
         moveByEncoder(speed, turnDist, -turnDist, timeoutS);
-    }
-
-    /**
-     * Moves the lift by distance
-     * @param speed    Lift Speed
-     * @param distance Distance in millimeters
-     * @param timeoutS Timeout in seconds
-     */
-    public void moveLiftByDistance(double speed, double distance, double timeoutS) {
-        int newTargetPosition = (int)(distance * COUNTS_LIFT_PER_MM);
-
-        if (linearOpMode.opModeIsActive()) {
-            lift.getLiftMotor().setTargetPosition(newTargetPosition + lift.getCurrentPosition());
-            lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            lift.setLiftPower(Math.abs(speed));
-            timer.reset();
-            while (linearOpMode.opModeIsActive() && timer.seconds() < timeoutS && lift.getLiftMotor().isBusy()) {
-                telemetry.addData("status", "moving the lift");
-                telemetry.addData("speed", "%.2f", lift.getLiftPower());
-                telemetry.addData("target", "%07d", lift.getCurrentPosition());
-                telemetry.addData("current", "%07d", lift.getCurrentPosition());
-                telemetry.update();
-            }
-            lift.setLiftPower(0);
-            lift.getLiftMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-    }
-
-    /**
-     * Turns the robot by degrees
-     * @param speed    Speed
-     * @param degrees  Turn in degrees
-     * @param timeoutS Timeout in seconds
-     */
-    public void turnByGyro(double speed, int degrees, double timeoutS) {
-        double leftPower, rightPower;
-
-        if (linearOpMode.opModeIsActive() && degrees != 0) {
-            // Reset the degrees first before turning
-            sensors.resetAngle();
-
-            speed = Math.abs(speed);
-            if (degrees > 0) {
-                leftPower = speed;
-                rightPower = -speed;
-            } else {
-                leftPower = -speed;
-                rightPower = speed;
-            }
-
-            // Reset the timer
-            timer.reset();
-
-            // Run the motors
-            setDrivePower(leftPower, rightPower);
-
-            // The robot turns until it has reached its desired degree
-            if (degrees > 0) {
-                while (linearOpMode.opModeIsActive() &&
-                        ((sensors.getAngle() == 0) || (sensors.getAngle() < degrees)) &&
-                        timer.seconds() < timeoutS) {
-                    telemetry.addData("status", "turning left");
-                    telemetry.addData("desired degrees", degrees);
-                    telemetry.addData("time", "%.2f", timeoutS - timer.seconds());
-                    telemetry.update();
-                }
-            } else {
-                while (linearOpMode.opModeIsActive() &&
-                        ((sensors.getAngle() == 0) || (sensors.getAngle() > degrees))
-                        && timer.seconds() < timeoutS) {
-                    telemetry.addData("status", "turning right");
-                    telemetry.addData("desired degrees", degrees);
-                    telemetry.addData("time", "%.2f", timeoutS - timer.seconds());
-                    telemetry.update();
-                }
-            }
-
-            // Stop the robot
-            setDrivePower(0, 0);
-
-            // Reset the angle so the robot can use the gyro sensor without any problems such
-            // direction correction.
-            sensors.resetAngle();
-        }
     }
 
     /**

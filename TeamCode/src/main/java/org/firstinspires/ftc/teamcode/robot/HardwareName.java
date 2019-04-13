@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+/**
+ * This class implements the hardware names for the motors and servos.
+ * @author Henry
+ * @version 1.0
+ */
 public class HardwareName {
 
     public static final String MOTOR_DRIVE_LEFT_FRONT = "motor_drive_lf";

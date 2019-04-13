@@ -18,20 +18,17 @@ import org.firstinspires.ftc.teamcode.robot.DriveBot;
 @TeleOp(name = "Drive Op 1.3 - Competition", group = "drive")
 public class DriveOp extends OpMode {
 
-    // Sweeper Time
-    private static final double DEPLOY_TIME = 0.5;
-    private static final double RETRACT_TIME = 0.6;
+    private DriveBot robot;
 
     // Control button for the sideways control on gamepad 1
     private boolean sidewaysControlState = false;
     private boolean sidewaysControlStateButtonDown;
 
-    // Needed for moving lift using encoder counts
-    private DriveBot robot;
+    private boolean sweepingButtonDown = false;
+    private boolean sweepingForever = false;
 
-    private ElapsedTime sweeperDeployTimer = new ElapsedTime();
-    private double sweeperTime = 0.0;
-    private boolean sweeperBusy = false;
+    private boolean sweepingDirectionChangeButtonDown = false;
+    private boolean sweepingForward = true;
 
     @Override
     public void init() {
@@ -64,9 +61,8 @@ public class DriveOp extends OpMode {
         slide();
         sweep();
 
-        // Sends the info to the driver station for debugging and important acoustics
+        // Sends the info to the driver station for debugging and important information
         telemetry.addData("Sideways Motion Controls", sidewaysControlState ? "D-Pad" : "Bumpers");
-        //telemetry.addData("sweeper deploy/retract time", "%.2f", sweeperTime);
 
         // DRIVE MOTORS
         telemetry.addLine("-------------------");
@@ -80,6 +76,9 @@ public class DriveOp extends OpMode {
         telemetry.addData("Sweeper Power", "%.2f", robot.getSweeper().getSweeperPower());
         telemetry.addData("Sweeper-Lift Power", "%.2f", robot.getSweeper().getLiftPower());
         telemetry.addData("Sweeper-Slider Power", "%.2f", robot.getSweeper().getSliderPower());
+
+        telemetry.addData("Sweeping Direction", sweepingForward ? "Forward" : "Backward");
+        telemetry.addData("Sweeping Forever", sweepingForever);
 
         // LIFT
         telemetry.addLine("-------------------");
@@ -99,6 +98,11 @@ public class DriveOp extends OpMode {
         float joystickLeftYOne = gamepad1.left_stick_y;
         float joystickRightYOne = gamepad1.right_stick_y;
 
+        double leftFrontPower = Range.clip(joystickLeftYOne, -Bot.LEFT_FRONT_POWER, Bot.LEFT_FRONT_POWER);
+        double leftRearPower = Range.clip(joystickLeftYOne, -Bot.LEFT_REAR_POWER, Bot.LEFT_REAR_POWER);
+        double rightFrontPower = Range.clip(joystickRightYOne, -Bot.RIGHT_FRONT_POWER, Bot.RIGHT_FRONT_POWER);
+        double rightRearPower = Range.clip(joystickRightYOne, -Bot.RIGHT_REAR_POWER, Bot.RIGHT_REAR_POWER);
+
         // Changes the control layout for turning and sideways motion on bumpers and dpad
         if (!sidewaysControlStateButtonDown && gamepad1.a) {
             sidewaysControlState = !sidewaysControlState;
@@ -111,63 +115,78 @@ public class DriveOp extends OpMode {
         if (gamepad1.right_bumper) {
             // Move the robot sideways left or turn left depending the sideways state
             if (!sidewaysControlState) {
-                robot.getMotorDriveLeftFront().setPower(-Bot.DRIVE_SPEED);
-                robot.getMotorDriveLeftRear().setPower(Bot.DRIVE_SPEED);
-                robot.getMotorDriveRightFront().setPower(Bot.DRIVE_SPEED);
-                robot.getMotorDriveRightRear().setPower(-Bot.DRIVE_SPEED);
+                leftFrontPower = -Bot.LEFT_FRONT_POWER;
+                leftRearPower = Bot.LEFT_REAR_POWER;
+                rightFrontPower = Bot.RIGHT_FRONT_POWER;
+                rightRearPower = -Bot.RIGHT_REAR_POWER;
 
             } else {
-                robot.setDrivePowerTurn(Bot.TURN_SPEED, Bot.TURN_SPEED);
+                leftFrontPower = -Bot.LEFT_FRONT_POWER;
+                leftRearPower = -Bot.LEFT_REAR_POWER;
+                rightFrontPower = Bot.RIGHT_FRONT_POWER;
+                rightRearPower = Bot.RIGHT_REAR_POWER;
             }
 
         } else if (gamepad1.left_bumper) {
             // Move the robot sideways right or turn right using the right bumper
             if (!sidewaysControlState) {
-                robot.getMotorDriveLeftFront().setPower(Bot.DRIVE_SPEED);
-                robot.getMotorDriveLeftRear().setPower(-Bot.DRIVE_SPEED);
-                robot.getMotorDriveRightFront().setPower(-Bot.DRIVE_SPEED);
-                robot.getMotorDriveRightRear().setPower(Bot.DRIVE_SPEED);
+                leftFrontPower = Bot.LEFT_FRONT_POWER;
+                leftRearPower = -Bot.LEFT_REAR_POWER;
+                rightFrontPower = -Bot.RIGHT_FRONT_POWER;
+                rightRearPower = Bot.RIGHT_REAR_POWER;
 
             } else {
-                robot.setDrivePowerTurn(-Bot.TURN_SPEED, -Bot.TURN_SPEED);
+                leftFrontPower = Bot.LEFT_FRONT_POWER;
+                leftRearPower = Bot.LEFT_REAR_POWER;
+                rightFrontPower = -Bot.RIGHT_FRONT_POWER;
+                rightRearPower = -Bot.RIGHT_REAR_POWER;
             }
 
         } else if (gamepad1.dpad_up) {
             // Moves the robot forwards
-            robot.setDrivePower(-Bot.DRIVE_SPEED, -Bot.DRIVE_SPEED);
+            leftFrontPower = -Bot.LEFT_FRONT_POWER;
+            leftRearPower = -Bot.LEFT_REAR_POWER;
+            rightFrontPower = -Bot.RIGHT_FRONT_POWER;
+            rightRearPower = -Bot.RIGHT_REAR_POWER;
 
         } else if (gamepad1.dpad_down) {
             // Moves the robot backwards
-            robot.setDrivePower(Bot.DRIVE_SPEED, Bot.DRIVE_SPEED);
+            leftFrontPower = Bot.LEFT_FRONT_POWER;
+            leftRearPower = Bot.LEFT_REAR_POWER;
+            rightFrontPower = Bot.RIGHT_FRONT_POWER;
+            rightRearPower = Bot.RIGHT_REAR_POWER;
 
         } else if (gamepad1.dpad_right) {
             // Moves the robots sideways left or turn left using left dpad
             if (sidewaysControlState) {
-                robot.getMotorDriveLeftFront().setPower(-Bot.DRIVE_SPEED);
-                robot.getMotorDriveLeftRear().setPower(Bot.DRIVE_SPEED);
-                robot.getMotorDriveRightFront().setPower(Bot.DRIVE_SPEED);
-                robot.getMotorDriveRightRear().setPower(-Bot.DRIVE_SPEED);
+                leftFrontPower = Bot.LEFT_FRONT_POWER;
+                leftRearPower = -Bot.LEFT_REAR_POWER;
+                rightFrontPower = -Bot.RIGHT_FRONT_POWER;
+                rightRearPower = Bot.RIGHT_REAR_POWER;
             } else {
-                robot.setDrivePowerTurn(-Bot.TURN_SPEED, -Bot.TURN_SPEED);
+                leftFrontPower = Bot.LEFT_FRONT_POWER;
+                leftRearPower = Bot.LEFT_REAR_POWER;
+                rightFrontPower = -Bot.RIGHT_FRONT_POWER;
+                rightRearPower = -Bot.RIGHT_REAR_POWER;
             }
 
         } else if (gamepad1.dpad_left) {
             // Moves the robots sideways right or turn right using right dpad
             if (sidewaysControlState) {
-                robot.getMotorDriveLeftFront().setPower(Bot.DRIVE_SPEED);
-                robot.getMotorDriveLeftRear().setPower(-Bot.DRIVE_SPEED);
-                robot.getMotorDriveRightFront().setPower(-Bot.DRIVE_SPEED);
-                robot.getMotorDriveRightRear().setPower(Bot.DRIVE_SPEED);
+                leftFrontPower = Bot.LEFT_FRONT_POWER;
+                leftRearPower = -Bot.LEFT_REAR_POWER;
+                rightFrontPower = -Bot.RIGHT_FRONT_POWER;
+                rightRearPower = Bot.RIGHT_REAR_POWER;
             } else {
-                robot.setDrivePowerTurn(Bot.TURN_SPEED, Bot.TURN_SPEED);
+                leftFrontPower = -Bot.LEFT_FRONT_POWER;
+                leftRearPower = -Bot.LEFT_REAR_POWER;
+                rightFrontPower = Bot.RIGHT_FRONT_POWER;
+                rightRearPower = Bot.RIGHT_REAR_POWER;
             }
 
-        } else {
-            // Controls the movement of the robot using joysticks on gamepad 1
-            // or setting the drive power to zero if no input exists
-            robot.setDrivePower(joystickLeftYOne, joystickRightYOne);
-
         }
+
+        robot.setDrivePower(leftFrontPower, leftRearPower, rightFrontPower, rightRearPower);
     }
 
     /**
@@ -208,42 +227,31 @@ public class DriveOp extends OpMode {
     private void sweep() {
         float totalTrigger = gamepad1.right_trigger - gamepad1.left_trigger;
 
-        // Deploys or retracts the sweeper using the lift motor
-        //
-        // If the driver presses one of the buttons, the sweeper would deploy or retracts
-        // with little effort on the driver's side. The deployment or retractment takes
-        // time, so the sweeper lift motor would be "busy" for the time being.
-        //
-        // After the time is up, the sweeper lift motor would set to power of zero which
-        // stops the motor
-
-        /*
-        if (sweeperBusy && (sweeperTime > sweeperDeployTimer.seconds())) {
-            robot.getSweeper().setLiftPower(0.0);
-            sweeperBusy = false;
-            sweeperTime = 0.0;
-        } else {
-            if (gamepad2.right_bumper && (gamepad2.a || gamepad2.b)) {
-                sweeperDeployTimer.reset();
-                if (gamepad2.a && !gamepad2.b) {
-                    sweeperTime = DEPLOY_TIME;
-                    robot.getSweeper().setLiftPower(Bot.SWEEPER_LIFT_SPEED);
-                    sweeperBusy = true;
-                } else if (!gamepad2.a && gamepad2.b) {
-                    sweeperTime = RETRACT_TIME;
-                    robot.getSweeper().setLiftPower(-Bot.SWEEPER_LIFT_SPEED);
-                    sweeperBusy = true;
-                }
-            } else {
-                robot.getSweeper().setLiftPower(Range.clip(gamepad2.left_stick_y, -Bot.SWEEPER_LIFT_SPEED, Bot.SWEEPER_LIFT_SPEED));
-            }
-        }
-        */
-
+        // Lifts the sweeper up or down
         robot.getSweeper().setLiftPower(Range.clip(gamepad2.left_stick_y, -Bot.SWEEPER_LIFT_SPEED, Bot.SWEEPER_LIFT_SPEED));
 
+        // Activate or deactivate sweeping forever on the sweeper forever
+        if (!sweepingButtonDown && gamepad1.b) {
+            sweepingButtonDown = true;
+            sweepingForever = !sweepingForever;
+        } else if (sweepingButtonDown && !gamepad1.b) {
+            sweepingButtonDown = false;
+        }
+
+        // Switches the direction of the sweeper
+        if (!sweepingDirectionChangeButtonDown && gamepad1.y) {
+            sweepingDirectionChangeButtonDown = true;
+            sweepingForward = !sweepingForward;
+        } else if (sweepingDirectionChangeButtonDown && !gamepad1.y) {
+            sweepingDirectionChangeButtonDown = false;
+        }
+
         // Sweeps the minerals from the ground
-        robot.getSweeper().setSweeperPower(Range.clip(totalTrigger, -Bot.SWEEPER_SPEED, Bot.SWEEPER_SPEED));
+        if (sweepingForever) {
+            robot.getSweeper().setSweeperPower(sweepingForward ? Bot.SWEEPER_SPEED : -Bot.SWEEPER_SPEED);
+        } else {
+            robot.getSweeper().setSweeperPower(Range.clip(totalTrigger, -Bot.SWEEPER_SPEED, Bot.SWEEPER_SPEED));
+        }
     }
 
     /**
@@ -251,6 +259,8 @@ public class DriveOp extends OpMode {
      */
     private void slide() {
         double sliderPower = 0.0;
+
+        // Slides the horizontal slider in or out
         if (gamepad2.dpad_up) {
             sliderPower -= Bot.SLIDER_SPEED;
         }

@@ -12,6 +12,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 public interface Bot {
 
+    double LEFT_FRONT_POWER = 1;
+    double LEFT_REAR_POWER = 1;
+    double RIGHT_FRONT_POWER = 1;
+    double RIGHT_REAR_POWER = 1;
+
     // Constant speed values for autonomous and driver control
     double DRIVE_SPEED = 1.0;
     double TURN_SPEED = 1.0;

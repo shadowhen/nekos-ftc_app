@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
  * @author Henry
  * @version 1.0
  */
-@Autonomous(name = "Delta - COMPETITION - DEPOT - RIGHT SIDE - MEET ALL POINTS", group = "auto")
+@Autonomous(name = "Delta - COMPETITION - Depot - Right Side - Does Everything", group = "auto")
 public class AutoDelta extends AutoOpMode {
 
     private MineralType centerMineral;
@@ -66,8 +66,11 @@ public class AutoDelta extends AutoOpMode {
 
             if (leftMineral.equals(MineralType.GOLD)) {
                 goLeft();
-            } else {
+            } else if (leftMineral.equals(MineralType.SILVER)){
                 goRight();
+            } else {
+                // Tries to avoid the minerals (final solution)
+                avoidMinerals();
             }
         }
 
@@ -81,7 +84,7 @@ public class AutoDelta extends AutoOpMode {
         robot.moveSidewaysByEncoder(DRIVE_SPEED, -200, 5);
 
         // Runs through the minerals
-        robot.moveByEncoder(DRIVE_SPEED, 1180, 1180, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 1180, 5);
 
         // Deposits the team marker in the depot for autonomous points
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
@@ -92,10 +95,8 @@ public class AutoDelta extends AutoOpMode {
         robot.moveByEncoder(TURN_SPEED, -740, 740, 5);
         robot.moveSidewaysByEncoder(DRIVE_SPEED, 200, 5);
         robot.turnByEncoder(TURN_SPEED, -100, 5);
-        robot.moveSidewaysByEncoder(DRIVE_SPEED, 190, 5);
-        robot.moveByEncoder(1, 1000+(1000-150), 1000+(1000-150), 10);
-        //robot.moveByEncoder(TURN_SPEED, -100, 100, 5);
-        //robot.moveByEncoder(1, 1000-150, 1000-150, 10);
+        robot.moveSidewaysByEncoder(DRIVE_SPEED, 190,5);
+        robot.moveByEncoder(1, 1000+(1000-150),10);
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 
@@ -104,7 +105,7 @@ public class AutoDelta extends AutoOpMode {
 
         // Lines up to the hit the gold mineral on the left
         robot.turnByEncoder(TURN_SPEED, 100+10, 5);
-        robot.moveByEncoder(DRIVE_SPEED, 400, 400, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 400, 5);
         robot.moveSidewaysByEncoder(DRIVE_SPEED, -300-30, 5);
 
         // Runs towards the gold mineral to earn sampling points
@@ -120,11 +121,11 @@ public class AutoDelta extends AutoOpMode {
         setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 600);
 
         // Goes backward and then turns ~180 degrees
-        robot.moveByEncoder(speed, -1000, -1000, 5);
+        robot.moveByEncoder(speed, -1000, 5);
         robot.turnByEncoder(TURN_SPEED, -1110+100, 5);
 
         // Runs to the crater and deploys the sweeper to park partially
-        robot.moveByEncoder(speed, 300, 300, 5);
+        robot.moveByEncoder(speed, 300, 5);
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 
@@ -133,15 +134,15 @@ public class AutoDelta extends AutoOpMode {
 
         // Lines up with the gold mineral on the right
         robot.turnByEncoder(TURN_SPEED, 100, 5);
-        robot.moveByEncoder(DRIVE_SPEED, 400, 400, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 400, 5);
         robot.moveSidewaysByEncoder(0.8, 550, 5);
 
         // Runs towards the gold mineral to earn sampling points
-        robot.moveByEncoder(DRIVE_SPEED, 500+80+100, 500+80+100, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 500+80+100, 5);
 
         // Moves into position where the robot can drop the team marker
         robot.turnByEncoder(TURN_SPEED, -300, 5);
-        robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 300, 5);
 
         // Drops the team marker
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
@@ -151,12 +152,33 @@ public class AutoDelta extends AutoOpMode {
         // Get into position where the robot can make run for the crater to park
         robot.moveByEncoder(speed, 200, 200, 5);
         robot.turnByEncoder(speed, -300, 5);
-        robot.moveByEncoder(speed, 200+100, 200+100, 5);
+        robot.moveByEncoder(speed, 200+100, 5);
         robot.turnByEncoder(speed, -230, 5);
         robot.moveSidewaysByEncoder(0.8, 100, 5);
 
         // Runs to the crater and then parks by deploying the sweeper
-        robot.moveByEncoder(1, 1800, 1800, 5);
+        robot.moveByEncoder(1, 1800,5);
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+    }
+
+    private void avoidMinerals() {
+        // Moves to the barrier
+        robot.turnByEncoder(TURN_SPEED, 100+10, 5);
+        robot.moveSidewaysByEncoder(DRIVE_SPEED, -500, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 400, 5);
+
+        // Moves to the depot and drop team marker
+        robot.turnByEncoder(DRIVE_SPEED, 400, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 500, 5);
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, SWEEPER_DEPLOY_SLEEP);
+
+        // Moves backward so the robot can retract the sweeper
+        robot.moveByEncoder(DRIVE_SPEED, -400, 5);
+        setSweeperLiftPower(SWEEPER_RETRACT_SPEED, SWEEPER_RETRACT_SLEEP);
+
+        // Turns ~180 degrees and moves towards the crater to park
+        robot.turnByEncoder(TURN_SPEED, 1010, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 1000, 5);
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, SWEEPER_DEPLOY_SLEEP);
     }
 }

@@ -41,15 +41,12 @@ public class AutoDemo extends AutoOpMode {
         switch (mineralPosition) {
             case LEFT:
                 robot.moveSidewaysByEncoder(DRIVE_SPEED, -400, 5);
-                //robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
                 break;
             case RIGHT:
                 robot.moveSidewaysByEncoder(DRIVE_SPEED, 400, 5);
-                //robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
                 break;
             default:
                 robot.moveByEncoder(DRIVE_SPEED, -100, -100, 5);
-                //robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
         }
         sleep(500);
     }

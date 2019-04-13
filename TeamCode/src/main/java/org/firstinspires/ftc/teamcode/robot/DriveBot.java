@@ -74,20 +74,30 @@ public class DriveBot implements Bot {
         motorDriveRightRear.setMode(runMode);
     }
 
+    public void setDrivePower(double leftFrontPower, double leftRearPower, double rightFrontPower, double rightRearPower) {
+        motorDriveLeftFront.setPower(leftFrontPower);
+        motorDriveLeftRear.setPower(leftRearPower);
+        motorDriveRightFront.setPower(rightFrontPower);
+        motorDriveRightRear.setPower(rightRearPower);
+    }
+
     /**
      * Set the drive power of the left and right motors.
      * @param leftPower  Left Power
      * @param rightPower Right Power
      */
     public void setDrivePower(double leftPower, double rightPower) {
-        motorDriveLeftFront.setPower(leftPower);
-        motorDriveLeftRear.setPower(leftPower);
-        motorDriveRightFront.setPower(rightPower);
-        motorDriveRightRear.setPower(rightPower);
+        setDrivePower(leftPower, leftPower, rightPower, rightPower);
     }
 
-    public void setDrivePowerSideways(double power) {
-        setDrivePowerSideways(power, power);
+    /**
+     * Set the drive power using an array
+     * @param drivePower Drive Power Array
+     */
+    public void setDrivePower(double[] drivePower) {
+        if (drivePower.length >= 4) {
+            setDrivePower(drivePower[0], drivePower[1], drivePower[2], drivePower[3]);
+        }
     }
 
     /**
@@ -96,14 +106,15 @@ public class DriveBot implements Bot {
      * @param rightPower Right Power
      */
     public void setDrivePowerSideways(double leftPower, double rightPower) {
-        motorDriveLeftFront.setPower(leftPower);
-        motorDriveLeftRear.setPower(-leftPower);
-        motorDriveRightFront.setPower(-rightPower);
-        motorDriveRightRear.setPower(rightPower);
+        setDrivePower(leftPower, -leftPower, -rightPower, rightPower);
     }
 
-    public void setDrivePowerTurn(double power) {
-        setDrivePowerTurn(power, power);
+    /**
+     * Set the drive power to sideways move the robot
+     * @param power Drive Power
+     */
+    public void setDrivePowerSideways(double power) {
+        setDrivePowerSideways(power, power);
     }
 
     /**
@@ -112,10 +123,15 @@ public class DriveBot implements Bot {
      * @param rightPower Right Power
      */
     public void setDrivePowerTurn(double leftPower, double rightPower) {
-        motorDriveLeftFront.setPower(-leftPower);
-        motorDriveLeftRear.setPower(-leftPower);
-        motorDriveRightFront.setPower(rightPower);
-        motorDriveRightRear.setPower(rightPower);
+        setDrivePower(-leftPower, -leftPower, rightPower, rightPower);
+    }
+
+    /**
+     * Set the drive power to turn the robot
+     * @param power Drive Power
+     */
+    public void setDrivePowerTurn(double power) {
+        setDrivePowerTurn(power, power);
     }
 
     /**
@@ -168,14 +184,6 @@ public class DriveBot implements Bot {
      */
     public Dumper getDumper() {
         return dumper;
-    }
-
-    /**
-     * Returns the hardware map
-     * @return Hardware Map
-     */
-    public HardwareMap getHardwareMap() {
-        return hwMap;
     }
 
     /**

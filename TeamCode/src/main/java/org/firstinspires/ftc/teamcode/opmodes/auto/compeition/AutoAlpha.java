@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.robot.Bot;
  * @author Henry
  * @version 1.1
  */
-@Autonomous(name = "Alpha - COMPETITION - CRATER - LEFT SIDE - LANDING - PARK ONLY", group = "auto")
+@Autonomous(name = "Alpha - COMPETITION - Crater - Left Side - Park Only", group = "auto")
 public class AutoAlpha extends AutoOpMode {
 
     @Override
@@ -35,6 +35,6 @@ public class AutoAlpha extends AutoOpMode {
         sleep(1000);
 
         // Parks on the crater by deploying the sweeper
-        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, SWEEPER_DEPLOY_SLEEP);
     }
 }

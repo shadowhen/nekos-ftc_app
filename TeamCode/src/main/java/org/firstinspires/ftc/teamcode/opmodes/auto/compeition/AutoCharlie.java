@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.robot.Bot;
  * @author Henry
  * @version 1.1
  */
-@Autonomous(name = "Charlie - COMPETITION - CRATER - LEFT SIDE - LANDING - CLAIM DEPOT - PARK OUR CRATER", group = "auto")
+@Autonomous(name = "Charlie - COMPETITION - Crater - Left Side - Claiming Depot and Park", group = "auto")
 public class AutoCharlie extends AutoOpMode {
 
     @Override
@@ -33,7 +33,7 @@ public class AutoCharlie extends AutoOpMode {
         }
 
         // Lands on the field by raising the lift
-        liftByTime(Bot.VERTICAL_RAISE_SPEED, SLEEP_DRIVE);
+        liftByTime(Bot.VERTICAL_RAISE_SPEED, SLEEP_LANDING);
 
         // Moves sideways to unlatch from the lander latch
         robot.moveSidewaysByEncoder(SIDEWAYS_SPEED, 200, 5);

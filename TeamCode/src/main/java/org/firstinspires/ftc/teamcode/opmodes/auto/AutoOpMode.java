@@ -67,12 +67,12 @@ public class AutoOpMode extends LinearOpMode {
         robot.setAutoDrive(AutoDrive.FORWARD);
 
         // Calibrates the gyro sensor in the imu
-        telemetry.addData("status", "calibrating the gyro...");
+        /*telemetry.addData("status", "calibrating the gyro...");
         telemetry.update();
         if (!isStopRequested() && !robot.getSensors().isGyroCalibrated()) {
             sleep(50);
             idle();
-        }
+        }*/
 
         telemetry.addData("status", "ready to start...");
         telemetry.update();

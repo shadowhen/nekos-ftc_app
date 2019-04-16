@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.compeition;
+package org.firstinspires.ftc.teamcode.opmodes.auto.delay;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.robot.Bot;
  * @author Henry
  * @version 1.1
  */
-@Autonomous(name = "Charlie - COMPETITION - Crater - Left Side - Claiming Depot and Park", group = "auto")
-public class AutoCharlie extends AutoOpMode {
+@Autonomous(name = "Charlie DELAY - COMPETITION - Crater - Left Side - Claiming Depot and Park", group = "delay")
+public class AutoCharlieDelay extends AutoOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -42,7 +42,7 @@ public class AutoCharlie extends AutoOpMode {
         robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
         robot.moveByEncoder(TURN_SPEED, -450, 450, 5);
         robot.moveByEncoder(DRIVE_SPEED, 1000, 1000, 5);
-        /*robot.moveByEncoder(TURN_SPEED, -300, 300, 5);
+        robot.moveByEncoder(TURN_SPEED, -300, 300, 5);
         robot.moveByEncoder(DRIVE_SPEED, 1000, 1000, 5);
 
         // Drop the team marker by deploying the sweeper
@@ -58,7 +58,7 @@ public class AutoCharlie extends AutoOpMode {
         robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
 
         // Park partially on the crater by deploying the sweeper
-        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);*/
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 
 }

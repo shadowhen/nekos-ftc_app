@@ -128,7 +128,7 @@ public class DriveDemoOp extends OpMode {
         }
 
         robot.getDumper().setPower(armPower);
-        robot.setLiftPower(liftPower);
+        robot.getLift().setLiftPower(liftPower);
         robot.getSweeper().setLiftPower(deployPower);
         robot.getSweeper().setSliderPower(sliderPower);
         robot.getSweeper().setSweeperPower(sweeperPower);

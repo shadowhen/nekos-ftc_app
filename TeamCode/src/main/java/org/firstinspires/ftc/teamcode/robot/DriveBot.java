@@ -100,13 +100,17 @@ public class DriveBot implements Bot {
         }
     }
 
+    public void setDrivePowerSideways(double leftFrontPower, double leftRearPower, double rightFrontPower, double rightRearPower) {
+        setDrivePower(leftFrontPower, -leftRearPower, -rightFrontPower, rightRearPower);
+    }
+
     /**
      * Set the drive power of the left and right motors which the robot drives sideways.
      * @param leftPower  Left Power
      * @param rightPower Right Power
      */
     public void setDrivePowerSideways(double leftPower, double rightPower) {
-        setDrivePower(leftPower, -leftPower, -rightPower, rightPower);
+        setDrivePowerSideways(leftPower, leftPower, rightPower, rightPower);
     }
 
     /**
@@ -115,6 +119,19 @@ public class DriveBot implements Bot {
      */
     public void setDrivePowerSideways(double power) {
         setDrivePowerSideways(power, power);
+    }
+
+    public void setDrivePowerSideways(double[] power) {
+        if (power.length >= 4) {
+            setDrivePowerSideways(power[0], power[1], power[2], power[3]);
+        } else if (power.length >= 2) {
+            setDrivePowerSideways(power[0], power[1]);
+        } else if (power.length >= 1) {
+            setDrivePowerSideways(power[0]);
+        } else {
+            setDrivePowerSideways(0);
+        }
+
     }
 
     /**
@@ -145,12 +162,9 @@ public class DriveBot implements Bot {
         motorDriveRightRear.setZeroPowerBehavior(behavior);
     }
 
-    /**
-     * Set the power of the lift
-     * @param power Lift Power
-     */
-    public void setLiftPower(double power) {
-        lift.setLiftPower(power);
+    public double[] getDrivePower() {
+        return new double[]{ motorDriveLeftFront.getPower(), motorDriveLeftRear.getPower(),
+                motorDriveRightFront.getPower(), motorDriveRightRear.getPower()};
     }
 
     /**
@@ -192,37 +206,5 @@ public class DriveBot implements Bot {
      */
     public Telemetry getTelemetry() {
         return telemetry;
-    }
-
-    /**
-     * Returns the front left drive motor
-     * @return Front left drive motor
-     */
-    public DcMotor getMotorDriveLeftFront() {
-        return motorDriveLeftFront;
-    }
-
-    /**
-     * Returns the rear left drive motor
-     * @return Rear left drive motor
-     */
-    public DcMotor getMotorDriveLeftRear() {
-        return motorDriveLeftRear;
-    }
-
-    /**
-     * Returns the front right drive motor
-     * @return Front right drive motor
-     */
-    public DcMotor getMotorDriveRightFront() {
-        return motorDriveRightFront;
-    }
-
-    /**
-     * Returns the rear right drive motor
-     * @return Rear right drive motor
-     */
-    public DcMotor getMotorDriveRightRear() {
-        return motorDriveRightRear;
     }
 }

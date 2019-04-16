@@ -28,25 +28,11 @@ public class Sweeper {
         liftMotor = hwMap.get(DcMotor.class, HardwareName.MOTOR_SWEEPER_LIFT);
         sliderMotor = hwMap.get(DcMotor.class, HardwareName.MOTOR_HORIZONTAL_SLIDER);
 
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
         sweeperServo.setPower(0.0);
         liftMotor.setPower(0.0);
         sliderMotor.setPower(0.0);
-    }
-
-    /**
-     * Get the zero power behavior of the sweeper's lift motor
-     * @return Zero Power Behavior
-     */
-    public DcMotor.ZeroPowerBehavior getLiftZeroPowerBehavior() {
-        return liftMotor.getZeroPowerBehavior();
-    }
-
-    /**
-     * Set the zero power behavior of the sweeper's lift motor
-     * @param behavior Zero Power Behavior
-     */
-    public void setLiftZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
-        liftMotor.setZeroPowerBehavior(behavior);
     }
 
     /**

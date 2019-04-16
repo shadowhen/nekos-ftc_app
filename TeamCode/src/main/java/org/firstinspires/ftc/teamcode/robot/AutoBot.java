@@ -23,13 +23,11 @@ public class AutoBot extends DriveBot {
     private static final double WHEEL_DIAMETER_MM = 100;
     private static final double COUNTS_PER_MM = (COUNTS_PER_REV) / (WHEEL_DIAMETER_MM * Math.PI);
 
-    private ElapsedTime timer;
-    private SensorBot sensors;
+    protected ElapsedTime timer;
+    protected SensorBot sensors;
 
     // Used for accessing methods in the linearOpMode
-    private LinearOpMode linearOpMode;
-
-    private double[] driveSpeed = new double[4];
+    protected LinearOpMode linearOpMode;
 
     public AutoBot() {
         this(null);
@@ -126,15 +124,20 @@ public class AutoBot extends DriveBot {
             // Reset the timer for the timeout
             timer.reset();
 
+            motorDriveLeftFront.setPower(Range.clip(speed, 0, Bot.LEFT_FRONT_POWER));
+            motorDriveLeftRear.setPower(Range.clip(speed, 0, Bot.LEFT_REAR_POWER));
+            motorDriveRightFront.setPower(Range.clip(speed, 0, Bot.RIGHT_FRONT_POWER));
+            motorDriveRightRear.setPower(Range.clip(speed, 0, Bot.RIGHT_REAR_POWER));
+
             // The robot drives to the desired target position until the timer goes
             // pass the limit for a timeout or reaches the destination.
             while (isDriveMotorsBusy() && (timer.seconds() < timeoutS) && linearOpMode.opModeIsActive()) {
-                setDrivePower(speed, speed);
-
                 telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
                 telemetry.addData("current pos", "%07d %07d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
                 telemetry.addData("target pos", "%07d %07d", motorDriveLeftFront.getTargetPosition(), motorDriveRightFront.getCurrentPosition());
+                telemetry.addData("power", getDrivePower());
                 telemetry.update();
+
             }
 
             // Stop the drive motors
@@ -163,16 +166,19 @@ public class AutoBot extends DriveBot {
             setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             timer.reset();
-            while (isDriveMotorsBusy() && (timer.seconds() < timeoutS) && linearOpMode.opModeIsActive()) {
-                motorDriveLeftFront.setPower(speed);
-                motorDriveLeftRear.setPower(speed);
-                motorDriveRightFront.setPower(speed);
-                motorDriveRightRear.setPower(speed);
 
+            motorDriveLeftFront.setPower(Range.clip(speed, 0, Bot.LEFT_FRONT_POWER));
+            motorDriveLeftRear.setPower(Range.clip(speed, 0, Bot.LEFT_REAR_POWER));
+            motorDriveRightFront.setPower(Range.clip(speed, 0, Bot.RIGHT_FRONT_POWER));
+            motorDriveRightRear.setPower(Range.clip(speed, 0, Bot.RIGHT_REAR_POWER));
+
+            while (isDriveMotorsBusy() && (timer.seconds() < timeoutS) && linearOpMode.opModeIsActive()) {
                 telemetry.addData("timeout", "%.2f", timeoutS - timer.seconds());
                 telemetry.addData("current pos", "%07d %07d", motorDriveLeftFront.getCurrentPosition(), motorDriveRightFront.getCurrentPosition());
                 telemetry.addData("target pos", "%07d %07d", motorDriveLeftFront.getTargetPosition(), motorDriveRightFront.getCurrentPosition());
+                telemetry.addData("power", getDrivePower());
                 telemetry.update();
+
             }
 
             // Stop the drive motors

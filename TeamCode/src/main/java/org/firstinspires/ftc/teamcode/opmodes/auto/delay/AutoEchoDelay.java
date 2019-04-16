@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.compeition;
+package org.firstinspires.ftc.teamcode.opmodes.auto.delay;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoOpMode;
 import org.firstinspires.ftc.teamcode.robot.Bot;
@@ -14,9 +13,9 @@ import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
  * @author Henry
  * @version 1.0
  */
-@Autonomous(name = "Echo - CRATER - RIGHT SIDE - SAMPLE ONLY", group = "auto")
+@Autonomous(name = "Echo DELAY - CRATER - RIGHT SIDE - SAMPLE ONLY", group = "delay")
 //Disabled
-public class AutoEcho extends AutoOpMode {
+public class AutoEchoDelay extends AutoOpMode {
 
     private static final double PARKING_SPEED = -1.0;
 
@@ -81,7 +80,7 @@ public class AutoEcho extends AutoOpMode {
         robot.moveSidewaysByEncoder(DRIVE_SPEED, -300-30, 5);
 
         // Runs into the mineral for sampling points
-        robot.moveByEncoder(DRIVE_SPEED, 600-175, 5);
+        robot.moveByEncoder(DRIVE_SPEED, 600, 5);
 
         // Park in the crater
         setSweeperLiftPower(PARKING_SPEED, 500);

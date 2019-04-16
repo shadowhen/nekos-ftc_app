@@ -29,6 +29,8 @@ public class DriveOp extends OpMode {
 
     private boolean sweepingDirectionChangeButtonDown = false;
     private boolean sweepingForward = true;
+    
+    private double[] driveSpeed = new double[4];
 
     @Override
     public void init() {
@@ -48,12 +50,6 @@ public class DriveOp extends OpMode {
     }
 
     @Override
-    public void start() {
-        // Allow the robot's lift and latch to work properly
-        robot.getSweeper().setLiftZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-    }
-
-    @Override
     public void loop() {
         drive();
         lift();
@@ -66,10 +62,7 @@ public class DriveOp extends OpMode {
 
         // DRIVE MOTORS
         telemetry.addLine("-------------------");
-        telemetry.addData("Left Motor-Front Power", "%.2f", robot.getMotorDriveLeftFront().getPower());
-        telemetry.addData("Left Motor-Rear Power", "%.2f", robot.getMotorDriveLeftRear().getPower());
-        telemetry.addData("Right Motor-Front Power", "%.2f", robot.getMotorDriveRightFront().getPower());
-        telemetry.addData("Right Motor-Rear Power", "%.2f", robot.getMotorDriveRightRear().getPower());
+        telemetry.addData("Drive Power (LF, LR, RF, RR)", robot.getDrivePower());
 
         // SWEEPER
         telemetry.addLine("-------------------");

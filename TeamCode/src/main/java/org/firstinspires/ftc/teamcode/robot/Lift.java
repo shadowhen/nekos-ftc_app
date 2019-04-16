@@ -45,12 +45,4 @@ public class Lift {
     public double getLiftPower() {
         return liftMotor.getPower();
     }
-
-    /**
-     * Gets the current position of the lift motor's encoder
-     * @return Current Position
-     */
-    public int getCurrentPosition() {
-        return liftMotor.getCurrentPosition();
-    }
 }

@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
  * @author Henry
  * @version 1.1
  */
-@Autonomous(name = "Fox - COMPETITION - Crater - Left Side - Claiming Depot and Park", group = "auto")
+@Autonomous(name = "Fox - COMPETITION - Crater - Right Side - Does Everything", group = "auto")
 public class AutoFox extends AutoOpMode {
 
     private double highSpeed = 0.75;
@@ -72,7 +72,7 @@ public class AutoFox extends AutoOpMode {
             }
         }
 
-        robot.moveByEncoder(extermeSpeed, -300, 300, 5);
+        /*robot.moveByEncoder(extermeSpeed, -300, 300, 5);
         robot.moveSidewaysByEncoder(extermeSpeed, 250, 5);
         robot.moveByEncoder(extermeSpeed, 1100,5);
 
@@ -89,7 +89,7 @@ public class AutoFox extends AutoOpMode {
         robot.moveByEncoder(extermeSpeed, 300, 300, 5);
 
         // Park partially on the crater by deploying the sweeper
-        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);*/
 
         if (detector.getDetector() != null) {
             detector.getDetector().deactivate();
@@ -101,18 +101,39 @@ public class AutoFox extends AutoOpMode {
         robot.moveSidewaysByEncoder(extermeSpeed, -200, 5);
 
         // Runs through the minerals
-        robot.moveByEncoder(extermeSpeed, 700, 5);
+        robot.moveByEncoder(extermeSpeed, 600, 5);
 
-        robot.moveByEncoder(extermeSpeed, -300, 5);
-
-        robot.turnByEncoder(extermeSpeed, -500, 5);
-
+        // Reach the point where the robot can make its move towards the depot and reach
+        // the crater in time
+        robot.moveByEncoder(extermeSpeed, -300+100, 5);
+        robot.turnByEncoder(extermeSpeed, -550, 5);
         robot.moveByEncoder(extermeSpeed, 400, 5);
+
+        // Tries to go for the depot
+        // Turn
+        robot.moveByEncoder(extermeSpeed, -380, 380, 5);
+        robot.moveSidewaysByEncoder(extermeSpeed, 590, 5);
+        sleep(3000);
+        robot.moveByEncoder(extermeSpeed, 1300,5);
+
+        // Drop the team marker by deploying the sweeper
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+        sleep(500);
+
+        // Retracts the sweeper so the robot can move more freely
+        setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 600);
+
+        // Drives to the crater on our alliance side to park
+        robot.moveByEncoder(extermeSpeed, -1100, 5);
+        robot.turnByEncoder(extermeSpeed, -1210+100, 5);
+        robot.moveByEncoder(extermeSpeed, 300+200, 5);
+
+        // Park partially on the crater by deploying the sweeper
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 
+    // Safe and ready
     private void goLeft() {
-        double speed = 1.0;
-
         // Lines up to the hit the gold mineral on the left
         robot.turnByEncoder(extermeSpeed, 100+10, 5);
         robot.moveByEncoder(extermeSpeed, 400, 5);
@@ -121,16 +142,35 @@ public class AutoFox extends AutoOpMode {
         // Runs towards the gold mineral to earn sampling points
         robot.moveByEncoder(extermeSpeed, 400, 5);
 
+        // Reach the point where the robot can make its move towards the depot and reach
+        // the crater in time
         robot.moveByEncoder(extermeSpeed, -300, 5);
-
         robot.turnByEncoder(extermeSpeed, -500, 5);
-
         robot.moveByEncoder(extermeSpeed, 250, 5);
+
+        // Tries to go for the depot
+        robot.moveByEncoder(extermeSpeed, -300, 300, 5);
+        robot.moveSidewaysByEncoder(extermeSpeed, 250, 5);
+        sleep(3000);
+        robot.moveByEncoder(extermeSpeed, 1100,5);
+
+        // Drop the team marker by deploying the sweeper
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+        sleep(500);
+
+        // Retracts the sweeper so the robot can move more freely
+        setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 600);
+
+        // Drives to the crater on our alliance side to park
+        robot.moveByEncoder(extermeSpeed, -1100, -1000, 5);
+        robot.turnByEncoder(extermeSpeed, -1210+200, 5);
+        robot.moveByEncoder(extermeSpeed, 300, 300, 5);
+
+        // Park partially on the crater by deploying the sweeper
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 
     private void goRight() {
-        double speed = 0.8;
-
         // Lines up with the gold mineral on the right
         robot.turnByEncoder(extermeSpeed, 100, 5);
         robot.moveByEncoder(extermeSpeed, 400, 5);
@@ -139,11 +179,33 @@ public class AutoFox extends AutoOpMode {
         // Runs towards the gold mineral to earn sampling points
         robot.moveByEncoder(extermeSpeed, 400, 5);
 
-        robot.moveByEncoder(extermeSpeed, -400, 5);
+        // Backs out
+        robot.moveByEncoder(extermeSpeed, -310, 5);
 
-        robot.turnByEncoder(extermeSpeed, -500, 5);
-
+        // Heads for the barrier
+        robot.turnByEncoder(extermeSpeed, -560, 5);
         robot.moveByEncoder(extermeSpeed, 500+350+250, 5);
+        robot.moveByEncoder(extermeSpeed, -290, 290, 5);
+        robot.moveSidewaysByEncoder(extermeSpeed, 370, 5);
+
+        // Tries to go for the depot
+        sleep(4000);
+        robot.moveByEncoder(extermeSpeed, 1100,5);
+
+        // Drop the team marker by deploying the sweeper
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
+        sleep(500);
+
+        // Retracts the sweeper so the robot can move more freely
+        setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 600);
+
+        // Drives to the crater on our alliance side to park
+        robot.moveByEncoder(extermeSpeed, -1100, -1000, 5);
+        robot.turnByEncoder(extermeSpeed, -1210+100, 5);
+        robot.moveByEncoder(extermeSpeed, 300+200, 300, 5);
+
+        // Park partially on the crater by deploying the sweeper
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 
 }

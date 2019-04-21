@@ -14,10 +14,10 @@ public interface Bot {
 
     // Power for drive motors in case of the
     // center of gravity is off of the center
-    double LEFT_FRONT_POWER = 0.97;
-    double LEFT_REAR_POWER = 0.96;
-    double RIGHT_FRONT_POWER = 1;
-    double RIGHT_REAR_POWER = 0.98;
+    double LEFT_FRONT_POWER = .99;
+    double LEFT_REAR_POWER = .99;
+    double RIGHT_FRONT_POWER = .99;
+    double RIGHT_REAR_POWER = 1;
 
     // Constant speed values for autonomous and driver control
     double DRIVE_SPEED = 1.0;

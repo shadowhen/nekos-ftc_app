@@ -16,6 +16,9 @@ import org.firstinspires.ftc.teamcode.robot.Bot;
 @Autonomous(name = "Charlie - COMPETITION - Crater - Left Side - Claiming Depot and Park", group = "auto")
 public class AutoCharlie extends AutoOpMode {
 
+    private static final double HIGH_SPEED = 0.75;
+    private static final double TURN_HIGH_SPEED = 0.7;
+    
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
@@ -36,14 +39,15 @@ public class AutoCharlie extends AutoOpMode {
         liftByTime(Bot.VERTICAL_RAISE_SPEED, SLEEP_LANDING);
 
         // Moves sideways to unlatch from the lander latch
-        robot.moveSidewaysByEncoder(SIDEWAYS_SPEED, 200, 5);
+        robot.moveSidewaysByEncoder(HIGH_SPEED, 200, 5);
 
         // Drive to the depot
-        robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
-        robot.moveByEncoder(TURN_SPEED, -450, 450, 5);
-        robot.moveByEncoder(DRIVE_SPEED, 1000, 1000, 5);
-        /*robot.moveByEncoder(TURN_SPEED, -300, 300, 5);
-        robot.moveByEncoder(DRIVE_SPEED, 1000, 1000, 5);
+        robot.moveByEncoder(HIGH_SPEED, 300, 300, 5);
+        robot.moveByEncoder(TURN_HIGH_SPEED, -450, 450, 5);
+        // TODO:
+        robot.moveByEncoder(HIGH_SPEED, 1000, 1000, 5);
+        robot.moveByEncoder(TURN_HIGH_SPEED, -300, 300, 5);
+        robot.moveByEncoder(HIGH_SPEED, 1000, 1000, 5);
 
         // Drop the team marker by deploying the sweeper
         setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
@@ -53,12 +57,12 @@ public class AutoCharlie extends AutoOpMode {
         setSweeperLiftPower(SWEEPER_RETRACT_SPEED, 600);
 
         // Drives to the crater on our alliance side to park
-        robot.moveByEncoder(DRIVE_SPEED, -1000, -1000, 5);
-        robot.turnByEncoder(TURN_SPEED, -1110, 5);
-        robot.moveByEncoder(DRIVE_SPEED, 300, 300, 5);
+        robot.moveByEncoder(HIGH_SPEED, -1000, -1000, 5);
+        robot.turnByEncoder(TURN_HIGH_SPEED, -1110, 5);
+        robot.moveByEncoder(HIGH_SPEED, 300, 300, 5);
 
         // Park partially on the crater by deploying the sweeper
-        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);*/
+        setSweeperLiftPower(SWEEPER_DEPLOY_SPEED, 500);
     }
 
 }

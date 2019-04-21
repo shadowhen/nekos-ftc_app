@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.robot.TensorFlowDetector;
  * @author Henry
  * @version 1.0
  */
-@Autonomous(name = "Delta - COMPETITION - Depot - Right Side - Does Everything", group = "auto")
-public class AutoDelta extends AutoOpMode {
+@Autonomous(name = "Golf - COMPETITION - Depot - Right Side - Does Everything", group = "auto")
+public class AutoGolf extends AutoOpMode {
 
     private static final double HIGH_SPEED = 0.75;
     private static final double TURN_HIGH_SPEED = 0.7;
@@ -71,8 +71,7 @@ public class AutoDelta extends AutoOpMode {
                 // This method would be most accurate when the robot executes this
                 goLeft();
             } else {
-                goRight();
-                //goLeft();
+                goRightAlt();
             }
         }
 
@@ -176,15 +175,15 @@ public class AutoDelta extends AutoOpMode {
         // Runs towards the gold mineral to earn sampling points
         robot.moveByEncoder(HIGH_SPEED, 400, 5);
 
-        // Back out
+        // Backs out
         robot.moveByEncoder(HIGH_SPEED, -310, 5);
 
-        // Moves to the left sideways
-        robot.moveSidewaysByEncoder(HIGH_SPEED, -500, 5);
+        // Heads for the barrier
+        robot.turnByEncoder(HIGH_SPEED, -560, 5);
 
         // Move forward, turn right, and move towards the depot
-        robot.moveByEncoder(HIGH_SPEED, 1180/2, 5);
-        robot.turnByEncoder(TURN_HIGH_SPEED, 300, 5);
+        robot.moveByEncoder(HIGH_SPEED, 500+350+250, 5);
+        robot.moveByEncoder(HIGH_SPEED, -290, 290, 5);
         robot.moveByEncoder(HIGH_SPEED, 200, 5);
 
         // Drops the team marker

@@ -1,8 +1,8 @@
 # NEKOS - 6302 FTC Team
 
-**Update 5/15/2020: Since this repository has not been updated before the SKYSTONE season, the repository shall go into archive.
-If you want to get the latest FTC SDK, go to this [repository](https://github.com/FIRST-Tech-Challenge/SkyStone/). 
-This project has been maintained by a FIRST alumni, and since no updates have not been made recently, the repository shall be archived.**
+**Since this repository has not been updated before the SKYSTONE season, the repository has been archived.
+If you want to get the latest FTC SDK, go to this [repository](https://github.com/FIRST-Tech-Challenge/FtcRobotController). 
+This project was maintained by a former team member who had already graduated from high school.**
 
 Welcome to the NEKOS 6302 FTC Team repository. This repository is where 
 we upload our source code for our programers to understand and other teams to use 

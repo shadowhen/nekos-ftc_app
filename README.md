@@ -1,5 +1,12 @@
 # NEKOS - 6302 FTC Team
 
+## This repository is archived
+This repository was maintained by a robotics team member, who has graduated
+from high school and is no longer a member of the robotics team. Therefore,
+the repository is archived.
+
+## Description
+
 Welcome to the NEKOS 6302 FTC Team repository. This repository is where 
 we upload our source code for our programers to understand and other teams to use 
 as examples. In the spirit of gracious professionalism, we will share our code for 
